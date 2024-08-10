@@ -1,23 +1,22 @@
 extern "C"
 {
-	#include "Global.h"
-	#include "../GameEngine2D/Window.h"
+#include "Global.h"
 }
-#include "window.h"
 
 int main()
 {
-	CreateGraphicsWindow(1280, 720, "Game");
-	while (!glfwWindowShouldClose(global.window.GLFWindow))
+	GameEngineCreateGraphicsWindow(1280, 720, "Game");
+	while (!glfwWindowShouldClose(global.Window.GLFWindow))
 	{
 		glfwPollEvents();
 
 		int width = 0, height = 0;
-		glfwGetFramebufferSize(global.window.GLFWindow, &width, &height);
+		glfwGetFramebufferSize(global.Window.GLFWindow, &width, &height);
 		while (width == 0 || height == 0) {
-			glfwGetFramebufferSize(global.window.GLFWindow, &width, &height);
+			glfwGetFramebufferSize(global.Window.GLFWindow, &width, &height);
 			glfwWaitEvents();
 		}
 	}
-	//DestroyWindow();
+	GameEngineDestroyWindow();
 }
+

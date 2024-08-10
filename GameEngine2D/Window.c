@@ -1,40 +1,42 @@
 #include "Window.h"
 #include "Global.h"
 
-void CreateGraphicsWindow(uint32_t width, uint32_t height, const char* WindowName)
+static WindowState state = { 0 };
+
+void GameEngineCreateGraphicsWindow(uint32_t width, uint32_t height, const char* WindowName)
 {
-	global.window.FramebufferResized = false;
-	global.window.Width = width;
-	global.window.Height = height;
+	global.Window.FramebufferResized = false;
+	global.Window.Width = width;
+	global.Window.Height = height;
 
 	glfwInit();
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
-	global.window.GLFWindow = glfwCreateWindow(width, height, WindowName, NULL, NULL);
-	GLFWwindow* a = global.window.GLFWindow;
-	//glfwSetWindowUserPointer(GLFWindow, nullptr);
-	glfwSetFramebufferSizeCallback(global.window.GLFWindow, FrameBufferResizeCallBack);
-	//glfwSetCursorPosCallback(GLFWindow, Mouse::MousePosCallback);
-	//glfwSetMouseButtonCallback(GLFWindow, Mouse::MouseButtonCallback);
-	//glfwSetScrollCallback(GLFWindow, Mouse::MouseScrollCallback);
+	global.Window.GLFWindow = glfwCreateWindow(width, height, WindowName, NULL, NULL);
+	GLFWwindow* a = global.Window.GLFWindow;
+	glfwSetWindowUserPointer(global.Window.GLFWindow, NULL);
+	glfwSetFramebufferSizeCallback(global.Window.GLFWindow, GameEngineFrameBufferResizeCallBack);
+	glfwSetCursorPosCallback(global.Window.GLFWindow, GameEngineMousePosCallback);
+	glfwSetMouseButtonCallback(global.Window.GLFWindow, GameEngineMouseButtonCallback);
+	glfwSetScrollCallback(global.Window.GLFWindow, GameEngineMouseScrollCallback);
 	//glfwSetKeyCallback(GLFWindow, Keyboard::KeyCallBack);
 	//GameController::SetUpGamePad();
 }
 
-void FrameBufferResizeCallBack(GLFWwindow* window, int width, int height)
+void GameEngineFrameBufferResizeCallBack(GLFWwindow* window, int width, int height)
 {
-	//global.window.FramebufferResized = true;
+	global.Window.FramebufferResized = true;
 
-	//glfwGetFramebufferSize(window, &width, &height);
-	//while (width == 0 || height == 0)
-	//{
-	//	glfwGetFramebufferSize(window, &width, &height);
-	//	glfwWaitEvents();
-	//}
+	glfwGetFramebufferSize(window, &width, &height);
+	while (width == 0 || height == 0)
+	{
+		glfwGetFramebufferSize(window, &width, &height);
+		glfwWaitEvents();
+	}
 }
 
-//void DestroyWindow()
-//{
-//	glfwDestroyWindow(global.window.GLFWindow);
-//	glfwTerminate();
-//}
+void GameEngineDestroyWindow(void)
+{
+	glfwDestroyWindow(global.Window.GLFWindow);
+	glfwTerminate();
+}
