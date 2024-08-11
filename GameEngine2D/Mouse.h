@@ -1,6 +1,5 @@
 #pragma once
 #define SDL_MAIN_HANDLED
-#include <stdbool.h>
 #include <sdl/include/sdl.h>
 
 typedef enum mouseButtons

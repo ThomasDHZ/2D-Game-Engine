@@ -7,7 +7,7 @@
 typedef struct global {
     WindowState Window;
     MouseState Mouse;
-    //KeyboardState Keyboard;
+    KeyboardState Keyboard;
     //ControllerState Controller;
 } Global;
 

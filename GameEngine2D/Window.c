@@ -27,6 +27,8 @@ void GameEngine_PollEvents(void)
             case SDL_MOUSEBUTTONDOWN: GameEngine_MouseButtonPressedEvent(&global.Window.Event); break;
             case SDL_MOUSEBUTTONUP:   GameEngine_MouseButtonUnPressedEvent(&global.Window.Event); break;
             case SDL_MOUSEWHEEL:      GameEngine_MouseWheelEvent(&global.Window.Event); break;
+            case SDL_KEYDOWN:         GameEngine_KeyboardKeyDown(&global.Window.Event); break;
+            case SDL_KEYUP:           GameEngine_KeyboardKeyUp(&global.Window.Event); break;
             default: break;
         }
     }
