@@ -3,40 +3,37 @@
 
 static WindowState state = { 0 };
 
-void GameEngineCreateGraphicsWindow(uint32_t width, uint32_t height, const char* WindowName)
+void GameEngineCreateGraphicsWindow(const char* WindowName, uint32_t width, uint32_t height)
 {
-	global.Window.FramebufferResized = false;
-	global.Window.Width = width;
-	global.Window.Height = height;
+    if (SDL_Init(SDL_INIT_VIDEO) < 0) 
+    {
+        printf("Could not loead SDL: %s\n", SDL_GetError());
+    }
 
-	glfwInit();
-	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-
-	global.Window.GLFWindow = glfwCreateWindow(width, height, WindowName, NULL, NULL);
-	GLFWwindow* a = global.Window.GLFWindow;
-	glfwSetWindowUserPointer(global.Window.GLFWindow, NULL);
-	glfwSetFramebufferSizeCallback(global.Window.GLFWindow, GameEngineFrameBufferResizeCallBack);
-	glfwSetCursorPosCallback(global.Window.GLFWindow, GameEngineMousePosCallback);
-	glfwSetMouseButtonCallback(global.Window.GLFWindow, GameEngineMouseButtonCallback);
-	glfwSetScrollCallback(global.Window.GLFWindow, GameEngineMouseScrollCallback);
-	//glfwSetKeyCallback(GLFWindow, Keyboard::KeyCallBack);
-	//GameController::SetUpGamePad();
+    global.Window.SDLWindow = SDL_CreateWindow(WindowName, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_VULKAN);
+    if (!global.Window.SDLWindow)
+    {
+        printf("Failed to load window: %s\n", SDL_GetError());
+    }
 }
 
-void GameEngineFrameBufferResizeCallBack(GLFWwindow* window, int width, int height)
+void GameEnginePollEvents(void)
 {
-	global.Window.FramebufferResized = true;
-
-	glfwGetFramebufferSize(window, &width, &height);
-	while (width == 0 || height == 0)
-	{
-		glfwGetFramebufferSize(window, &width, &height);
-		glfwWaitEvents();
-	}
+    SDL_Event event;
+    while (SDL_PollEvent(&event) )
+    {
+        switch (event.type)
+        {
+            case SDL_MOUSEMOTION: GameEngine_MouseMoveEvent(&event); break;
+            case SDL_MOUSEBUTTONDOWN: GameEngine_MouseButtonPressedEvent(&event); break;
+            case SDL_MOUSEBUTTONUP: GameEngine_MouseButtonPressedEvent(&event); break;
+            default: break;
+        }
+    }
 }
 
 void GameEngineDestroyWindow(void)
 {
-	glfwDestroyWindow(global.Window.GLFWindow);
-	glfwTerminate();
+    SDL_DestroyWindow(global.Window.SDLWindow);
+    SDL_Quit();
 }

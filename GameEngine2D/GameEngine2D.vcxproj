@@ -71,8 +71,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)External;$(SolutionDir)External\glfw\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)External\glfw\lib-vc2022;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)External;$(SolutionDir)External\sdl\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)External\sdl\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -133,12 +133,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="GameController.h" />
     <ClInclude Include="Global.h" />
+    <ClInclude Include="Keyboard.h" />
     <ClInclude Include="Mouse.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="GameController.c" />
     <ClCompile Include="Global.c" />
+    <ClCompile Include="Keyboard.c" />
     <ClCompile Include="Mouse.c" />
     <ClCompile Include="Window.c" />
   </ItemGroup>

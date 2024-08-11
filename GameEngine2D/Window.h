@@ -1,17 +1,19 @@
 #pragma once
-#include <GLFW/glfw3.h>
+#define SDL_MAIN_HANDLED
+#include <stdio.h>
 #include <stdbool.h>
+#include <sdl/include/sdl.h>
 
-#include "Mouse.h"
 
 typedef struct windowState
 {
-    GLFWwindow* GLFWindow;
+    SDL_Window* SDLWindow;
+    SDL_Event Event;
     uint32_t Width;
     uint32_t Height;
     bool FramebufferResized;
 } WindowState;
 
-void GameEngineCreateGraphicsWindow(uint32_t width, uint32_t height, const char* WindowName);
-void GameEngineFrameBufferResizeCallBack(GLFWwindow* window, int width, int height);
+void GameEngineCreateGraphicsWindow(const char* WindowName, uint32_t width, uint32_t height);
+void GameEnginePollEvents(void);
 void GameEngineDestroyWindow(void);
