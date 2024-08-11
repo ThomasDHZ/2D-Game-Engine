@@ -3,7 +3,7 @@
 
 static WindowState state = { 0 };
 
-void GameEngineCreateGraphicsWindow(const char* WindowName, uint32_t width, uint32_t height)
+void GameEngine_CreateGraphicsWindow(const char* WindowName, uint32_t width, uint32_t height)
 {
     if (SDL_Init(SDL_INIT_VIDEO) < 0) 
     {
@@ -17,22 +17,22 @@ void GameEngineCreateGraphicsWindow(const char* WindowName, uint32_t width, uint
     }
 }
 
-void GameEnginePollEvents(void)
+void GameEngine_PollEvents(void)
 {
-    SDL_Event event;
-    while (SDL_PollEvent(&event) )
+    while (SDL_PollEvent(&global.Window.Event) )
     {
-        switch (event.type)
+        switch (global.Window.Event.type)
         {
-            case SDL_MOUSEMOTION: GameEngine_MouseMoveEvent(&event); break;
-            case SDL_MOUSEBUTTONDOWN: GameEngine_MouseButtonPressedEvent(&event); break;
-            case SDL_MOUSEBUTTONUP: GameEngine_MouseButtonPressedEvent(&event); break;
+            case SDL_MOUSEMOTION:     GameEngine_MouseMoveEvent(&global.Window.Event); break;
+            case SDL_MOUSEBUTTONDOWN: GameEngine_MouseButtonPressedEvent(&global.Window.Event); break;
+            case SDL_MOUSEBUTTONUP:   GameEngine_MouseButtonUnPressedEvent(&global.Window.Event); break;
+            case SDL_MOUSEWHEEL:      GameEngine_MouseWheelEvent(&global.Window.Event); break;
             default: break;
         }
     }
 }
 
-void GameEngineDestroyWindow(void)
+void GameEngine_DestroyWindow(void)
 {
     SDL_DestroyWindow(global.Window.SDLWindow);
     SDL_Quit();

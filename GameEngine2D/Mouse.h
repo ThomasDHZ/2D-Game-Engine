@@ -19,15 +19,14 @@ typedef enum mouseButtonEventState
 
 typedef struct mouseState
 {
-	uint32_t X;
-	uint32_t Y;
+	int X;
+	int Y;
+	int WheelOffset;
 	MouseButtonEventState MouseButtonState[3];
 
 }MouseState;
 
-static void GameEngine_MouseButtonState(uint32_t buttonstate, const MouseButtons button);
 void GameEngine_MouseMoveEvent(const SDL_Event* event);
 void GameEngine_MouseButtonPressedEvent(const SDL_Event* event);
-//void GameEngineMousePosCallback(GLFWwindow* window, double xpos, double ypos);
-//void GameEngineMouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
-//void GameEngineMouseScrollCallback(GLFWwindow* window, double Xoffset, double Yoffset);
+void GameEngine_MouseButtonUnPressedEvent(const SDL_Event* event);
+void GameEngine_MouseWheelEvent(const SDL_Event* event);

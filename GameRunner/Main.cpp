@@ -5,20 +5,19 @@ extern "C"
 
 int main()
 {
-	GameEngineCreateGraphicsWindow("Game", 1280, 720);
+	GameEngine_CreateGraphicsWindow("Game", 1280, 720);
 	while (global.Window.Event.type != SDL_QUIT)
 	{
-		GameEnginePollEvents();
+		GameEngine_PollEvents();
+
 		//int width = 0, height = 0;
 		//glfwGetFramebufferSize(global.Window.GLFWindow, &width, &height);
 		//while (width == 0 || height == 0) {
 		//	glfwGetFramebufferSize(global.Window.GLFWindow, &width, &height);
 		//	glfwWaitEvents();
 		//}
-
-		SDL_PollEvent(&global.Window.Event);
 	}
-	GameEngineDestroyWindow();
+	GameEngine_DestroyWindow();
 	return 0;
 }
 

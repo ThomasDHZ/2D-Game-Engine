@@ -14,6 +14,6 @@ typedef struct windowState
     bool FramebufferResized;
 } WindowState;
 
-void GameEngineCreateGraphicsWindow(const char* WindowName, uint32_t width, uint32_t height);
-void GameEnginePollEvents(void);
-void GameEngineDestroyWindow(void);
+void GameEngine_CreateGraphicsWindow(const char* WindowName, uint32_t width, uint32_t height);
+void GameEngine_PollEvents(void);
+void GameEngine_DestroyWindow(void);
