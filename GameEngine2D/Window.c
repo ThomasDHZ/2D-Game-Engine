@@ -23,12 +23,15 @@ void GameEngine_PollEvents(void)
     {
         switch (global.Window.Event.type)
         {
-            case SDL_MOUSEMOTION:     GameEngine_MouseMoveEvent(&global.Window.Event); break;
-            case SDL_MOUSEBUTTONDOWN: GameEngine_MouseButtonPressedEvent(&global.Window.Event); break;
-            case SDL_MOUSEBUTTONUP:   GameEngine_MouseButtonUnPressedEvent(&global.Window.Event); break;
-            case SDL_MOUSEWHEEL:      GameEngine_MouseWheelEvent(&global.Window.Event); break;
-            case SDL_KEYDOWN:         GameEngine_KeyboardKeyDown(&global.Window.Event); break;
-            case SDL_KEYUP:           GameEngine_KeyboardKeyUp(&global.Window.Event); break;
+            case SDL_MOUSEMOTION:           GameEngine_MouseMoveEvent(&global.Window.Event); break;
+            case SDL_MOUSEBUTTONDOWN:       GameEngine_MouseButtonPressedEvent(&global.Window.Event); break;
+            case SDL_MOUSEBUTTONUP:         GameEngine_MouseButtonUnPressedEvent(&global.Window.Event); break;
+            case SDL_MOUSEWHEEL:            GameEngine_MouseWheelEvent(&global.Window.Event); break;
+            case SDL_KEYDOWN:               GameEngine_KeyboardKeyDown(&global.Window.Event); break;
+            case SDL_KEYUP:                 GameEngine_KeyboardKeyUp(&global.Window.Event); break;
+            case SDL_CONTROLLERAXISMOTION:  GameEngine_ControllerMoveAxis(&global.Window.Event); break;
+            case SDL_CONTROLLERBUTTONDOWN:  GameEngine_ControllerButtonDown(&global.Window.Event); break;
+            case SDL_CONTROLLERBUTTONUP:    GameEngine_ControllerButtonUp(&global.Window.Event); break;
             default: break;
         }
     }

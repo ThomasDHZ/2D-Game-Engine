@@ -22,7 +22,6 @@ typedef struct mouseState
 	int Y;
 	int WheelOffset;
 	MouseButtonEventState MouseButtonState[3];
-
 }MouseState;
 
 void GameEngine_MouseMoveEvent(const SDL_Event* event);
