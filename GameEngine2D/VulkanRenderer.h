@@ -1,5 +1,11 @@
 #pragma once
+#include <windows.h>
+#include <sdl/include/SDL_vulkan.h>
 #include <vulkan/vulkan.h>
+#include <vulkan/vulkan_win32.h>
+#include <vulkan/vulkan_core.h>
+
+#include "Window.h"
 
 typedef struct rendererState
 {
@@ -20,4 +26,5 @@ typedef struct rendererState
 	 //VulkanSwapChain SwapChain;
 }RendererState;
 
-void Vulkan_SetUp();
+void Vulkan_GetError();
+void Vulkan_RendererSetUp();

@@ -1,13 +1,13 @@
 extern "C"
 {
 #include "Global.h"
-#include "List.h"
+#include "VulkanRenderer.h"
 }
 
 int main()
 {
 	GameEngine_CreateGraphicsWindow("Game", 1280, 720);
-
+	Vulkan_RendererSetUp();
 	while (global.Window.Event.type != SDL_QUIT)
 	{
 		GameEngine_PollEvents();

@@ -1,4 +1,13 @@
-#include "List.h"
+#include "CList.h"
+
+static void List_Resize(List* list)
+{
+	void* newPtr = malloc(list->ElementSize * list->Capacity);
+	memcpy(newPtr, list->Data, list->ElementSize * list->ItemCount);
+
+	free(list->Data);
+	list->Data = (int*)newPtr;
+}
 
 void List_StartUp(List* list, int elementSize)
 {
@@ -8,16 +17,7 @@ void List_StartUp(List* list, int elementSize)
 	list->Capacity = 0;
 }
 
-void List_Resize(List* list)
-{
-	void* newPtr = malloc(list->ElementSize * list->Capacity);
-	memcpy(newPtr, list->Data, list->ElementSize * list->ItemCount);
-
-	free(list->Data);
-	list->Data = (int*)newPtr;
-}
-
-void* List_Get(List* list, size_t index)
+void* List_GetElement(List* list, size_t index)
 {
 	char* startMemoryAddress = (char*)list->Data;
 	char* readMemoryAddress = startMemoryAddress + (index * list->ElementSize);

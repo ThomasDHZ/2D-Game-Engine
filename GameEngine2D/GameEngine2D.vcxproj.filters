@@ -33,7 +33,13 @@
     <ClInclude Include="VulkanRenderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="List.h">
+    <ClInclude Include="CList.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CArray.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="VulkanError.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -56,7 +62,10 @@
     <ClCompile Include="VulkanRenderer.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="List.c">
+    <ClCompile Include="CList.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CArray.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
