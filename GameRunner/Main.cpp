@@ -24,6 +24,7 @@ int main()
 	}
 
 	//SDL_GameControllerClose();
+	Vulkan_DestroyRenderer();
 	GameEngine_DestroyWindow();
 	return 0;
 }
