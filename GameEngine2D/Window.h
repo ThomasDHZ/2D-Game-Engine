@@ -2,7 +2,7 @@
 #define SDL_MAIN_HANDLED
 #include <stdio.h>
 #include <stdbool.h>
-#include <sdl/include/sdl.h>
+#include <SDL.h>
 
 
 typedef struct windowState

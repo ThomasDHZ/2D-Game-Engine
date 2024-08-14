@@ -1,6 +1,6 @@
 #pragma once
 #define SDL_MAIN_HANDLED
-#include <sdl/include/sdl.h>
+#include <SDL.h>
 
 typedef enum inputKey
 {

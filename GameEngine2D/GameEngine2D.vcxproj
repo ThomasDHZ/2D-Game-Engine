@@ -136,9 +136,12 @@
     <ClInclude Include="CArray.h" />
     <ClInclude Include="GameController.h" />
     <ClInclude Include="Global.h" />
+    <ClInclude Include="GraphicsDevice.h" />
     <ClInclude Include="Keyboard.h" />
     <ClInclude Include="CList.h" />
+    <ClInclude Include="Macro.h" />
     <ClInclude Include="Mouse.h" />
+    <ClInclude Include="VulkanDebugger.h" />
     <ClInclude Include="VulkanError.h" />
     <ClInclude Include="VulkanRenderer.h" />
     <ClInclude Include="Window.h" />
@@ -147,9 +150,11 @@
     <ClCompile Include="CArray.c" />
     <ClCompile Include="GameController.c" />
     <ClCompile Include="Global.c" />
+    <ClCompile Include="GraphicsDevice.c" />
     <ClCompile Include="Keyboard.c" />
     <ClCompile Include="CList.c" />
     <ClCompile Include="Mouse.c" />
+    <ClCompile Include="VulkanDebugger.c" />
     <ClCompile Include="VulkanRenderer.c" />
     <ClCompile Include="Window.c" />
   </ItemGroup>

@@ -5,15 +5,15 @@ static WindowState state = { 0 };
 
 void GameEngine_CreateGraphicsWindow(const char* WindowName, uint32_t width, uint32_t height)
 {
-    if (SDL_Init(SDL_INIT_VIDEO) < 0) 
+    if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
     {
-        printf("Could not loead SDL: %s\n", SDL_GetError());
+        fprintf(stderr, "Could not load SDL: %s\n", SDL_GetError());
     }
 
     global.Window.SDLWindow = SDL_CreateWindow(WindowName, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_VULKAN);
     if (!global.Window.SDLWindow)
     {
-        printf("Failed to load window: %s\n", SDL_GetError());
+        fprintf(stderr, "Failed to load window: %s\n", SDL_GetError());
     }
 }
 

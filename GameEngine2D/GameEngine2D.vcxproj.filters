@@ -36,10 +36,19 @@
     <ClInclude Include="CList.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="VulkanError.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="CArray.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="VulkanError.h">
+    <ClInclude Include="VulkanDebugger.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Macro.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsDevice.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -66,6 +75,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CArray.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="VulkanDebugger.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsDevice.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

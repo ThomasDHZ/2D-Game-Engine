@@ -1,7 +1,7 @@
 extern "C"
 {
-#include "Global.h"
-#include "VulkanRenderer.h"
+#include <Global.h>
+#include <VulkanRenderer.h>
 }
 
 int main()
