@@ -26,48 +26,15 @@ void Vulkan_RendererSetUp()
     SDL_Window* window = global.Window.SDLWindow;
 
     uint32_t extensionCount;
-    if (!SDL_Vulkan_GetInstanceExtensions(window, &extensionCount, NULL))
-    {
-        fprintf(stderr, "Failed to get Vulkan instance extensions: %s\n", SDL_GetError());
-        return;
-    }
+    SDL_Vulkan_GetInstanceExtensions(window, &extensionCount, NULL);
 
     const char** extensions = malloc(sizeof(const char*) * (extensionCount + 1));
-    if (!extensions)
-    {
-        fprintf(stderr, "Failed to allocate memory for Vulkan extensions.\n");
-        return;
-    }
+    SDL_Vulkan_GetInstanceExtensions(window, &extensionCount, extensions);
+    extensions[extensionCount++] = VK_EXT_DEBUG_UTILS_EXTENSION_NAME;
 
-    if (!SDL_Vulkan_GetInstanceExtensions(window, &extensionCount, extensions))
-    {
-        fprintf(stderr, "Failed to get Vulkan instance extensions: %s\n", SDL_GetError());
-        free(extensions);
-        return;
-    }
+    VkDebugUtilsMessengerCreateInfoEXT debugInfo = { 0 };
 
-    extensions[extensionCount] = VK_EXT_DEBUG_UTILS_EXTENSION_NAME;
-    extensionCount++;
-
-    printf("Loading extensions:\n");
-    for (unsigned int i = 0; i < extensionCount; i++)
-    {
-        printf("%u: %s\n", i, extensions[i]);
-    }
-    printf("\n");
-
- /*   VkDebugUtilsMessengerCreateInfoEXT debugInfo = { 0 };
-    Vulkan_SetUpDebugger(&debugInfo);*/
-
-    //VkValidationFeaturesEXT ValidationFeatures = { 0 };
-    //ValidationFeatures.sType = VK_STRUCTURE_TYPE_VALIDATION_FEATURES_EXT;
-    //ValidationFeatures.disabledValidationFeatureCount = ARRAY_SIZE(enabledList);
-    //ValidationFeatures.enabledValidationFeatureCount = ARRAY_SIZE(disabledList);
-    //ValidationFeatures.pEnabledValidationFeatures = enabledList;
-    //ValidationFeatures.pDisabledValidationFeatures = disabledList;
-   // ValidationFeatures.pNext = &debugInfo;
-
-    VkApplicationInfo applicationInfo = 
+    VkApplicationInfo applicationInfo =
     {
         .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
         .pApplicationName = "Vulkan Application",
@@ -77,33 +44,31 @@ void Vulkan_RendererSetUp()
         .apiVersion = VK_API_VERSION_1_3
     };
 
-    VkInstanceCreateInfo vulkanCreateInfo = 
+    VkInstanceCreateInfo vulkanCreateInfo =
     {
         .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
         .pApplicationInfo = &applicationInfo,
         .enabledExtensionCount = extensionCount,
         .ppEnabledExtensionNames = extensions
     };
-
 #ifdef NDEBUG
     vulkanCreateInfo.enabledLayerCount = 0;
 #else
     vulkanCreateInfo.enabledLayerCount = ARRAY_SIZE(ValidationLayers);
     vulkanCreateInfo.ppEnabledLayerNames = ValidationLayers;
-    //vulkanCreateInfo.pNext = &ValidationFeatures;
+    vulkanCreateInfo.pNext = &debugInfo;
 #endif
 
     VkResult result = vkCreateInstance(&vulkanCreateInfo, NULL, &global.Renderer.Instance);
-    if (result != VK_SUCCESS)
-    {
+    if (result != VK_SUCCESS) {
         Vulkan_GetError(result);
         free(extensions);
-        return;
+        return; 
     }
 
-    // Create Vulkan surface
-    if (!SDL_Vulkan_CreateSurface(window, global.Renderer.Instance, &global.Renderer.Surface))
-    {
+    Vulkan_SetUpDebugger(&debugInfo);
+
+    if (!SDL_Vulkan_CreateSurface(window, global.Renderer.Instance, &global.Renderer.Surface)) {
         fprintf(stderr, "Failed to create Vulkan surface: %s\n", SDL_GetError());
         vkDestroyInstance(global.Renderer.Instance, NULL);
         free(extensions);
@@ -117,9 +82,7 @@ void Vulkan_DestroyRenderer()
 {
     //SwapChain.Destroy(global.Renderer.Device);
 
-    vkDestroyCommandPool(global.Renderer.Device, global.Renderer.CommandPool, NULL);
-    global.Renderer.CommandPool = VK_NULL_HANDLE;
-
+    Vulkan_DestroyCommandPool();
     for (size_t x = 0; x < MAX_FRAMES_IN_FLIGHT; x++)
     {
         //vkDestroySemaphore(global.Renderer.Device, AcquireImageSemaphores[x], NULL);
@@ -130,12 +93,32 @@ void Vulkan_DestroyRenderer()
         //PresentImageSemaphores[x] = VK_NULL_HANDLE;
         //InFlightFences[x] = VK_NULL_HANDLE;
     }
+    Vulkan_DestroyDevice();
+    Vulkan_DestroyDebugger();
+    Vulkan_DestroySurface();
+    Vulkan_DestroyInstance();
+}
 
+void Vulkan_DestroyCommandPool()
+{
+    vkDestroyCommandPool(global.Renderer.Device, global.Renderer.CommandPool, NULL);
+    global.Renderer.CommandPool = VK_NULL_HANDLE;
+}
+
+void Vulkan_DestroyDevice()
+{
     vkDestroyDevice(global.Renderer.Device, NULL);
     global.Renderer.Device = VK_NULL_HANDLE;
+}
 
-    Vulkan_DestroyDebugger();
-
+void Vulkan_DestroySurface()
+{
     vkDestroySurfaceKHR(global.Renderer.Instance, global.Renderer.Surface, NULL);
+    global.Renderer.Surface = VK_NULL_HANDLE;
+}
+
+void Vulkan_DestroyInstance()
+{
     vkDestroyInstance(global.Renderer.Instance, NULL);
+    global.Renderer.Instance = VK_NULL_HANDLE;
 }

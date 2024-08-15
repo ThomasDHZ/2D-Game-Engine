@@ -1,7 +1,7 @@
 #include "VulkanDebugger.h"
 #include "Global.h"
 
-static VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger)
+VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger)
 {
 	PFN_vkCreateDebugUtilsMessengerEXT func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
 	if (func != NULL)
@@ -14,7 +14,7 @@ static VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugU
 	}
 }
 
-static void DestroyDebugUtilsMessengerEXT(const VkAllocationCallbacks* pAllocator)
+void DestroyDebugUtilsMessengerEXT(const VkAllocationCallbacks* pAllocator)
 {
 	PFN_vkDestroyDebugUtilsMessengerEXT func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(global.Renderer.Instance, "vkDestroyDebugUtilsMessengerEXT");
 	if (func != NULL)
@@ -27,7 +27,7 @@ static void DestroyDebugUtilsMessengerEXT(const VkAllocationCallbacks* pAllocato
 	}
 }
 
-static VKAPI_ATTR VkBool32 VKAPI_CALL Vulkan_DebugCallBack(VkDebugUtilsMessageSeverityFlagBitsEXT MessageSeverity, VkDebugUtilsMessageTypeFlagsEXT MessageType, const VkDebugUtilsMessengerCallbackDataEXT* CallBackData, void* UserData)
+ VKAPI_ATTR VkBool32 VKAPI_CALL Vulkan_DebugCallBack(VkDebugUtilsMessageSeverityFlagBitsEXT MessageSeverity, VkDebugUtilsMessageTypeFlagsEXT MessageType, const VkDebugUtilsMessengerCallbackDataEXT* CallBackData, void* UserData)
 {
 	fprintf(stderr, "Validation Layer: %s\n", CallBackData->pMessage);
 	return VK_FALSE;

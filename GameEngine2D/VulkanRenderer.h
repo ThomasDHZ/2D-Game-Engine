@@ -33,3 +33,8 @@ typedef struct rendererState
 //void Vulkan_GetExtenstions();
 void Vulkan_RendererSetUp();
 void Vulkan_DestroyRenderer();
+
+void Vulkan_DestroyCommandPool();
+void Vulkan_DestroyDevice();
+void Vulkan_DestroySurface();
+void Vulkan_DestroyInstance();
