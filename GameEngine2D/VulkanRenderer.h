@@ -8,7 +8,9 @@
 
 #include "Macro.h"
 #include "GraphicsDevice.h"
+#include "VulkanSwapChain.h"
 #include "Window.h"
+#include "CArray.h"
 
 static const int MAX_FRAMES_IN_FLIGHT = 3;
 
@@ -22,6 +24,11 @@ typedef struct rendererState
 	 uint32_t ImageIndex;
 	 uint32_t CMDIndex;
 	 VkDebugUtilsMessengerEXT DebugMessenger;
+	 SwapChainState SwapChain;
+	 VkPhysicalDeviceFeatures PhysicalDeviceFeatures;
+	 int GraphicsFamily;
+	 int PresentFamily;
+
 	 //std::vector<VkFence> InFlightFences;
 	 //std::vector<VkSemaphore> AcquireImageSemaphores;
 	 //std::vector<VkSemaphore> PresentImageSemaphores;
@@ -30,7 +37,6 @@ typedef struct rendererState
 	 //VulkanSwapChain SwapChain;
 }RendererState;
 
-//void Vulkan_GetExtenstions();
 void Vulkan_RendererSetUp();
 void Vulkan_DestroyRenderer();
 

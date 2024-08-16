@@ -144,6 +144,7 @@
     <ClInclude Include="VulkanDebugger.h" />
     <ClInclude Include="VulkanError.h" />
     <ClInclude Include="VulkanRenderer.h" />
+    <ClInclude Include="VulkanSwapChain.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>
@@ -156,6 +157,7 @@
     <ClCompile Include="Mouse.c" />
     <ClCompile Include="VulkanDebugger.c" />
     <ClCompile Include="VulkanRenderer.c" />
+    <ClCompile Include="VulkanSwapChain.c" />
     <ClCompile Include="Window.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
