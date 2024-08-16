@@ -141,7 +141,6 @@
     <ClInclude Include="CList.h" />
     <ClInclude Include="Macro.h" />
     <ClInclude Include="Mouse.h" />
-    <ClInclude Include="VulkanDebugger.h" />
     <ClInclude Include="VulkanError.h" />
     <ClInclude Include="VulkanRenderer.h" />
     <ClInclude Include="VulkanSwapChain.h" />
@@ -155,7 +154,6 @@
     <ClCompile Include="Keyboard.c" />
     <ClCompile Include="CList.c" />
     <ClCompile Include="Mouse.c" />
-    <ClCompile Include="VulkanDebugger.c" />
     <ClCompile Include="VulkanRenderer.c" />
     <ClCompile Include="VulkanSwapChain.c" />
     <ClCompile Include="Window.c" />

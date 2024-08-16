@@ -3,8 +3,6 @@
 #include <SDL.h>
 #include <SDL_vulkan.h>
 #include <vulkan/vulkan.h>
-#include <vulkan/vulkan_win32.h>
-#include <vulkan/vulkan_core.h>
 
 #include "Macro.h"
 #include "GraphicsDevice.h"
@@ -38,4 +36,5 @@ void Vulkan_DestroyFences();
 void Vulkan_DestroyCommandPool();
 void Vulkan_DestroyDevice();
 void Vulkan_DestroySurface();
+void Vulkan_DestroyDebugger();
 void Vulkan_DestroyInstance();

@@ -4,6 +4,7 @@
 
 typedef struct swapChainState
 {
+	uint32_t SwapChainImageCount;
 	uint32_t GraphicsFamily;
 	uint32_t PresentFamily;
 	VkImage* SwapChainImages;
@@ -14,6 +15,5 @@ typedef struct swapChainState
 
 void Vulkan_SetUpSwapChain();
 void Vulkan_RebuildSwapChain();
-void Vulkan_DestroySwapChain();
 void Vulkan_DestroyImageView();
 void Vulkan_DestroySwapChain();

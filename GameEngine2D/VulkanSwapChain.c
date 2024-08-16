@@ -1,7 +1,7 @@
 #include "VulkanSwapChain.h"
 #include "Global.h"
 
-VkSurfaceFormatKHR SwapChain_FindSwapSurfaceFormat(VkSurfaceFormatKHR* availableFormats)
+static VkSurfaceFormatKHR SwapChain_FindSwapSurfaceFormat(VkSurfaceFormatKHR* availableFormats)
 {
 	for (int x = 0; x < ARRAY_SIZE(availableFormats); x++)
 	{
@@ -15,7 +15,7 @@ VkSurfaceFormatKHR SwapChain_FindSwapSurfaceFormat(VkSurfaceFormatKHR* available
 	return;
 }
 
-VkPresentModeKHR SwapChain_FindSwapPresentMode(VkPresentModeKHR* availablePresentModes)
+static VkPresentModeKHR SwapChain_FindSwapPresentMode(VkPresentModeKHR* availablePresentModes)
 {
 	for (int x = 0; x < ARRAY_SIZE(availablePresentModes); x++)
 	{
@@ -26,6 +26,29 @@ VkPresentModeKHR SwapChain_FindSwapPresentMode(VkPresentModeKHR* availablePresen
 	}
 
 	return VK_PRESENT_MODE_FIFO_KHR;
+}
+
+void SwapChain_GetQueueFamilies(VkPhysicalDevice* physicalDevice, uint32_t* graphicsFamily, uint32_t* presentFamily)
+{
+	uint32_t queueFamilyCount = UINT32_MAX;
+	vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount, NULL);
+
+	VkQueueFamilyProperties* queueFamilies = malloc(sizeof(VkQueueFamilyProperties) * queueFamilyCount);
+	vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount, queueFamilies);
+	for (int x = 0; x <= queueFamilies; x++)
+	{
+		VkBool32 presentSupport = false;
+		vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice, x, global.Renderer.Surface, &presentSupport);
+
+		if (queueFamilies->queueFlags & VK_QUEUE_GRAPHICS_BIT)
+		{
+			*presentFamily = x;
+			*graphicsFamily = x;
+			break;
+		}
+	}
+
+	free(queueFamilies);
 }
 
 void Vulkan_SetUpSwapChain()
@@ -51,7 +74,7 @@ void Vulkan_SetUpSwapChain()
 		vkGetPhysicalDeviceSurfacePresentModesKHR(global.Renderer.PhysicalDevice, global.Renderer.Surface, &presentModeCount, compatiblePresentModesList);
 	}
 
-	FindQueueFamilies(global.Renderer.PhysicalDevice, global.Renderer.Surface);
+	SwapChain_GetQueueFamilies(global.Renderer.PhysicalDevice, &global.Renderer.SwapChain.GraphicsFamily, &global.Renderer.SwapChain.PresentFamily);
 	VkSurfaceFormatKHR SwapChainImageFormat = SwapChain_FindSwapSurfaceFormat(compatibleSwapChainFormatList);
 	VkPresentModeKHR SwapChainPresentMode = SwapChain_FindSwapPresentMode(compatiblePresentModesList);
 
@@ -101,36 +124,63 @@ void Vulkan_SetUpSwapChain()
 	VkResult result = vkCreateSwapchainKHR(global.Renderer.Device, &SwapChainCreateInfo, NULL, &global.Renderer.SwapChain.Swapchain);
 	if (result != VK_SUCCESS)
 	{
-		fprintf(stderr, "failed to create swap chain! %s\n", result);
+		fprintf(stderr, "Failed to create swap chain: %s\n", result);
 		free(compatibleSwapChainFormatList);
 		free(compatiblePresentModesList);
 		return;
 	}
 
-	vkGetSwapchainImagesKHR(global.Renderer.Device, global.Renderer.SwapChain.Swapchain, &SwapChainImageCount, NULL);
-	global.Renderer.SwapChain.SwapChainImages = malloc(sizeof(VkImage) * SwapChainImageCount);
-	vkGetSwapchainImagesKHR(global.Renderer.Device, global.Renderer.SwapChain.Swapchain, &SwapChainImageCount, &global.Renderer.SwapChain.SwapChainImages);
-
-	global.Renderer.SwapChain.SwapChainImageViews = SwapChainImageCount;
-	for (uint32_t x = 0; x < SwapChainImageCount; x++)
+	global.Renderer.SwapChain.SwapChainImageCount = INT32_MAX;
+	VkResult swapChainImagesResult = vkGetSwapchainImagesKHR(global.Renderer.Device, global.Renderer.SwapChain.Swapchain, &global.Renderer.SwapChain.SwapChainImageCount, NULL);
+	if (swapChainImagesResult != VK_SUCCESS)
 	{
-		VkImageViewCreateInfo SwapChainViewInfo = 
+		fprintf(stderr, "Failed to create swap chain: %s\n", result);
+		free(compatibleSwapChainFormatList);
+		free(compatiblePresentModesList);
+		return;
+	}
+
+	global.Renderer.SwapChain.SwapChainImages = malloc(sizeof(VkImage) * global.Renderer.SwapChain.SwapChainImageCount);
+	VkResult swapChainImagesResult2 = vkGetSwapchainImagesKHR(global.Renderer.Device, global.Renderer.SwapChain.Swapchain, &global.Renderer.SwapChain.SwapChainImageCount, global.Renderer.SwapChain.SwapChainImages);
+	if (swapChainImagesResult2 != VK_SUCCESS)
+	{
+		fprintf(stderr, "Failed to create swap chain: %s\n", result);
+		free(compatibleSwapChainFormatList);
+		free(compatiblePresentModesList);
+		return;
+	}
+
+	global.Renderer.SwapChain.SwapChainImageViews = malloc(sizeof(VkImageView) * global.Renderer.SwapChain.SwapChainImageCount);
+	if (global.Renderer.SwapChain.SwapChainImageViews == NULL)
+	{
+		fprintf(stderr, "Failed to allocate memory for swap chain image views.\n");
+		free(compatibleSwapChainFormatList);
+		free(compatiblePresentModesList);
+		return;
+	}
+
+	for (uint32_t x = 0; x < global.Renderer.SwapChain.SwapChainImageCount; x++)
+	{
+		VkImageViewCreateInfo SwapChainViewInfo =
 		{
 			.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
 			.image = global.Renderer.SwapChain.SwapChainImages[x],
 			.viewType = VK_IMAGE_VIEW_TYPE_2D,
 			.format = SwapChainImageFormat.format,
-			.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-			.subresourceRange.baseMipLevel = 0,
-			.subresourceRange.levelCount = 1,
-			.subresourceRange.baseArrayLayer = 0,
-			.subresourceRange.layerCount = 1
+			.subresourceRange =
+			{
+				.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+				.baseMipLevel = 0,
+				.levelCount = 1,
+				.baseArrayLayer = 0,
+				.layerCount = 1
+			}
 		};
 
 		VkResult result = vkCreateImageView(global.Renderer.Device, &SwapChainViewInfo, NULL, &global.Renderer.SwapChain.SwapChainImageViews[x]);
 		if (result != VK_SUCCESS)
 		{
-			fprintf(stderr, "failed to create swap chain! %s\n", result);
+			fprintf(stderr, "Failed to create image view: %d\n", result);
 			free(compatibleSwapChainFormatList);
 			free(compatiblePresentModesList);
 			return;
@@ -143,18 +193,12 @@ void Vulkan_SetUpSwapChain()
 
 void Vulkan_RebuildSwapChain()
 {
-	SetUpSwapChain(global.Window.SDLWindow, global.Renderer.Device, global.Renderer.PhysicalDevice, global.Renderer.Surface);
-}
-
-void Vulkan_DestroySwapChain()
-{
-	Vulkan_DestroyImageView();
-	Vulkan_DestroySwapChain();
+	Vulkan_SetUpSwapChain(global.Window.SDLWindow, global.Renderer.Device, global.Renderer.PhysicalDevice, global.Renderer.Surface);
 }
 
 void Vulkan_DestroyImageView()
 {
-	for (int x = 0; x < ARRAY_SIZE(global.Renderer.SwapChain.SwapChainImageViews); x++)
+	for (int x = 0; x < global.Renderer.SwapChain.SwapChainImageCount; x++)
 	{
 		if (global.Renderer.Surface != VK_NULL_HANDLE)
 		{

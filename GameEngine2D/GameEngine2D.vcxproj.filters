@@ -42,9 +42,6 @@
     <ClInclude Include="CArray.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="VulkanDebugger.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Macro.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -78,9 +75,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CArray.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="VulkanDebugger.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GraphicsDevice.c">

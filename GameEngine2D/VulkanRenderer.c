@@ -20,12 +20,11 @@ static VkValidationFeatureDisableEXT disabledList[] = { VK_VALIDATION_FEATURE_DI
 														VK_VALIDATION_FEATURE_DISABLE_OBJECT_LIFETIMES_EXT,
 														VK_VALIDATION_FEATURE_DISABLE_CORE_CHECKS_EXT };
 
-static bool Array_LinearSearch(const char* array[], const char* target)
+static bool Array_VulkanExtensionPropertiesSearch(VkExtensionProperties* array, uint32_t arrayCount, const char* target)
 {
-    int size = ARRAY_SIZE(array);
-    for (int x = 0; x < size; x++)
+    for (uint32_t x = 0; x < arrayCount; x++)
     {
-        if (array[x] == target)
+        if (strcmp(array[x].extensionName, target) == 0)
         {
             return true;
         }
@@ -33,42 +32,53 @@ static bool Array_LinearSearch(const char* array[], const char* target)
     return false;
 }
 
-static void GetQueueFamilies(VkPhysicalDevice* physicalDevice, uint32_t* graphicsFamily, uint32_t* presentFamily)
+static VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger)
 {
-    uint32_t queueFamilyCount = 0;
-    vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount, NULL);
-
-    VkQueueFamilyProperties* queueFamilies = malloc(sizeof(VkQueueFamilyProperties) * queueFamilyCount);
-    vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount, queueFamilies);
-    for (int x = 0; x <= queueFamilies; x++)
+    PFN_vkCreateDebugUtilsMessengerEXT func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
+    if (func != NULL)
     {
-        VkBool32 presentSupport = false;
-        vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice, x, global.Renderer.Surface, &presentSupport);
-
-        if (queueFamilies->queueFlags & VK_QUEUE_GRAPHICS_BIT)
-        {
-            *presentFamily = x;
-            *graphicsFamily = x;
-            break;
-        }
+        return func(instance, pCreateInfo, pAllocator, pDebugMessenger);
     }
-
-    free(queueFamilies);
+    else
+    {
+        return VK_ERROR_EXTENSION_NOT_PRESENT;
+    }
 }
 
-static VkExtensionProperties* GetDeviceExtensions(VkPhysicalDevice* physicalDevice)
+static void DestroyDebugUtilsMessengerEXT(VkInstance instance, const VkAllocationCallbacks* pAllocator)
 {
-    uint32_t deviceExtensionCount;
+    PFN_vkDestroyDebugUtilsMessengerEXT func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
+    if (func != NULL)
+    {
+        func(instance, global.Renderer.DebugMessenger, pAllocator);
+    }
+    else
+    {
+        fprintf(stderr, "Failed to load vkDestroyDebugUtilsMessengerEXT function\n");
+    }
+}
+
+VKAPI_ATTR VkBool32 VKAPI_CALL Vulkan_DebugCallBack(VkDebugUtilsMessageSeverityFlagBitsEXT MessageSeverity, VkDebugUtilsMessageTypeFlagsEXT MessageType, const VkDebugUtilsMessengerCallbackDataEXT* CallBackData, void* UserData)
+{
+    fprintf(stderr, "Validation Layer: %s\n", CallBackData->pMessage);
+    return VK_FALSE;
+}
+
+static VkExtensionProperties* GetDeviceExtensions(VkPhysicalDevice* physicalDevice, uint32_t* deviceExtensionCountPtr)
+{
+    uint32_t deviceExtensionCount = 0;
     vkEnumerateDeviceExtensionProperties(physicalDevice, NULL, &deviceExtensionCount, NULL);
 
     VkExtensionProperties* deviceExtensions = malloc(sizeof(VkExtensionProperties) * deviceExtensionCount);
     if (!deviceExtensions)
     {
         fprintf(stderr, "Failed to allocate memory for Vulkan.\n");
-        return;
+        *deviceExtensionCountPtr = 0;
+        return NULL;
     }
 
     vkEnumerateDeviceExtensionProperties(physicalDevice, NULL, &deviceExtensionCount, deviceExtensions);
+    *deviceExtensionCountPtr = deviceExtensionCount;
     return deviceExtensions;
 }
 
@@ -78,16 +88,17 @@ static VkSurfaceFormatKHR* GetSurfaceFormats(VkPhysicalDevice* physicalDevice)
     vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, global.Renderer.Surface, &surfaceFormatCount, NULL);
     if (surfaceFormatCount > 0)
     {
-        VkSurfaceFormatKHR* surfaceFormat = malloc(sizeof(VkExtensionProperties) * surfaceFormatCount);
-        if (!surfaceFormat)
+        VkSurfaceFormatKHR* surfaceFormats = malloc(sizeof(VkSurfaceFormatKHR) * surfaceFormatCount);
+        if (!surfaceFormats)
         {
             fprintf(stderr, "Failed to allocate memory for Vulkan.\n");
-            return;
+            return NULL;
         }
 
-        vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, global.Renderer.Surface, &surfaceFormatCount, surfaceFormat);
-        return surfaceFormat;
+        vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, global.Renderer.Surface, &surfaceFormatCount, surfaceFormats);
+        return surfaceFormats;
     }
+    return NULL;
 }
 
 static VkPresentModeKHR* GetPresentModes(VkPhysicalDevice* physicalDevice)
@@ -96,23 +107,23 @@ static VkPresentModeKHR* GetPresentModes(VkPhysicalDevice* physicalDevice)
     vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, global.Renderer.Surface, &presentModeCount, NULL);
     if (presentModeCount > 0)
     {
-        VkPresentModeKHR* presentMode = malloc(sizeof(VkPresentModeKHR) * presentModeCount);
-        if (!presentMode)
+        VkPresentModeKHR* presentModes = malloc(sizeof(VkPresentModeKHR) * presentModeCount);
+        if (!presentModes)
         {
             fprintf(stderr, "Failed to allocate memory for Vulkan.\n");
-            return;
+            return NULL;
         }
 
-        vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, global.Renderer.Surface, &presentModeCount, presentMode);
-        return presentMode;
+        vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, global.Renderer.Surface, &presentModeCount, presentModes);
+        return presentModes;
     }
+    return NULL;
 }
 
 static bool GetRayTracingSupport()
 {   
-    VkExtensionProperties deviceExtenstion;
-    GetDeviceExtensions(global.Renderer.PhysicalDevice, &deviceExtenstion);
-
+    uint32_t deviceExtensionCount = INT32_MAX;
+    VkExtensionProperties* deviceExtensions = GetDeviceExtensions(global.Renderer.PhysicalDevice, &deviceExtensionCount);
     VkPhysicalDeviceAccelerationStructureFeaturesKHR physicalDeviceAccelerationStructureFeatures =
     {
         .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR
@@ -134,8 +145,8 @@ static bool GetRayTracingSupport()
     if (physicalDeviceRayTracingPipelineFeatures.rayTracingPipeline == VK_TRUE &&
         physicalDeviceAccelerationStructureFeatures.accelerationStructure == VK_TRUE)
     {
-        if (Array_LinearSearch(&deviceExtenstion, VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME) &&
-            Array_LinearSearch(&deviceExtenstion, VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME))
+        if (Array_VulkanExtensionPropertiesSearch(deviceExtensions, deviceExtensionCount, VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME) &&
+            Array_VulkanExtensionPropertiesSearch(deviceExtensions, deviceExtensionCount, VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME))
         {
             uint32_t extensionCount;
             SDL_Vulkan_GetInstanceExtensions(global.Window.SDLWindow, &extensionCount, NULL);
@@ -145,24 +156,28 @@ static bool GetRayTracingSupport()
             if (!extensions) 
             {
                 fprintf(stderr, "Failed to allocate memory for Vulkan.\n");
+                free(deviceExtensions);
                 return false;
             }
             extensions[extensionCount++] = VK_EXT_DEBUG_UTILS_EXTENSION_NAME;
             extensions[extensionCount++] = VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME;
             extensions[extensionCount++] = VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME;
-            free(extensions);
 
+            free(extensions);
+            free(deviceExtensions);
             return true;
         }
         else
         {
             fprintf(stderr, "GPU/Mother Board isn't ray tracing compatible.\n");
+            free(deviceExtensions);
             return false;
         }
     }
     else
     {
         fprintf(stderr, "GPU/Mother Board isn't ray tracing compatible.\n");
+        free(deviceExtensions);
         return false;
     }
 }
@@ -263,7 +278,13 @@ void Vulkan_RendererSetUp()
     SDL_Vulkan_GetInstanceExtensions(global.Window.SDLWindow, &extensionCount, extensions);
     extensions[extensionCount++] = VK_EXT_DEBUG_UTILS_EXTENSION_NAME;
 
-    VkDebugUtilsMessengerCreateInfoEXT debugInfo = { 0 };
+    VkDebugUtilsMessengerCreateInfoEXT debugInfo =
+    {
+        .sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT,
+        .messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT,
+        .messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT,
+        .pfnUserCallback = Vulkan_DebugCallBack
+    };
 
     VkApplicationInfo applicationInfo =
     {
@@ -298,7 +319,16 @@ void Vulkan_RendererSetUp()
         return; 
     }
 
-    Vulkan_SetUpDebugger(&debugInfo);
+#ifdef NDEBUG
+#else
+    VkResult debugMessangerResult = CreateDebugUtilsMessengerEXT(global.Renderer.Instance, &debugInfo, NULL, &global.Renderer.DebugMessenger);
+    if (debugMessangerResult != VK_SUCCESS)
+    {
+        fprintf(stderr, "Failed to create Vulkan Debug Messager: %s\n", SDL_GetError());
+        Vulkan_DestroyRenderer();
+        free(extensions);
+    }
+#endif
 
     if (!SDL_Vulkan_CreateSurface(global.Window.SDLWindow, global.Renderer.Instance, &global.Renderer.Surface)) 
     {
@@ -308,7 +338,7 @@ void Vulkan_RendererSetUp()
         return;
     }
 
-    uint32_t deviceCount = 0;
+    uint32_t deviceCount = UINT32_MAX;
     vkEnumeratePhysicalDevices(global.Renderer.Instance, &deviceCount, NULL);
     if (deviceCount == 0)
     {
@@ -332,8 +362,7 @@ void Vulkan_RendererSetUp()
     for (int x = 0; x < deviceCount; x++)
     {
         vkGetPhysicalDeviceFeatures(physicalDeviceList[x], &global.Renderer.PhysicalDeviceFeatures);
-        GetQueueFamilies(physicalDeviceList[x], &global.Renderer.SwapChain.GraphicsFamily, &global.Renderer.SwapChain.PresentFamily);
-        VkExtensionProperties* deviceExtensions = GetDeviceExtensions(physicalDeviceList[x]);
+        SwapChain_GetQueueFamilies(physicalDeviceList[x], &global.Renderer.SwapChain.GraphicsFamily, &global.Renderer.SwapChain.PresentFamily);
         VkSurfaceFormatKHR* surfaceFormat = GetSurfaceFormats(physicalDeviceList[x]);
         VkPresentModeKHR* presentMode = GetPresentModes(physicalDeviceList[x]);
         if (global.Renderer.SwapChain.GraphicsFamily != -1 &&
@@ -344,14 +373,12 @@ void Vulkan_RendererSetUp()
         {
             global.Renderer.PhysicalDevice = physicalDeviceList[x];
             free(surfaceFormat);
-            free(deviceExtensions);
             free(presentMode);
             break;
         }
         else
         {
             free(surfaceFormat);
-            free(deviceExtensions);
             free(presentMode);
         }
     }
@@ -471,12 +498,12 @@ void Vulkan_RendererSetUp()
     }
 
     free(extensions);
-    Vulkan_DestroyRenderer();
 }
 
 void Vulkan_DestroyRenderer()
 {
-    Vulkan_DestorySwapChain();
+    Vulkan_DestroySwapChain();
+    Vulkan_DestroyImageView();
     Vulkan_DestroyCommandPool();
     Vulkan_DestroyFences();
     Vulkan_DestroyDevice();
@@ -532,6 +559,11 @@ void Vulkan_DestroySurface()
         vkDestroySurfaceKHR(global.Renderer.Instance, global.Renderer.Surface, NULL);
         global.Renderer.Surface = VK_NULL_HANDLE;
     }
+}
+
+void Vulkan_DestroyDebugger()
+{
+    DestroyDebugUtilsMessengerEXT(global.Renderer.Instance, NULL);
 }
 
 void Vulkan_DestroyInstance()
