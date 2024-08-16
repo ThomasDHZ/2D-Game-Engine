@@ -26,20 +26,15 @@ typedef struct rendererState
 	 VkDebugUtilsMessengerEXT DebugMessenger;
 	 SwapChainState SwapChain;
 	 VkPhysicalDeviceFeatures PhysicalDeviceFeatures;
-	 int GraphicsFamily;
-	 int PresentFamily;
 
-	 //std::vector<VkFence> InFlightFences;
-	 //std::vector<VkSemaphore> AcquireImageSemaphores;
-	 //std::vector<VkSemaphore> PresentImageSemaphores;
-	 //std::vector<const char*> ValidationLayers;
-
-	 //VulkanSwapChain SwapChain;
+	 VkFence* InFlightFences;
+	 VkSemaphore* AcquireImageSemaphores;
+	 VkSemaphore* PresentImageSemaphores;
 }RendererState;
 
 void Vulkan_RendererSetUp();
 void Vulkan_DestroyRenderer();
-
+void Vulkan_DestroyFences();
 void Vulkan_DestroyCommandPool();
 void Vulkan_DestroyDevice();
 void Vulkan_DestroySurface();

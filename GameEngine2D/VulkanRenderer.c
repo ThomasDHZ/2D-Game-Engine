@@ -322,24 +322,22 @@ void Vulkan_RendererSetUp()
     VkResult physicalDeviceResult = vkEnumeratePhysicalDevices(global.Renderer.Instance, &deviceCount, physicalDeviceList);
     if (physicalDeviceResult != VK_SUCCESS)
     {
-        Vulkan_GetError(physicalDeviceResult);
+        fprintf(stderr, "Failed to find to create physical device: %s\n", physicalDeviceResult);
         Vulkan_DestroyRenderer();
         free(extensions);
         return;
     }
 
-    uint32_t graphicsFamily = UINT32_MAX;
-    uint32_t presentFamily = UINT32_MAX;
     VkPresentModeKHR* presentMode = NULL;
     for (int x = 0; x < deviceCount; x++)
     {
         vkGetPhysicalDeviceFeatures(physicalDeviceList[x], &global.Renderer.PhysicalDeviceFeatures);
-        GetQueueFamilies(physicalDeviceList[x], &graphicsFamily, &presentFamily);
+        GetQueueFamilies(physicalDeviceList[x], &global.Renderer.SwapChain.GraphicsFamily, &global.Renderer.SwapChain.PresentFamily);
         VkExtensionProperties* deviceExtensions = GetDeviceExtensions(physicalDeviceList[x]);
         VkSurfaceFormatKHR* surfaceFormat = GetSurfaceFormats(physicalDeviceList[x]);
         VkPresentModeKHR* presentMode = GetPresentModes(physicalDeviceList[x]);
-        if (graphicsFamily != -1 &&
-            presentFamily != -1 &&
+        if (global.Renderer.SwapChain.GraphicsFamily != -1 &&
+            global.Renderer.SwapChain.PresentFamily != -1 &&
             ARRAY_SIZE(surfaceFormat) > 0 &&
             ARRAY_SIZE(presentMode) != 0 &&
             global.Renderer.PhysicalDeviceFeatures.samplerAnisotropy)
@@ -365,62 +363,122 @@ void Vulkan_RendererSetUp()
         return;
     }
 
-    float queuePriority = 1.0f;
-    uint32_t uniqueQueueFamilies[] = { graphicsFamily, presentFamily };
-    VkDeviceQueueCreateInfo deviceQueueCreateInfo = 
-    {
-        .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
-        .queueFamilyIndex = uniqueQueueFamilies[0],
-        .queueCount = 1,
-        .pQueuePriorities = &queuePriority
-    };
-
     VkPhysicalDeviceVulkan11Features physicalDeviceVulkan11Features;
     GetVulkanFeatures(&physicalDeviceVulkan11Features);
 
-    VkDeviceCreateInfo deviceCreateInfo =
+    float queuePriority = 1.0f;
+    VkDeviceQueueCreateInfo queueCreateInfo[2];
+    uint32_t queueCreateInfoCount = 0;
+    if (global.Renderer.SwapChain.GraphicsFamily != UINT32_MAX)
     {
+        queueCreateInfo[queueCreateInfoCount++] = (VkDeviceQueueCreateInfo){
+            .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
+            .queueFamilyIndex = global.Renderer.SwapChain.GraphicsFamily,
+            .queueCount = 1,
+            .pQueuePriorities = &queuePriority
+        };
+    }
+
+    if (global.Renderer.SwapChain.PresentFamily != UINT32_MAX &&
+        global.Renderer.SwapChain.PresentFamily != global.Renderer.SwapChain.GraphicsFamily)
+    {
+        queueCreateInfo[queueCreateInfoCount++] = (VkDeviceQueueCreateInfo)
+        {
+            .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
+            .queueFamilyIndex = global.Renderer.SwapChain.PresentFamily,
+            .queueCount = 1,
+            .pQueuePriorities = &queuePriority
+        };
+    }
+
+    VkDeviceCreateInfo deviceCreateInfo = {
         .sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
-        .queueCreateInfoCount = 1,
-        .pQueueCreateInfos = &deviceQueueCreateInfo,
+        .queueCreateInfoCount = queueCreateInfoCount,
+        .pQueueCreateInfos = queueCreateInfo,
         .pEnabledFeatures = NULL,
         .enabledExtensionCount = ARRAY_SIZE(DeviceExtensionList),
-        .ppEnabledExtensionNames = DeviceExtensionList,
-        .pNext = &physicalDeviceVulkan11Features
+        .ppEnabledExtensionNames = DeviceExtensionList
     };
 #ifdef NDEBUG
     deviceCreateInfo.enabledLayerCount = 0;
 #else
     deviceCreateInfo.enabledLayerCount = ARRAY_SIZE(ValidationLayers);
-    deviceCreateInfo.pEnabledFeatures = ValidationLayers;
+    deviceCreateInfo.ppEnabledLayerNames = ValidationLayers;
 #endif
 
     VkResult deviceResult = vkCreateDevice(global.Renderer.PhysicalDevice, &deviceCreateInfo, NULL, &global.Renderer.Device);
+    if (deviceResult != VK_SUCCESS)
     {
+        fprintf(stderr, "Failed to find to create device: %s\n", deviceResult);
+        Vulkan_DestroyRenderer();
+        free(extensions);
+        return;
+    }
+
+    Vulkan_SetUpSwapChain();
+
+    VkCommandPoolCreateInfo CommandPoolCreateInfo = 
+    {
+        .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
+        .flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
+        .queueFamilyIndex = global.Renderer.SwapChain.GraphicsFamily
+    };
+
+    VkResult commandPoolResult = vkCreateCommandPool(global.Renderer.Device, &CommandPoolCreateInfo, NULL, &global.Renderer.CommandPool);
+    if (commandPoolResult != VK_SUCCESS)
+    {
+        fprintf(stderr, "Failed to find to create graphics command pool: %s\n", commandPoolResult);
         Vulkan_GetError(deviceResult);
         Vulkan_DestroyRenderer();
         free(extensions);
         return;
     }
 
+    global.Renderer.InFlightFences = malloc(sizeof(VkFence)* MAX_FRAMES_IN_FLIGHT);
+    VkSemaphoreTypeCreateInfo semaphoreTypeCreateInfo =
+    {
+        .sType = VK_STRUCTURE_TYPE_SEMAPHORE_TYPE_CREATE_INFO,
+        .semaphoreType = VK_SEMAPHORE_TYPE_BINARY,
+        .initialValue = 0,
+        .pNext = NULL
+    };
+
+    global.Renderer.AcquireImageSemaphores = malloc(sizeof(VkSemaphore) * MAX_FRAMES_IN_FLIGHT);
+    VkSemaphoreCreateInfo semaphoreCreateInfo =
+    {
+        .sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,
+        .pNext = &semaphoreTypeCreateInfo
+    };
+
+    global.Renderer.PresentImageSemaphores = malloc(sizeof(VkSemaphore) * MAX_FRAMES_IN_FLIGHT);
+    VkFenceCreateInfo fenceInfo =
+    {
+        .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
+        .flags = VK_FENCE_CREATE_SIGNALED_BIT
+    };
+    
+    for (size_t x = 0; x < MAX_FRAMES_IN_FLIGHT; x++)
+    {
+        if (vkCreateSemaphore(global.Renderer.Device, &semaphoreCreateInfo, NULL, &global.Renderer.AcquireImageSemaphores[x]) != VK_SUCCESS ||
+            vkCreateSemaphore(global.Renderer.Device, &semaphoreCreateInfo, NULL, &global.Renderer.PresentImageSemaphores[x]) != VK_SUCCESS ||
+            vkCreateFence(global.Renderer.Device, &fenceInfo, NULL, &global.Renderer.InFlightFences[x]) != VK_SUCCESS)
+        {
+            fprintf(stderr, "Failed to create synchronization objects for a frame.\n");
+            Vulkan_DestroyRenderer();
+            free(extensions);
+            return;
+        }
+    }
+
     free(extensions);
+    Vulkan_DestroyRenderer();
 }
 
 void Vulkan_DestroyRenderer()
 {
-    //SwapChain.Destroy(global.Renderer.Device);
-
+    Vulkan_DestorySwapChain();
     Vulkan_DestroyCommandPool();
-    for (size_t x = 0; x < MAX_FRAMES_IN_FLIGHT; x++)
-    {
-        //vkDestroySemaphore(global.Renderer.Device, AcquireImageSemaphores[x], NULL);
-        //vkDestroySemaphore(global.Renderer.Device, PresentImageSemaphores[x], NULL);
-        //vkDestroyFence(global.Renderer.Device, InFlightFences[x], NULL);
-
-        //AcquireImageSemaphores[x] = VK_NULL_HANDLE;
-        //PresentImageSemaphores[x] = VK_NULL_HANDLE;
-        //InFlightFences[x] = VK_NULL_HANDLE;
-    }
+    Vulkan_DestroyFences();
     Vulkan_DestroyDevice();
     Vulkan_DestroyDebugger();
     Vulkan_DestroySurface();
@@ -433,6 +491,28 @@ void Vulkan_DestroyCommandPool()
     {
         vkDestroyCommandPool(global.Renderer.Device, global.Renderer.CommandPool, NULL);
         global.Renderer.CommandPool = VK_NULL_HANDLE;
+    }
+}
+
+void Vulkan_DestroyFences()
+{
+    for (size_t x = 0; x < MAX_FRAMES_IN_FLIGHT; x++)
+    {
+        if (global.Renderer.AcquireImageSemaphores[x] != VK_NULL_HANDLE)
+        {
+            vkDestroySemaphore(global.Renderer.Device, global.Renderer.AcquireImageSemaphores[x], NULL);
+            global.Renderer.AcquireImageSemaphores[x] = VK_NULL_HANDLE;
+        }
+        if (global.Renderer.PresentImageSemaphores[x] != VK_NULL_HANDLE)
+        {
+            vkDestroySemaphore(global.Renderer.Device, global.Renderer.PresentImageSemaphores[x], NULL);
+            global.Renderer.PresentImageSemaphores[x] = VK_NULL_HANDLE;
+        }
+        if (global.Renderer.InFlightFences[x] != VK_NULL_HANDLE)
+        {
+            vkDestroyFence(global.Renderer.Device, global.Renderer.InFlightFences[x], NULL);
+            global.Renderer.InFlightFences[x] = VK_NULL_HANDLE;
+        }
     }
 }
 

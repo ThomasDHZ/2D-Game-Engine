@@ -5,22 +5,19 @@ static WindowState state = { 0 };
 
 void GameEngine_CreateGraphicsWindow(const char* WindowName, uint32_t width, uint32_t height)
 {
-    // Initialize SDL for video subsystem
     if (SDL_Init(SDL_INIT_VIDEO) < 0)
     {
         fprintf(stderr, "Could not initialize SDL: %s\n", SDL_GetError());
-        return; // Early return on error
+        return;
     }
 
-    // Create a Vulkan-enabled window
     global.Window.SDLWindow = SDL_CreateWindow(WindowName, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_VULKAN);
 
-    // Check if the window was created successfully
     if (!global.Window.SDLWindow)
     {
         fprintf(stderr, "Failed to create window: %s\n", SDL_GetError());
-        SDL_Quit(); // Remember to clean up SDL
-        return; // Early return on error
+        SDL_Quit();
+        return;
     }
 }
 
