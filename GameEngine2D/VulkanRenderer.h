@@ -5,6 +5,7 @@
 #include <vulkan/vulkan.h>
 
 #include "Macro.h"
+#include "VulkanRendererStruct.h"
 #include "GraphicsDevice.h"
 #include "VulkanSwapChain.h"
 #include "Window.h"
@@ -28,13 +29,20 @@ typedef struct rendererState
 	 VkFence* InFlightFences;
 	 VkSemaphore* AcquireImageSemaphores;
 	 VkSemaphore* PresentImageSemaphores;
+	 bool RebuildSwapChainFlag;
 }RendererState;
 
-void Vulkan_RendererSetUp();
-void Vulkan_DestroyRenderer();
-void Vulkan_DestroyFences();
-void Vulkan_DestroyCommandPool();
-void Vulkan_DestroyDevice();
-void Vulkan_DestroySurface();
-void Vulkan_DestroyDebugger();
-void Vulkan_DestroyInstance();
+void Renderer_RendererSetUp();
+void Renderer_CreateCommandBuffers(VkImageView* commandBufferList);
+void Renderer_CreateFrameBuffer(Renderer_CommandFrameBufferInfo* createCommandBufferStruct);
+void Renderer_CreateRenderPass(Renderer_RenderPassCreateInfo* renderPassCreateInfo);
+void Renderer_StartFrame();
+void Renderer_EndFrame(VkCommandBuffer* commandBufferSubmitList);
+
+void Renderer_DestroyRenderer();
+void Renderer_DestroyFences();
+void Renderer_DestroyCommandPool();
+void Renderer_DestroyDevice();
+void Renderer_DestroySurface();
+void Renderer_DestroyDebugger();
+void Renderer_DestroyInstance();

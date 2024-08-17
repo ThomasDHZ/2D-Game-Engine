@@ -1,13 +1,18 @@
 extern "C"
 {
-#include <Global.h>
-#include <VulkanRenderer.h>
+	#include <Global.h>
+	#include <VulkanRenderer.h>
 }
+#include "RenderPass2D.h"
 
 int main()
 {
 	GameEngine_CreateGraphicsWindow("Game", 1280, 720);
-	Vulkan_RendererSetUp();
+	Renderer_RendererSetUp();
+
+	RenderPass2D renderPass2D;
+	renderPass2D.BuildRenderPass();
+
 	while (global.Window.Event.type != SDL_QUIT)
 	{
 		GameEngine_PollEvents();
@@ -24,7 +29,7 @@ int main()
 	}
 
 	//SDL_GameControllerClose();
-	Vulkan_DestroyRenderer();
+	Renderer_DestroyRenderer();
 	GameEngine_DestroyWindow();
 	return 0;
 }

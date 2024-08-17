@@ -143,6 +143,7 @@
     <ClInclude Include="Mouse.h" />
     <ClInclude Include="VulkanError.h" />
     <ClInclude Include="VulkanRenderer.h" />
+    <ClInclude Include="VulkanRendererStruct.h" />
     <ClInclude Include="VulkanSwapChain.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>

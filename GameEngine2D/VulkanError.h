@@ -1,7 +1,7 @@
 #pragma once
 #include <vulkan/vulkan.h>
 
-void Vulkan_GetError(VkResult result)
+void Renderer_GetError(VkResult result)
 {
     const char* errorMessage;
     switch (result)
@@ -55,5 +55,5 @@ void Vulkan_GetError(VkResult result)
         default: errorMessage = "Unknown Error"; break;
     };
 
-    printf("Vulkan function failed with error: %s\n", errorMessage);
+    printf("Renderer function failed with error: %s\n", errorMessage);
 }

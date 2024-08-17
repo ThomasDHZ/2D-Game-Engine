@@ -20,7 +20,7 @@ static VkValidationFeatureDisableEXT disabledList[] = { VK_VALIDATION_FEATURE_DI
 														VK_VALIDATION_FEATURE_DISABLE_OBJECT_LIFETIMES_EXT,
 														VK_VALIDATION_FEATURE_DISABLE_CORE_CHECKS_EXT };
 
-static bool Array_VulkanExtensionPropertiesSearch(VkExtensionProperties* array, uint32_t arrayCount, const char* target)
+static bool Array_RendererExtensionPropertiesSearch(VkExtensionProperties* array, uint32_t arrayCount, const char* target)
 {
     for (uint32_t x = 0; x < arrayCount; x++)
     {
@@ -145,8 +145,8 @@ static bool GetRayTracingSupport()
     if (physicalDeviceRayTracingPipelineFeatures.rayTracingPipeline == VK_TRUE &&
         physicalDeviceAccelerationStructureFeatures.accelerationStructure == VK_TRUE)
     {
-        if (Array_VulkanExtensionPropertiesSearch(deviceExtensions, deviceExtensionCount, VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME) &&
-            Array_VulkanExtensionPropertiesSearch(deviceExtensions, deviceExtensionCount, VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME))
+        if (Array_RendererExtensionPropertiesSearch(deviceExtensions, deviceExtensionCount, VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME) &&
+            Array_RendererExtensionPropertiesSearch(deviceExtensions, deviceExtensionCount, VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME))
         {
             uint32_t extensionCount;
             SDL_Vulkan_GetInstanceExtensions(global.Window.SDLWindow, &extensionCount, NULL);
@@ -182,7 +182,7 @@ static bool GetRayTracingSupport()
     }
 }
 
-static void GetVulkanFeatures(VkPhysicalDeviceVulkan11Features* physicalDeviceVulkan11Features)
+static void GetRendererFeatures(VkPhysicalDeviceVulkan11Features* physicalDeviceVulkan11Features)
 {
     VkPhysicalDeviceBufferDeviceAddressFeatures physicalDeviceBufferDeviceAddressFeatures =
     {
@@ -264,8 +264,10 @@ static void GetVulkanFeatures(VkPhysicalDeviceVulkan11Features* physicalDeviceVu
     physicalDeviceVulkan11Features->pNext = &physicalDeviceFeatures2;
 }
 
-void Vulkan_RendererSetUp()
+void Renderer_RendererSetUp()
 {
+    global.Renderer.RebuildSwapChainFlag = false;
+
     uint32_t extensionCount;
     SDL_Vulkan_GetInstanceExtensions(global.Window.SDLWindow, &extensionCount, NULL);
     const char** extensions = malloc(sizeof(const char*) * (extensionCount + 1));
@@ -314,7 +316,7 @@ void Vulkan_RendererSetUp()
     VkResult instanceResult = vkCreateInstance(&vulkanCreateInfo, NULL, &global.Renderer.Instance);
     if (instanceResult != VK_SUCCESS) 
     {
-        Vulkan_GetError(instanceResult);
+        Renderer_GetError(instanceResult);
         free(extensions);
         return; 
     }
@@ -325,7 +327,7 @@ void Vulkan_RendererSetUp()
     if (debugMessangerResult != VK_SUCCESS)
     {
         fprintf(stderr, "Failed to create Vulkan Debug Messager: %s\n", SDL_GetError());
-        Vulkan_DestroyRenderer();
+        Renderer_DestroyRenderer();
         free(extensions);
     }
 #endif
@@ -333,7 +335,7 @@ void Vulkan_RendererSetUp()
     if (!SDL_Vulkan_CreateSurface(global.Window.SDLWindow, global.Renderer.Instance, &global.Renderer.Surface)) 
     {
         fprintf(stderr, "Failed to create Vulkan surface: %s\n", SDL_GetError());
-        Vulkan_DestroyRenderer();
+        Renderer_DestroyRenderer();
         free(extensions);
         return;
     }
@@ -343,7 +345,7 @@ void Vulkan_RendererSetUp()
     if (deviceCount == 0)
     {
         fprintf(stderr, "Failed to find GPUs with Vulkan support: %s\n", SDL_GetError());
-        Vulkan_DestroyRenderer();
+        Renderer_DestroyRenderer();
         free(extensions);
         return;
     }
@@ -353,7 +355,7 @@ void Vulkan_RendererSetUp()
     if (physicalDeviceResult != VK_SUCCESS)
     {
         fprintf(stderr, "Failed to find to create physical device: %s\n", physicalDeviceResult);
-        Vulkan_DestroyRenderer();
+        Renderer_DestroyRenderer();
         free(extensions);
         return;
     }
@@ -384,14 +386,14 @@ void Vulkan_RendererSetUp()
     }
     if (global.Renderer.PhysicalDevice == VK_NULL_HANDLE)
     {
-        Vulkan_GetError(physicalDeviceResult);
-        Vulkan_DestroyRenderer();
+        Renderer_GetError(physicalDeviceResult);
+        Renderer_DestroyRenderer();
         free(extensions);
         return;
     }
 
     VkPhysicalDeviceVulkan11Features physicalDeviceVulkan11Features;
-    GetVulkanFeatures(&physicalDeviceVulkan11Features);
+    GetRendererFeatures(&physicalDeviceVulkan11Features);
 
     float queuePriority = 1.0f;
     VkDeviceQueueCreateInfo queueCreateInfo[2];
@@ -437,7 +439,7 @@ void Vulkan_RendererSetUp()
     if (deviceResult != VK_SUCCESS)
     {
         fprintf(stderr, "Failed to find to create device: %s\n", deviceResult);
-        Vulkan_DestroyRenderer();
+        Renderer_DestroyRenderer();
         free(extensions);
         return;
     }
@@ -455,8 +457,8 @@ void Vulkan_RendererSetUp()
     if (commandPoolResult != VK_SUCCESS)
     {
         fprintf(stderr, "Failed to find to create graphics command pool: %s\n", commandPoolResult);
-        Vulkan_GetError(deviceResult);
-        Vulkan_DestroyRenderer();
+        Renderer_GetError(deviceResult);
+        Renderer_DestroyRenderer();
         free(extensions);
         return;
     }
@@ -491,7 +493,7 @@ void Vulkan_RendererSetUp()
             vkCreateFence(global.Renderer.Device, &fenceInfo, NULL, &global.Renderer.InFlightFences[x]) != VK_SUCCESS)
         {
             fprintf(stderr, "Failed to create synchronization objects for a frame.\n");
-            Vulkan_DestroyRenderer();
+            Renderer_DestroyRenderer();
             free(extensions);
             return;
         }
@@ -500,19 +502,156 @@ void Vulkan_RendererSetUp()
     free(extensions);
 }
 
-void Vulkan_DestroyRenderer()
+void Renderer_CreateCommandBuffers(VkImageView* commandBufferList)
 {
-    Vulkan_DestroySwapChain();
-    Vulkan_DestroyImageView();
-    Vulkan_DestroyCommandPool();
-    Vulkan_DestroyFences();
-    Vulkan_DestroyDevice();
-    Vulkan_DestroyDebugger();
-    Vulkan_DestroySurface();
-    Vulkan_DestroyInstance();
+    for (size_t x = 0; x < global.Renderer.SwapChain.SwapChainImageCount; x++)
+    {
+        VkCommandBufferAllocateInfo commandBufferAllocateInfo =
+        {
+            .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
+            .commandPool = global.Renderer.CommandPool,
+            .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
+            .commandBufferCount = 1
+        };
+
+        VkResult result = vkAllocateCommandBuffers(global.Renderer.Device, &commandBufferAllocateInfo, &commandBufferList[x]);
+        if (result != VK_SUCCESS) 
+        {
+            fprintf(stderr, "Failed to create command buffers.%s\n", result);
+            Renderer_DestroyRenderer();
+            GameEngine_DestroyWindow();
+        }
+    }
 }
 
-void Vulkan_DestroyCommandPool()
+void Renderer_CreateFrameBuffer(Renderer_CommandFrameBufferInfo* createCommandBufferStruct)
+{
+    for (size_t x = 0; x < global.Renderer.SwapChain.SwapChainImageCount; x++)
+    {
+        VkFramebufferCreateInfo frameBufferCreateInfo =
+        {
+            .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
+            .renderPass = createCommandBufferStruct->RenderPass,
+            .attachmentCount = ARRAY_SIZE(createCommandBufferStruct->pAttachmentList),
+            .pAttachments = createCommandBufferStruct->pAttachmentList,
+            .width = createCommandBufferStruct->Width,
+            .height = createCommandBufferStruct->Height,
+            .layers = 1,
+        };
+
+        VkResult result = vkCreateFramebuffer(global.Renderer.Device, &frameBufferCreateInfo, NULL, &createCommandBufferStruct->pAttachmentList[x]);
+        if (result)
+        {
+            fprintf(stderr, "Failed to create Frame buffer.%s\n", result);
+            Renderer_DestroyRenderer();
+            GameEngine_DestroyWindow();
+        }
+    }
+}
+
+void Renderer_CreateRenderPass(Renderer_RenderPassCreateInfo* renderPassCreateInfo)
+{
+    VkResult result = vkCreateRenderPass(global.Renderer.Device, renderPassCreateInfo->pRenderPassCreateInfo, NULL, renderPassCreateInfo->pRenderPass);
+    if (result != VK_SUCCESS) 
+    {
+        fprintf(stderr, "Failed to create render pass.%s\n", result);
+        Renderer_DestroyRenderer();
+        GameEngine_DestroyWindow();
+    }
+}
+
+void Renderer_RebuildSwapChain()
+{
+    vkDeviceWaitIdle(global.Renderer.Device);
+
+    global.Renderer.RebuildSwapChainFlag = true;
+    Vulkan_DestroyImageView();
+
+    vkDestroySwapchainKHR(global.Renderer.Device, global.Renderer.SwapChain.Swapchain, NULL);
+    Vulkan_RebuildSwapChain();
+}
+
+void Renderer_StartFrame()
+{
+    global.Renderer.CMDIndex = (global.Renderer.CMDIndex + 1) % MAX_FRAMES_IN_FLIGHT;
+
+    vkWaitForFences(global.Renderer.Device, 1, &global.Renderer.InFlightFences[global.Renderer.CMDIndex], VK_TRUE, UINT64_MAX);
+    vkResetFences(global.Renderer.Device, 1, &global.Renderer.InFlightFences[global.Renderer.CMDIndex]);
+
+    VkResult result = vkAcquireNextImageKHR(global.Renderer.Device, global.Renderer.SwapChain.Swapchain, UINT64_MAX, global.Renderer.AcquireImageSemaphores[global.Renderer.CMDIndex], VK_NULL_HANDLE, &global.Renderer.ImageIndex);
+    if (result == VK_ERROR_OUT_OF_DATE_KHR)
+    {
+        Renderer_RebuildSwapChain();
+        return result;
+    }
+    else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
+    {
+        fprintf(stderr, "Failed to create synchronization objects for a frame.\n");
+        Renderer_DestroyRenderer();
+        GameEngine_DestroyWindow();
+    }
+}
+
+void Renderer_EndFrame(VkCommandBuffer* commandBufferSubmitList)
+{
+    VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+
+    VkSubmitInfo SubmitInfo =
+    {
+        .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+        .waitSemaphoreCount = 1,
+        .pWaitSemaphores = &global.Renderer.AcquireImageSemaphores[global.Renderer.CMDIndex],
+        .pWaitDstStageMask = waitStages,
+        .commandBufferCount = ARRAY_SIZE(commandBufferSubmitList),
+        .pCommandBuffers = commandBufferSubmitList,
+        .signalSemaphoreCount = 1,
+        .pSignalSemaphores = global.Renderer.PresentImageSemaphores[global.Renderer.ImageIndex]
+    };
+    VkResult QueueSubmit = vkQueueSubmit(global.Renderer.SwapChain.GraphicsFamily, 1, &SubmitInfo, global.Renderer.InFlightFences[global.Renderer.CMDIndex]);
+    if (QueueSubmit != VK_SUCCESS) 
+    {
+        fprintf(stderr, "Failed to submit draw command buffer.\n");
+        Renderer_DestroyRenderer();
+        GameEngine_DestroyWindow();
+    }
+
+    VkPresentInfoKHR PresentInfoKHR =
+    {
+        .sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
+        .waitSemaphoreCount = 1,
+        .pWaitSemaphores = &global.Renderer.PresentImageSemaphores[global.Renderer.ImageIndex],
+        .swapchainCount = 1,
+        .pSwapchains = &global.Renderer.SwapChain.Swapchain,
+        .pImageIndices = &global.Renderer.ImageIndex
+    };
+    VkResult result = vkQueuePresentKHR(global.Renderer.SwapChain.PresentFamily, &PresentInfoKHR);
+    if (result == VK_ERROR_OUT_OF_DATE_KHR)
+    {
+        Renderer_RebuildSwapChain();
+        return result;
+    }
+    else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
+    {
+        fprintf(stderr, "Failed to present swap chain image.\n");
+        Renderer_DestroyRenderer();
+        GameEngine_DestroyWindow();
+    }
+}
+
+void Renderer_DestroyRenderer()
+{
+    vkDeviceWaitIdle(global.Renderer.Device);
+    Vulkan_DestroySwapChain();
+    Vulkan_DestroyImageView();
+    Renderer_DestroyCommandPool();
+    Renderer_DestroyFences();
+    Renderer_DestroyDevice();
+    Renderer_DestroyDebugger();
+    Renderer_DestroySurface();
+    Renderer_DestroyInstance();
+}
+
+void Renderer_DestroyCommandPool()
 {
     if (global.Renderer.CommandPool != VK_NULL_HANDLE)
     {
@@ -521,7 +660,7 @@ void Vulkan_DestroyCommandPool()
     }
 }
 
-void Vulkan_DestroyFences()
+void Renderer_DestroyFences()
 {
     for (size_t x = 0; x < MAX_FRAMES_IN_FLIGHT; x++)
     {
@@ -543,7 +682,7 @@ void Vulkan_DestroyFences()
     }
 }
 
-void Vulkan_DestroyDevice()
+void Renderer_DestroyDevice()
 {
     if (global.Renderer.Device != VK_NULL_HANDLE)
     {
@@ -552,7 +691,7 @@ void Vulkan_DestroyDevice()
     }
 }
 
-void Vulkan_DestroySurface()
+void Renderer_DestroySurface()
 {
     if (global.Renderer.Surface != VK_NULL_HANDLE)
     {
@@ -561,12 +700,12 @@ void Vulkan_DestroySurface()
     }
 }
 
-void Vulkan_DestroyDebugger()
+void Renderer_DestroyDebugger()
 {
     DestroyDebugUtilsMessengerEXT(global.Renderer.Instance, NULL);
 }
 
-void Vulkan_DestroyInstance()
+void Renderer_DestroyInstance()
 {
     if (global.Renderer.Instance != VK_NULL_HANDLE)
     {
