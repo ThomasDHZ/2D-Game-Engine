@@ -5,6 +5,7 @@
 #include <vulkan/vulkan.h>
 
 #include "Macro.h"
+#include "io.h"
 #include "VulkanRendererStruct.h"
 #include "GraphicsDevice.h"
 #include "VulkanSwapChain.h"
@@ -41,6 +42,8 @@ void Renderer_EndFrame(VkCommandBuffer* pCommandBufferSubmitList);
 void Renderer_BeginCommandBuffer(Renderer_BeginCommandBufferStruct* pBeginCommandBufferInfo);
 void Renderer_EndCommandBuffer(VkCommandBuffer* pCommandBuffer);
 void Renderer_SubmitDraw(VkCommandBuffer* pCommandBufferSubmitList);
+VkShaderModule Shader_CompileGLSLShaderFile(const char* path);
+VkPipelineShaderStageCreateInfo Shader_CreateShader(VkShaderModule shaderModule, VkShaderStageFlagBits shaderStages);
 
 void Renderer_DestroyRenderer();
 void Renderer_DestroyFences();

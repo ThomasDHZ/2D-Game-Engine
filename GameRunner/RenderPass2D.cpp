@@ -160,9 +160,11 @@ void RenderPass2D::Draw()
         .pClearValues = clearValues.data()
     };
 
-    VkCommandBufferBeginInfo CommandBufferBeginInfo{};
-    CommandBufferBeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-    CommandBufferBeginInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
+    VkCommandBufferBeginInfo CommandBufferBeginInfo
+    {
+        .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
+        .flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT
+    };
 
     Renderer_BeginCommandBufferStruct beginCommandBuffer
     {

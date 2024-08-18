@@ -24,6 +24,7 @@
     <ProjectGuid>{c177cba2-389f-4d1f-abbf-683c4db74b2e}</ProjectGuid>
     <RootNamespace>GameEngine2D</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>GameEngine2D</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -142,6 +143,7 @@
     <ClInclude Include="CList.h" />
     <ClInclude Include="Macro.h" />
     <ClInclude Include="Mouse.h" />
+    <ClInclude Include="CShaderCompiler.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="VulkanError.h" />
     <ClInclude Include="VulkanRenderer.h" />
@@ -158,6 +160,7 @@
     <ClCompile Include="Keyboard.c" />
     <ClCompile Include="CList.c" />
     <ClCompile Include="Mouse.c" />
+    <ClCompile Include="CShaderCompiler.c" />
     <ClCompile Include="Texture.c" />
     <ClCompile Include="VulkanRenderer.c" />
     <ClCompile Include="VulkanSwapChain.c" />

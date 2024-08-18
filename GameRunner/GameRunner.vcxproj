@@ -133,13 +133,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="HLSLShaderCompiler.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="RenderPass.cpp" />
     <ClCompile Include="RenderPass2D.cpp" />
+    <ClCompile Include="ShaderCompiler.cpp" />
+    <ClCompile Include="test.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="HLSLShaderCompiler.h" />
     <ClInclude Include="RenderPass.h" />
     <ClInclude Include="RenderPass2D.h" />
+    <ClInclude Include="ShaderCompiler.h" />
+    <ClInclude Include="test.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
