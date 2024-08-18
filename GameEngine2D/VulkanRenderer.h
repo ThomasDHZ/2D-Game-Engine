@@ -21,7 +21,7 @@ typedef struct rendererState
 	 VkSurfaceKHR Surface;
 	 VkCommandPool CommandPool;
 	 uint32_t ImageIndex;
-	 uint32_t CMDIndex;
+	 uint32_t CommandIndex;
 	 VkDebugUtilsMessengerEXT DebugMessenger;
 	 SwapChainState SwapChain;
 	 VkPhysicalDeviceFeatures PhysicalDeviceFeatures;
@@ -33,13 +33,14 @@ typedef struct rendererState
 }RendererState;
 
 void Renderer_RendererSetUp();
-void Renderer_CreateCommandBuffers(VkImageView* commandBufferList);
-void Renderer_CreateFrameBuffer(Renderer_CommandFrameBufferInfoStruct* createCommandBufferInfo);
-void Renderer_CreateRenderPass(Renderer_RenderPassCreateInfoStruct* renderPassCreateInfo);
+void Renderer_CreateCommandBuffers(VkCommandBuffer* pCommandBufferList);
+void Renderer_CreateFrameBuffer(Renderer_CommandFrameBufferInfoStruct* pCreateCommandBufferInfo);
+void Renderer_CreateRenderPass(Renderer_RenderPassCreateInfoStruct* pRenderPassCreateInfo);
 void Renderer_StartFrame();
-void Renderer_EndFrame(VkCommandBuffer* commandBufferSubmitList);
-void Renderer_BeginCommandBuffer(Renderer_BeginCommandBufferStruct* beginCommandBufferInfo);
-void Renderer_EndCommandBuffer(VkCommandBuffer* commandBuffer);
+void Renderer_EndFrame(VkCommandBuffer* pCommandBufferSubmitList);
+void Renderer_BeginCommandBuffer(Renderer_BeginCommandBufferStruct* pBeginCommandBufferInfo);
+void Renderer_EndCommandBuffer(VkCommandBuffer* pCommandBuffer);
+void Renderer_SubmitDraw(VkCommandBuffer* pCommandBufferSubmitList);
 
 void Renderer_DestroyRenderer();
 void Renderer_DestroyFences();

@@ -7,6 +7,8 @@ typedef struct swapChainState
 	uint32_t SwapChainImageCount;
 	uint32_t GraphicsFamily;
 	uint32_t PresentFamily;
+	VkQueue GraphicsQueue;
+	VkQueue PresentQueue;
 	VkImage* SwapChainImages;
 	VkImageView* SwapChainImageViews;
 	VkExtent2D SwapChainResolution;

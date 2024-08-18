@@ -499,10 +499,12 @@ void Renderer_RendererSetUp()
         }
     }
 
+    vkGetDeviceQueue(global.Renderer.Device, global.Renderer.SwapChain.GraphicsFamily, 0, &global.Renderer.SwapChain.GraphicsQueue);
+    vkGetDeviceQueue(global.Renderer.Device, global.Renderer.SwapChain.PresentFamily, 0, &global.Renderer.SwapChain.PresentQueue);
     free(extensions);
 }
 
-void Renderer_CreateCommandBuffers(VkImageView* commandBufferList)
+void Renderer_CreateCommandBuffers(VkCommandBuffer* commandBufferList)
 {
     for (size_t x = 0; x < global.Renderer.SwapChain.SwapChainImageCount; x++)
     {
@@ -573,12 +575,12 @@ void Renderer_RebuildSwapChain()
 
 void Renderer_StartFrame()
 {
-    global.Renderer.CMDIndex = (global.Renderer.CMDIndex + 1) % MAX_FRAMES_IN_FLIGHT;
+    global.Renderer.CommandIndex = (global.Renderer.CommandIndex + 1) % MAX_FRAMES_IN_FLIGHT;
 
-    vkWaitForFences(global.Renderer.Device, 1, &global.Renderer.InFlightFences[global.Renderer.CMDIndex], VK_TRUE, UINT64_MAX);
-    vkResetFences(global.Renderer.Device, 1, &global.Renderer.InFlightFences[global.Renderer.CMDIndex]);
+    vkWaitForFences(global.Renderer.Device, 1, &global.Renderer.InFlightFences[global.Renderer.CommandIndex], VK_TRUE, UINT64_MAX);
+    vkResetFences(global.Renderer.Device, 1, &global.Renderer.InFlightFences[global.Renderer.CommandIndex]);
 
-    VkResult result = vkAcquireNextImageKHR(global.Renderer.Device, global.Renderer.SwapChain.Swapchain, UINT64_MAX, global.Renderer.AcquireImageSemaphores[global.Renderer.CMDIndex], VK_NULL_HANDLE, &global.Renderer.ImageIndex);
+    VkResult result = vkAcquireNextImageKHR(global.Renderer.Device, global.Renderer.SwapChain.Swapchain, UINT64_MAX, global.Renderer.AcquireImageSemaphores[global.Renderer.CommandIndex], VK_NULL_HANDLE, &global.Renderer.ImageIndex);
     if (result == VK_ERROR_OUT_OF_DATE_KHR)
     {
         Renderer_RebuildSwapChain();
@@ -592,7 +594,7 @@ void Renderer_StartFrame()
     }
 }
 
-void Renderer_EndFrame(VkCommandBuffer* commandBufferSubmitList)
+void Renderer_EndFrame(VkCommandBuffer* pCommandBufferSubmitList)
 {
     VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
 
@@ -600,14 +602,14 @@ void Renderer_EndFrame(VkCommandBuffer* commandBufferSubmitList)
     {
         .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
         .waitSemaphoreCount = 1,
-        .pWaitSemaphores = &global.Renderer.AcquireImageSemaphores[global.Renderer.CMDIndex],
+        .pWaitSemaphores = &global.Renderer.AcquireImageSemaphores[global.Renderer.CommandIndex],
         .pWaitDstStageMask = waitStages,
-        .commandBufferCount = ARRAY_SIZE(commandBufferSubmitList),
-        .pCommandBuffers = commandBufferSubmitList,
+        .commandBufferCount = ARRAY_SIZE(pCommandBufferSubmitList),
+        .pCommandBuffers = pCommandBufferSubmitList,
         .signalSemaphoreCount = 1,
         .pSignalSemaphores = global.Renderer.PresentImageSemaphores[global.Renderer.ImageIndex]
     };
-    VkResult QueueSubmit = vkQueueSubmit(global.Renderer.SwapChain.GraphicsFamily, 1, &SubmitInfo, global.Renderer.InFlightFences[global.Renderer.CMDIndex]);
+    VkResult QueueSubmit = vkQueueSubmit(global.Renderer.SwapChain.GraphicsFamily, 1, &SubmitInfo, global.Renderer.InFlightFences[global.Renderer.CommandIndex]);
     if (QueueSubmit != VK_SUCCESS) 
     {
         fprintf(stderr, "Failed to submit draw command buffer.\n");
@@ -638,9 +640,9 @@ void Renderer_EndFrame(VkCommandBuffer* commandBufferSubmitList)
     }
 }
 
-void Renderer_BeginCommandBuffer(Renderer_BeginCommandBufferStruct* beginCommandBufferInfo)
+void Renderer_BeginCommandBuffer(Renderer_BeginCommandBufferStruct* pBeginCommandBufferInfo)
 {
-    VkResult result = vkBeginCommandBuffer(beginCommandBufferInfo->pCommandBuffer, &beginCommandBufferInfo->pRenderPassBeginInfo);
+    VkResult result = vkBeginCommandBuffer(*pBeginCommandBufferInfo->pCommandBuffer, pBeginCommandBufferInfo->pCommandBufferBegin);
     if (result != VK_SUCCESS) 
     {
         fprintf(stderr, "Failed to begin recording command buffer.%s\n", result);
@@ -649,14 +651,57 @@ void Renderer_BeginCommandBuffer(Renderer_BeginCommandBufferStruct* beginCommand
     }
 }
 
-void Renderer_EndCommandBuffer(VkCommandBuffer* commandBuffer)
+void Renderer_EndCommandBuffer(VkCommandBuffer* pCommandBuffer)
 {
-    VkResult result = vkEndCommandBuffer(commandBuffer);
+    VkResult result = vkEndCommandBuffer(*pCommandBuffer);
     if (result != VK_SUCCESS)
     {
         fprintf(stderr, "Failed to record command buffer.%s\n", result);
         Renderer_DestroyRenderer();
         GameEngine_DestroyWindow();
+    }
+}
+
+void Renderer_SubmitDraw(VkCommandBuffer* pCommandBufferSubmitList)
+{
+    VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+
+    VkSubmitInfo SubmitInfo =
+    {
+        .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+        .waitSemaphoreCount = 1,
+        .pWaitSemaphores = &global.Renderer.AcquireImageSemaphores[global.Renderer.CommandIndex],
+        .pWaitDstStageMask = waitStages,
+        .commandBufferCount = 3,
+        .pCommandBuffers = pCommandBufferSubmitList,
+        .signalSemaphoreCount = 1,
+        .pSignalSemaphores = &global.Renderer.PresentImageSemaphores[global.Renderer.ImageIndex],
+    };
+
+    VkResult QueueSubmit = vkQueueSubmit(global.Renderer.SwapChain.GraphicsQueue, 1, &SubmitInfo, global.Renderer.InFlightFences[global.Renderer.CommandIndex]);
+    if (QueueSubmit != VK_SUCCESS) {
+        // throw std::runtime_error("Failed to submit draw command buffer.");
+    }
+
+    VkPresentInfoKHR PresentInfoKHR =
+    {
+        .sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
+        .waitSemaphoreCount = 1,
+        .pWaitSemaphores = &global.Renderer.PresentImageSemaphores[global.Renderer.ImageIndex],
+        .swapchainCount = 1,
+        .pSwapchains = &global.Renderer.SwapChain.Swapchain,
+        .pImageIndices = &global.Renderer.ImageIndex
+    };
+
+    VkResult result = vkQueuePresentKHR(global.Renderer.SwapChain.PresentQueue, &PresentInfoKHR);
+    if (result == VK_ERROR_OUT_OF_DATE_KHR)
+    {
+        // RebuildSwapChain();
+        return result;
+    }
+    else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
+    {
+        // throw std::runtime_error("Failed to present swap chain image.");
     }
 }
 

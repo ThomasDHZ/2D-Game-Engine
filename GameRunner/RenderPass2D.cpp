@@ -118,6 +118,8 @@ void RenderPass2D::BuildRenderPass()
 
 void RenderPass2D::Draw()
 {
+    Renderer_StartFrame();
+
     std::vector<VkClearValue> clearValues
     {
         VkClearValue{.color = { {0.0f, 0.0f, 1.0f, 1.0f} } },
@@ -158,18 +160,24 @@ void RenderPass2D::Draw()
         .pClearValues = clearValues.data()
     };
 
+    VkCommandBufferBeginInfo CommandBufferBeginInfo{};
+    CommandBufferBeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+    CommandBufferBeginInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
+
     Renderer_BeginCommandBufferStruct beginCommandBuffer
     {
-        .pCommandBuffer = &CommandBufferList[global.Renderer.CMDIndex],
-        .pRenderPassBeginInfo = &RenderPassInfo,
+        .pCommandBuffer = &CommandBufferList[global.Renderer.CommandIndex],
+        .pCommandBufferBegin = &CommandBufferBeginInfo,
     };
 
     Renderer_BeginCommandBuffer(&beginCommandBuffer);
-    vkCmdBeginRenderPass(CommandBufferList[global.Renderer.CMDIndex], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-    vkCmdSetViewport(CommandBufferList[global.Renderer.CMDIndex], 0, 1, &viewport);
-    vkCmdSetScissor(CommandBufferList[global.Renderer.CMDIndex], 0, 1, &rect2D);
-    vkCmdEndRenderPass(CommandBufferList[global.Renderer.CMDIndex]);
-    Renderer_EndCommandBuffer(&CommandBufferList[global.Renderer.CMDIndex]);
+    vkCmdBeginRenderPass(CommandBufferList[global.Renderer.CommandIndex], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+    vkCmdSetViewport(CommandBufferList[global.Renderer.CommandIndex], 0, 1, &viewport);
+    vkCmdSetScissor(CommandBufferList[global.Renderer.CommandIndex], 0, 1, &rect2D);
+    vkCmdEndRenderPass(CommandBufferList[global.Renderer.CommandIndex]);
+    Renderer_EndCommandBuffer(&CommandBufferList[global.Renderer.CommandIndex]);
+
+    Renderer_SubmitDraw(CommandBufferList.data());
 }
 
 void RenderPass2D::Destroy()

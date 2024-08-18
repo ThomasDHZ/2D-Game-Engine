@@ -22,6 +22,6 @@ typedef struct
 
 typedef struct
 {
-	const VkCommandBuffer*        pCommandBuffer;
-	const VkRenderPassBeginInfo*  pRenderPassBeginInfo;
+	const VkCommandBuffer*           pCommandBuffer;
+	const VkCommandBufferBeginInfo*  pCommandBufferBegin;
 }Renderer_BeginCommandBufferStruct;
