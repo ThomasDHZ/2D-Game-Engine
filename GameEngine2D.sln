@@ -5,10 +5,16 @@ VisualStudioVersion = 17.7.34221.43
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GameRunner", "GameRunner\GameRunner.vcxproj", "{4D8D4604-0447-4424-B102-8D8D83D40FF6}"
 	ProjectSection(ProjectDependencies) = postProject
+		{6718AF68-C302-47C1-845B-BBA1CCC0DFF9} = {6718AF68-C302-47C1-845B-BBA1CCC0DFF9}
 		{C177CBA2-389F-4D1F-ABBF-683C4DB74B2E} = {C177CBA2-389F-4D1F-ABBF-683C4DB74B2E}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GameEngine2D", "GameEngine2D\GameEngine2D.vcxproj", "{C177CBA2-389F-4D1F-ABBF-683C4DB74B2E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6718AF68-C302-47C1-845B-BBA1CCC0DFF9} = {6718AF68-C302-47C1-845B-BBA1CCC0DFF9}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GameEngineCore", "GameEngineCore\GameEngineCore.vcxproj", "{6718AF68-C302-47C1-845B-BBA1CCC0DFF9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -44,6 +50,18 @@ Global
 		{C177CBA2-389F-4D1F-ABBF-683C4DB74B2E}.Release|x64.Build.0 = Release|x64
 		{C177CBA2-389F-4D1F-ABBF-683C4DB74B2E}.Release|x86.ActiveCfg = Release|Win32
 		{C177CBA2-389F-4D1F-ABBF-683C4DB74B2E}.Release|x86.Build.0 = Release|Win32
+		{6718AF68-C302-47C1-845B-BBA1CCC0DFF9}.Debug|Win32.ActiveCfg = Debug|Win32
+		{6718AF68-C302-47C1-845B-BBA1CCC0DFF9}.Debug|Win32.Build.0 = Debug|Win32
+		{6718AF68-C302-47C1-845B-BBA1CCC0DFF9}.Debug|x64.ActiveCfg = Debug|x64
+		{6718AF68-C302-47C1-845B-BBA1CCC0DFF9}.Debug|x64.Build.0 = Debug|x64
+		{6718AF68-C302-47C1-845B-BBA1CCC0DFF9}.Debug|x86.ActiveCfg = Debug|Win32
+		{6718AF68-C302-47C1-845B-BBA1CCC0DFF9}.Debug|x86.Build.0 = Debug|Win32
+		{6718AF68-C302-47C1-845B-BBA1CCC0DFF9}.Release|Win32.ActiveCfg = Release|Win32
+		{6718AF68-C302-47C1-845B-BBA1CCC0DFF9}.Release|Win32.Build.0 = Release|Win32
+		{6718AF68-C302-47C1-845B-BBA1CCC0DFF9}.Release|x64.ActiveCfg = Release|x64
+		{6718AF68-C302-47C1-845B-BBA1CCC0DFF9}.Release|x64.Build.0 = Release|x64
+		{6718AF68-C302-47C1-845B-BBA1CCC0DFF9}.Release|x86.ActiveCfg = Release|Win32
+		{6718AF68-C302-47C1-845B-BBA1CCC0DFF9}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

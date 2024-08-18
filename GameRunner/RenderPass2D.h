@@ -1,5 +1,5 @@
 #pragma once
-#include "RenderPass.h"
+#include <RenderPass.h>
 
 class RenderPass2D : public RenderPass
 {
