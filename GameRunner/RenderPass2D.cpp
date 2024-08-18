@@ -2,6 +2,7 @@
 
 RenderPass2D::RenderPass2D() : RenderPass()
 {
+
 }
 
 RenderPass2D::~RenderPass2D()
@@ -10,73 +11,165 @@ RenderPass2D::~RenderPass2D()
 
 void RenderPass2D::BuildRenderPass()
 {
-    VkAttachmentDescription colorAttachment
+    std::vector<VkImageView> textureAttachmentList;
+    std::vector<VkAttachmentDescription> attachmentDescriptionList
     {
-        .format = VK_FORMAT_B8G8R8A8_UNORM,
-        .samples = VK_SAMPLE_COUNT_1_BIT,
-        .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
-        .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
-        .stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-        .stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
-        .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-        .finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR
+        VkAttachmentDescription
+            {
+                .format = VK_FORMAT_B8G8R8A8_UNORM,
+                .samples = VK_SAMPLE_COUNT_1_BIT,
+                .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
+                .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
+                .stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+                .stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+                .finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR
+            }
     };
 
-    VkAttachmentReference colorAttachmentRef
+    std::vector<VkAttachmentReference> colorRefsList
     {
-        .attachment = 0,
-        .layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+        VkAttachmentReference
+        {
+            .attachment = 0,
+            .layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+        }
     };
 
+    std::vector<VkAttachmentReference> multiSampleReferenceList{};
+    std::vector<VkAttachmentReference> depthReference{};
 
-    VkSubpassDescription subpass
+    std::vector<VkSubpassDescription> subpassDescriptionList
     {
-        .pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS,
-        .colorAttachmentCount = 1,
-        .pColorAttachments = &colorAttachmentRef
+        VkSubpassDescription
+        {
+            .pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS,
+            .colorAttachmentCount = static_cast<uint32_t>(colorRefsList.size()),
+            .pColorAttachments = colorRefsList.data(),
+            .pResolveAttachments = multiSampleReferenceList.data(),
+            .pDepthStencilAttachment = depthReference.data()
+        }
     };
 
-    VkSubpassDependency dependency
+    std::vector<VkSubpassDependency> subpassDependencyList
     {
-        .srcSubpass = VK_SUBPASS_EXTERNAL,
-        .dstSubpass = 0,
-        .srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-        .dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-        .srcAccessMask = 0,
-        .dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT
+        VkSubpassDependency    
+        {
+            .srcSubpass = VK_SUBPASS_EXTERNAL,
+            .dstSubpass = 0,
+            .srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+            .dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+            .srcAccessMask = 0,
+            .dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT
+        }
     };
 
-    std::vector<VkAttachmentDescription> attachmentList;
-    attachmentList.emplace_back(colorAttachment);
-
-    VkRenderPassCreateInfo renderPassInfo
+    Renderer_RenderPassCreateInfoStruct renderPassCreateInfo
     {
-        .sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
-        .attachmentCount = static_cast<uint32_t>(attachmentList.size()),
-        .pAttachments = attachmentList.data(),
-        .subpassCount = 1,
-        .pSubpasses = &subpass,
-        .dependencyCount = 1,
-        .pDependencies = &dependency
+      .pRenderPass = &RenderPassPtr,
+      .pAttachmentList = attachmentDescriptionList.data(),
+      .pSubpassDescriptionList = subpassDescriptionList.data(),
+      .pSubpassDependencyList = subpassDependencyList.data(),
+      .AttachmentCount = static_cast<uint32_t>(attachmentDescriptionList.size()),
+      .SubpassCount = static_cast<uint32_t>(subpassDescriptionList.size()),
+      .DependencyCount = static_cast<uint32_t>(subpassDependencyList.size()),
+      .Width = global.Renderer.SwapChain.SwapChainResolution.width,
+      .Height = global.Renderer.SwapChain.SwapChainResolution.height,
     };
-
-    Renderer_RenderPassCreateInfo renderPassCreateInfo
-    {
-        .pRenderPass = &RenderPassPtr,
-        .pRenderPassCreateInfo = &renderPassInfo,
-    };
-
     Renderer_CreateRenderPass(&renderPassCreateInfo);
 
-    Renderer_CommandFrameBufferInfo commandFrameBufferInfo
+    Renderer_CommandFrameBufferInfoStruct commandFrameBufferInfo
     {
-        .RenderPass = RenderPassPtr,
-        .pAttachmentList = attachmentList.data(),
-        .Width = global.Renderer.SwapChain.SwapChainResolution.width,
-        .Height = global.Renderer.SwapChain.SwapChainResolution.height,
+        .pFrameBuffer = FrameBufferList.data(),
+        .FrameBufferCreateInfo =
+        {
+            .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
+            .renderPass = RenderPassPtr,
+            .attachmentCount = static_cast<uint32_t>(textureAttachmentList.size()),
+            .pAttachments = textureAttachmentList.data(),
+            .width = global.Renderer.SwapChain.SwapChainResolution.width,
+            .height = global.Renderer.SwapChain.SwapChainResolution.height,
+            .layers = 1
+        }
     };
 
-    Renderer_CreateFrameBuffer(&commandFrameBufferInfo);
+    for (size_t x = 0; x < global.Renderer.SwapChain.SwapChainImageCount; x++)
+    {
+        std::vector<VkImageView> AttachmentList;
+        AttachmentList.emplace_back(global.Renderer.SwapChain.SwapChainImageViews[x]);
+
+        VkFramebufferCreateInfo framebufferInfo
+        {
+            .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
+            .renderPass = RenderPassPtr,
+            .attachmentCount = static_cast<uint32_t>(AttachmentList.size()),
+            .pAttachments = AttachmentList.data(),
+            .width = global.Renderer.SwapChain.SwapChainResolution.width,
+            .height = global.Renderer.SwapChain.SwapChainResolution.height,
+            .layers = 1
+        };
+
+        if (vkCreateFramebuffer(global.Renderer.Device, &framebufferInfo, nullptr, &FrameBufferList[x]) != VK_SUCCESS) {
+            //throw std::runtime_error("failed to create framebuffer!");
+        }
+    }
+    //Renderer_CreateFrameBuffer(&commandFrameBufferInfo);
+}
+
+void RenderPass2D::Draw()
+{
+    std::vector<VkClearValue> clearValues
+    {
+        VkClearValue{.color = { {0.0f, 0.0f, 1.0f, 1.0f} } },
+        VkClearValue{.depthStencil = { 1.0f, 0 } }
+    };
+
+    VkViewport viewport
+    {
+        .x = 0.0f,
+        .y = 0.0f,
+        .width = (float)global.Renderer.SwapChain.SwapChainResolution.width,
+        .height = (float)global.Renderer.SwapChain.SwapChainResolution.height,
+        .minDepth = 0.0f,
+        .maxDepth = 1.0f
+    };
+
+    VkRect2D rect2D
+    {
+        rect2D.offset = { 0, 0 },
+        rect2D.extent =
+        {
+            (uint32_t)global.Renderer.SwapChain.SwapChainResolution.width,
+            (uint32_t)global.Renderer.SwapChain.SwapChainResolution.height
+        }
+    };
+
+    VkRenderPassBeginInfo renderPassInfo
+    {
+        .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
+        .renderPass = RenderPassPtr,
+        .framebuffer = FrameBufferList[global.Renderer.ImageIndex],
+        .renderArea
+        {
+            .offset = {0, 0},
+            .extent = { (uint32_t)global.Renderer.SwapChain.SwapChainResolution.width, (uint32_t)global.Renderer.SwapChain.SwapChainResolution.height }
+        },
+        .clearValueCount = static_cast<uint32_t>(clearValues.size()),
+        .pClearValues = clearValues.data()
+    };
+
+    Renderer_BeginCommandBufferStruct beginCommandBuffer
+    {
+        .pCommandBuffer = &CommandBufferList[global.Renderer.CMDIndex],
+        .pRenderPassBeginInfo = &RenderPassInfo,
+    };
+
+    Renderer_BeginCommandBuffer(&beginCommandBuffer);
+    vkCmdBeginRenderPass(CommandBufferList[global.Renderer.CMDIndex], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+    vkCmdSetViewport(CommandBufferList[global.Renderer.CMDIndex], 0, 1, &viewport);
+    vkCmdSetScissor(CommandBufferList[global.Renderer.CMDIndex], 0, 1, &rect2D);
+    vkCmdEndRenderPass(CommandBufferList[global.Renderer.CMDIndex]);
+    Renderer_EndCommandBuffer(&CommandBufferList[global.Renderer.CMDIndex]);
 }
 
 void RenderPass2D::Destroy()

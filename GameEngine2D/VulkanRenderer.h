@@ -34,10 +34,12 @@ typedef struct rendererState
 
 void Renderer_RendererSetUp();
 void Renderer_CreateCommandBuffers(VkImageView* commandBufferList);
-void Renderer_CreateFrameBuffer(Renderer_CommandFrameBufferInfo* createCommandBufferStruct);
-void Renderer_CreateRenderPass(Renderer_RenderPassCreateInfo* renderPassCreateInfo);
+void Renderer_CreateFrameBuffer(Renderer_CommandFrameBufferInfoStruct* createCommandBufferInfo);
+void Renderer_CreateRenderPass(Renderer_RenderPassCreateInfoStruct* renderPassCreateInfo);
 void Renderer_StartFrame();
 void Renderer_EndFrame(VkCommandBuffer* commandBufferSubmitList);
+void Renderer_BeginCommandBuffer(Renderer_BeginCommandBufferStruct* beginCommandBufferInfo);
+void Renderer_EndCommandBuffer(VkCommandBuffer* commandBuffer);
 
 void Renderer_DestroyRenderer();
 void Renderer_DestroyFences();

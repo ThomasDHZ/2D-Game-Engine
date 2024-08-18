@@ -517,44 +517,44 @@ void Renderer_CreateCommandBuffers(VkImageView* commandBufferList)
         VkResult result = vkAllocateCommandBuffers(global.Renderer.Device, &commandBufferAllocateInfo, &commandBufferList[x]);
         if (result != VK_SUCCESS) 
         {
-            fprintf(stderr, "Failed to create command buffers.%s\n", result);
+            fprintf(stderr, "Failed to create command buffers: %s\n", result);
             Renderer_DestroyRenderer();
             GameEngine_DestroyWindow();
         }
     }
 }
 
-void Renderer_CreateFrameBuffer(Renderer_CommandFrameBufferInfo* createCommandBufferStruct)
+void Renderer_CreateFrameBuffer(Renderer_CommandFrameBufferInfoStruct* createCommandBufferInfo)
 {
     for (size_t x = 0; x < global.Renderer.SwapChain.SwapChainImageCount; x++)
     {
-        VkFramebufferCreateInfo frameBufferCreateInfo =
+        VkResult result = vkCreateFramebuffer(global.Renderer.Device, &createCommandBufferInfo->FrameBufferCreateInfo, NULL, &createCommandBufferInfo->pFrameBuffer[x]);
+        if (result != VK_SUCCESS)
         {
-            .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
-            .renderPass = createCommandBufferStruct->RenderPass,
-            .attachmentCount = ARRAY_SIZE(createCommandBufferStruct->pAttachmentList),
-            .pAttachments = createCommandBufferStruct->pAttachmentList,
-            .width = createCommandBufferStruct->Width,
-            .height = createCommandBufferStruct->Height,
-            .layers = 1,
-        };
-
-        VkResult result = vkCreateFramebuffer(global.Renderer.Device, &frameBufferCreateInfo, NULL, &createCommandBufferStruct->pAttachmentList[x]);
-        if (result)
-        {
-            fprintf(stderr, "Failed to create Frame buffer.%s\n", result);
+            fprintf(stderr, "Failed to create frame buffers: %s\n", result);
             Renderer_DestroyRenderer();
             GameEngine_DestroyWindow();
         }
     }
 }
 
-void Renderer_CreateRenderPass(Renderer_RenderPassCreateInfo* renderPassCreateInfo)
+void Renderer_CreateRenderPass(Renderer_RenderPassCreateInfoStruct* renderPassCreateInfo)
 {
-    VkResult result = vkCreateRenderPass(global.Renderer.Device, renderPassCreateInfo->pRenderPassCreateInfo, NULL, renderPassCreateInfo->pRenderPass);
-    if (result != VK_SUCCESS) 
+    VkRenderPassCreateInfo renderPassInfo =
     {
-        fprintf(stderr, "Failed to create render pass.%s\n", result);
+        .sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
+        .attachmentCount = renderPassCreateInfo->AttachmentCount,
+        .pAttachments = renderPassCreateInfo->pAttachmentList,
+        .subpassCount = renderPassCreateInfo->SubpassCount,
+        .pSubpasses = renderPassCreateInfo->pSubpassDescriptionList,
+        .dependencyCount = renderPassCreateInfo->DependencyCount,
+        .pDependencies = renderPassCreateInfo->pSubpassDependencyList
+    };
+
+    VkResult result = vkCreateRenderPass(global.Renderer.Device, &renderPassInfo, NULL, renderPassCreateInfo->pRenderPass);
+    if (result)
+    {
+        fprintf(stderr, "Failed to create render pass:%s\n", result);
         Renderer_DestroyRenderer();
         GameEngine_DestroyWindow();
     }
@@ -633,6 +633,28 @@ void Renderer_EndFrame(VkCommandBuffer* commandBufferSubmitList)
     else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
     {
         fprintf(stderr, "Failed to present swap chain image.\n");
+        Renderer_DestroyRenderer();
+        GameEngine_DestroyWindow();
+    }
+}
+
+void Renderer_BeginCommandBuffer(Renderer_BeginCommandBufferStruct* beginCommandBufferInfo)
+{
+    VkResult result = vkBeginCommandBuffer(beginCommandBufferInfo->pCommandBuffer, &beginCommandBufferInfo->pRenderPassBeginInfo);
+    if (result != VK_SUCCESS) 
+    {
+        fprintf(stderr, "Failed to begin recording command buffer.%s\n", result);
+        Renderer_DestroyRenderer();
+        GameEngine_DestroyWindow();
+    }
+}
+
+void Renderer_EndCommandBuffer(VkCommandBuffer* commandBuffer)
+{
+    VkResult result = vkEndCommandBuffer(commandBuffer);
+    if (result != VK_SUCCESS)
+    {
+        fprintf(stderr, "Failed to record command buffer.%s\n", result);
         Renderer_DestroyRenderer();
         GameEngine_DestroyWindow();
     }

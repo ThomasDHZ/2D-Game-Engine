@@ -26,6 +26,7 @@ int main()
 		//	glfwGetFramebufferSize(global.Window.GLFWindow, &width, &height);
 		//	glfwWaitEvents();
 		//}
+		renderPass2D.Draw();
 	}
 
 	//SDL_GameControllerClose();

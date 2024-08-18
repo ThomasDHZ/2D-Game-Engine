@@ -12,12 +12,14 @@ class RenderPass
 	private:
 	protected:
 		VkRenderPass RenderPassPtr = VK_NULL_HANDLE;
-		std::vector<VkCommandBuffer> CommandBuffer;
-		std::vector<VkFramebuffer> Framebuffer;
+		VkRenderPassBeginInfo RenderPassInfo;
+		std::vector<VkCommandBuffer> CommandBufferList;
+		std::vector<VkFramebuffer> FrameBufferList;
 	public:
 		RenderPass();
 		~RenderPass();
 		virtual void BuildRenderPass();
+		virtual void Draw();
 		virtual void Destroy();
 };
 

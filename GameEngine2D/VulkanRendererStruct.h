@@ -3,14 +3,25 @@
 
 typedef struct
 {
-	VkRenderPass RenderPass;
-	VkAttachmentDescription* pAttachmentList;
-	uint32_t	 Width;
-	uint32_t	 Height;
-}Renderer_CommandFrameBufferInfo;
+	VkRenderPass*					pRenderPass;
+	const VkAttachmentDescription*  pAttachmentList;
+	const VkSubpassDescription*		pSubpassDescriptionList;
+	const VkSubpassDependency*		pSubpassDependencyList;
+	uint32_t						AttachmentCount;
+	uint32_t						SubpassCount;
+	uint32_t						DependencyCount;
+	uint32_t						Width;
+	uint32_t						Height;
+}Renderer_RenderPassCreateInfoStruct;
 
 typedef struct
 {
-	VkRenderPass* pRenderPass;
-	VkRenderPassCreateInfo* pRenderPassCreateInfo;
-}Renderer_RenderPassCreateInfo;
+	const VkFramebuffer*			pFrameBuffer;
+	VkFramebufferCreateInfo	FrameBufferCreateInfo;
+}Renderer_CommandFrameBufferInfoStruct;
+
+typedef struct
+{
+	const VkCommandBuffer*        pCommandBuffer;
+	const VkRenderPassBeginInfo*  pRenderPassBeginInfo;
+}Renderer_BeginCommandBufferStruct;

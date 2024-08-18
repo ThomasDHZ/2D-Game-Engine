@@ -9,6 +9,7 @@ class RenderPass2D : public RenderPass
 		RenderPass2D();
 		~RenderPass2D();
 		void BuildRenderPass() override;
+		void Draw() override;
 		void Destroy() override;
 };
 

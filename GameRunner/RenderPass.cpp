@@ -2,6 +2,8 @@
 
 RenderPass::RenderPass()
 {
+	CommandBufferList.resize(global.Renderer.SwapChain.SwapChainImageCount);
+	FrameBufferList.resize(global.Renderer.SwapChain.SwapChainImageCount);
 }
 
 RenderPass::~RenderPass()
@@ -9,6 +11,10 @@ RenderPass::~RenderPass()
 }
 
 void RenderPass::BuildRenderPass()
+{
+}
+
+void RenderPass::Draw()
 {
 }
 

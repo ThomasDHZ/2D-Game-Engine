@@ -71,7 +71,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\VulkanSDK\1.3.290.0\Include;$(SolutionDir)External;$(SolutionDir)External\sdl\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)External\stb;C:\VulkanSDK\1.3.290.0\Include;$(SolutionDir)External;$(SolutionDir)External\sdl\include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\VulkanSDK\1.3.290.0\Lib;$(SolutionDir)External\sdl\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -106,7 +106,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
@@ -137,10 +137,12 @@
     <ClInclude Include="GameController.h" />
     <ClInclude Include="Global.h" />
     <ClInclude Include="GraphicsDevice.h" />
+    <ClInclude Include="io.h" />
     <ClInclude Include="Keyboard.h" />
     <ClInclude Include="CList.h" />
     <ClInclude Include="Macro.h" />
     <ClInclude Include="Mouse.h" />
+    <ClInclude Include="Texture.h" />
     <ClInclude Include="VulkanError.h" />
     <ClInclude Include="VulkanRenderer.h" />
     <ClInclude Include="VulkanRendererStruct.h" />
@@ -152,9 +154,11 @@
     <ClCompile Include="GameController.c" />
     <ClCompile Include="Global.c" />
     <ClCompile Include="GraphicsDevice.c" />
+    <ClCompile Include="io.c" />
     <ClCompile Include="Keyboard.c" />
     <ClCompile Include="CList.c" />
     <ClCompile Include="Mouse.c" />
+    <ClCompile Include="Texture.c" />
     <ClCompile Include="VulkanRenderer.c" />
     <ClCompile Include="VulkanSwapChain.c" />
     <ClCompile Include="Window.c" />
