@@ -42,8 +42,9 @@ void Renderer_EndFrame(VkCommandBuffer* pCommandBufferSubmitList);
 void Renderer_BeginCommandBuffer(Renderer_BeginCommandBufferStruct* pBeginCommandBufferInfo);
 void Renderer_EndCommandBuffer(VkCommandBuffer* pCommandBuffer);
 void Renderer_SubmitDraw(VkCommandBuffer* pCommandBufferSubmitList);
-VkShaderModule Shader_CompileGLSLShaderFile(const char* path);
-VkPipelineShaderStageCreateInfo Shader_CreateShader(VkShaderModule shaderModule, VkShaderStageFlagBits shaderStages);
+
+VkCommandBuffer Renderer_BeginSingleTimeCommand();
+void Renderer_EndSingleTimeCommand(VkCommandBuffer* commandBuffer);
 
 void Renderer_DestroyRenderer();
 void Renderer_DestroyFences();
@@ -52,3 +53,8 @@ void Renderer_DestroyDevice();
 void Renderer_DestroySurface();
 void Renderer_DestroyDebugger();
 void Renderer_DestroyInstance();
+void Renderer_DestroyRenderPass(VkRenderPass* renderPass);
+void Renderer_DestroyFrameBuffers(VkFramebuffer* frameBufferList);
+void Renderer_DestroyDescriptorPool(VkDescriptorPool* descriptorPool);
+void Renderer_DestroyCommandBuffers(VkDescriptorPool* descriptorPool, VkCommandBuffer* commandBufferList);
+void Renderer_DestroyCommnadPool(VkCommandPool* commandPool);

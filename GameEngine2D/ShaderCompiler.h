@@ -5,7 +5,7 @@ extern "C"
 	#include <VulkanRenderer.h>
 }
 #include <string>
-#include "HLSLShaderCompiler.h"
+#include <CShaderCompiler.h>
 
 class ShaderCompiler
 {

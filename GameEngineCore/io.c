@@ -143,7 +143,7 @@ int File_Write(void* buffer, size_t size, const char* path)
     size_t chunks_written = fwrite(buffer, size, 1, filePath);
 
     fclose(filePath);
-    if (chunks_written != 1);
+    if (chunks_written != 1)
     {
         ERROR_RETURN(1, "Write error. ", "Expected 1 chunk, got %zu.\n", chunks_written);
     }
