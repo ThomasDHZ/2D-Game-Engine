@@ -2,7 +2,7 @@
 #include "VulkanRenderer.h"
 #include <ImGui/imgui.h>
 #include <ImGui/imgui_impl_vulkan.h>
-#include <ImGui/imgui_impl_sdl3.h>
+#include <ImGui/imgui_impl_sdl2.h>
 #include <Global.h>
 #include <vector>
 
@@ -175,7 +175,7 @@ public:
         ImGuiIO& io = ImGui::GetIO(); (void)io;
 
         ImGui::StyleColorsDark();
-        ImGui_ImplSDL3_InitForVulkan(global.Window.SDLWindow);
+        ImGui_ImplSDL2_InitForVulkan(global.Window.SDLWindow);
 
         ImGui_ImplVulkan_InitInfo init_info =
         {
@@ -185,6 +185,7 @@ public:
             .QueueFamily = global.Renderer.SwapChain.GraphicsFamily,
             .Queue = global.Renderer.SwapChain.GraphicsQueue,
             .DescriptorPool = ImGuiDescriptorPool,
+            .RenderPass = RenderPass,
             .MinImageCount = global.Renderer.SwapChain.SwapChainImageCount,
             .ImageCount = global.Renderer.SwapChain.SwapChainImageCount,
             .PipelineCache = VK_NULL_HANDLE,
@@ -215,14 +216,19 @@ public:
             VkClearValue {.depthStencil = { 1.0f, 0 } }
         };
 
-        VkRenderPassBeginInfo renderPassInfo{};
-        renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-        renderPassInfo.renderPass = RenderPass;
-        renderPassInfo.framebuffer = SwapChainFramebuffers[global.Renderer.ImageIndex];
-        renderPassInfo.renderArea.offset = { 0, 0 };
-        renderPassInfo.renderArea.extent = global.Renderer.SwapChain.SwapChainResolution;
-        renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
-        renderPassInfo.pClearValues = clearValues.data();
+        VkRenderPassBeginInfo renderPassInfo
+        {
+            .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
+            .renderPass = RenderPass,
+            .framebuffer = SwapChainFramebuffers[global.Renderer.ImageIndex],
+            .renderArea
+            {
+                .offset = { 0, 0 },
+                .extent = global.Renderer.SwapChain.SwapChainResolution,
+            },
+            .clearValueCount = static_cast<uint32_t>(clearValues.size()),
+            .pClearValues = clearValues.data()
+        };
 
         vkCmdBeginRenderPass(ImGuiCommandBuffers[global.Renderer.CommandIndex], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
         ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), ImGuiCommandBuffers[global.Renderer.CommandIndex]);
@@ -249,11 +255,11 @@ public:
     {
         Renderer_DestroyRenderPass(&RenderPass);
         Renderer_DestroyFrameBuffers(SwapChainFramebuffers.data());
+        Renderer_DestroyCommandBuffers(&ImGuiCommandPool, ImGuiCommandBuffers.data());
         Renderer_DestroyDescriptorPool(&ImGuiDescriptorPool);
-        Renderer_DestroyCommandBuffers(&ImGuiDescriptorPool, ImGuiCommandBuffers.data());
         Renderer_DestroyCommnadPool(&ImGuiCommandPool);
         ImGui_ImplVulkan_Shutdown();
-        ImGui_ImplSDL3_Shutdown();
+        ImGui_ImplSDL2_Shutdown();
         ImGui::DestroyContext();
     }
 };

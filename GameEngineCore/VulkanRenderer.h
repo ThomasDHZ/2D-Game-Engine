@@ -1,6 +1,6 @@
 #pragma once
 #include <windows.h>
-#include <SDL.h>
+#include <SDL2/SDL.h>
 #include <SDL_vulkan.h>
 #include <vulkan/vulkan.h>
 
@@ -38,7 +38,7 @@ void Renderer_CreateCommandBuffers(VkCommandBuffer* pCommandBufferList);
 void Renderer_CreateFrameBuffer(Renderer_CommandFrameBufferInfoStruct* pCreateCommandBufferInfo);
 void Renderer_CreateRenderPass(Renderer_RenderPassCreateInfoStruct* pRenderPassCreateInfo);
 void Renderer_StartFrame();
-void Renderer_EndFrame(VkCommandBuffer* pCommandBufferSubmitList);
+void Renderer_EndFrame(VkCommandBuffer* pCommandBufferSubmitList, uint32_t commandBufferCount);
 void Renderer_BeginCommandBuffer(Renderer_BeginCommandBufferStruct* pBeginCommandBufferInfo);
 void Renderer_EndCommandBuffer(VkCommandBuffer* pCommandBuffer);
 void Renderer_SubmitDraw(VkCommandBuffer* pCommandBufferSubmitList);
@@ -56,5 +56,6 @@ void Renderer_DestroyInstance();
 void Renderer_DestroyRenderPass(VkRenderPass* renderPass);
 void Renderer_DestroyFrameBuffers(VkFramebuffer* frameBufferList);
 void Renderer_DestroyDescriptorPool(VkDescriptorPool* descriptorPool);
-void Renderer_DestroyCommandBuffers(VkDescriptorPool* descriptorPool, VkCommandBuffer* commandBufferList);
+void Renderer_DestroyDescriptorSetLayout(VkDescriptorSet* descriptorSet);
+void Renderer_DestroyCommandBuffers(VkCommandPool* commandPool, VkCommandBuffer* commandBufferList);
 void Renderer_DestroyCommnadPool(VkCommandPool* commandPool);

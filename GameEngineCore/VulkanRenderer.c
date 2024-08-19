@@ -594,7 +594,7 @@ void Renderer_StartFrame()
     }
 }
 
-void Renderer_EndFrame(VkCommandBuffer* pCommandBufferSubmitList)
+void Renderer_EndFrame(VkCommandBuffer* pCommandBufferSubmitList, uint32_t commandBufferCount)
 {
     VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
 
@@ -604,12 +604,12 @@ void Renderer_EndFrame(VkCommandBuffer* pCommandBufferSubmitList)
         .waitSemaphoreCount = 1,
         .pWaitSemaphores = &global.Renderer.AcquireImageSemaphores[global.Renderer.CommandIndex],
         .pWaitDstStageMask = waitStages,
-        .commandBufferCount = ARRAY_SIZE(pCommandBufferSubmitList),
+        .commandBufferCount = commandBufferCount,
         .pCommandBuffers = pCommandBufferSubmitList,
         .signalSemaphoreCount = 1,
-        .pSignalSemaphores = global.Renderer.PresentImageSemaphores[global.Renderer.ImageIndex]
+        .pSignalSemaphores = &global.Renderer.PresentImageSemaphores[global.Renderer.CommandIndex]
     };
-    VkResult QueueSubmit = vkQueueSubmit(global.Renderer.SwapChain.GraphicsFamily, 1, &SubmitInfo, global.Renderer.InFlightFences[global.Renderer.CommandIndex]);
+    VkResult QueueSubmit = vkQueueSubmit(global.Renderer.SwapChain.GraphicsQueue, 1, &SubmitInfo, global.Renderer.InFlightFences[global.Renderer.CommandIndex]);
     if (QueueSubmit != VK_SUCCESS) 
     {
         fprintf(stderr, "Failed to submit draw command buffer.\n");
@@ -626,7 +626,7 @@ void Renderer_EndFrame(VkCommandBuffer* pCommandBufferSubmitList)
         .pSwapchains = &global.Renderer.SwapChain.Swapchain,
         .pImageIndices = &global.Renderer.ImageIndex
     };
-    VkResult result = vkQueuePresentKHR(global.Renderer.SwapChain.PresentFamily, &PresentInfoKHR);
+    VkResult result = vkQueuePresentKHR(global.Renderer.SwapChain.PresentQueue, &PresentInfoKHR);
     if (result == VK_ERROR_OUT_OF_DATE_KHR)
     {
         Renderer_RebuildSwapChain();
@@ -782,7 +782,6 @@ void Renderer_EndSingleTimeCommand(VkCommandBuffer* commandBuffer)
 
 void Renderer_DestroyRenderer()
 {
-    vkDeviceWaitIdle(global.Renderer.Device);
     Vulkan_DestroySwapChain();
     Vulkan_DestroyImageView();
     Renderer_DestroyCommandPool();
@@ -860,8 +859,8 @@ void Renderer_DestroyRenderPass(VkRenderPass* renderPass)
 {
     if (renderPass != VK_NULL_HANDLE)
     {
-        vkDestroyRenderPass(global.Renderer.Device, renderPass, NULL);
-        renderPass = VK_NULL_HANDLE;
+        vkDestroyRenderPass(global.Renderer.Device, *renderPass, NULL);
+        *renderPass = VK_NULL_HANDLE;
     }
 }
 
@@ -871,7 +870,7 @@ void Renderer_DestroyFrameBuffers(VkFramebuffer* frameBufferList)
     {
         if (frameBufferList != VK_NULL_HANDLE)
         {
-            vkDestroyFramebuffer(global.Renderer.Device, frameBufferList, NULL);
+            vkDestroyFramebuffer(global.Renderer.Device, *frameBufferList, NULL);
             frameBufferList = VK_NULL_HANDLE;
         }
     }
@@ -881,19 +880,28 @@ void Renderer_DestroyDescriptorPool(VkDescriptorPool* descriptorPool)
 {
     if (descriptorPool != VK_NULL_HANDLE)
     {
-        vkDestroyDescriptorPool(global.Renderer.Device, descriptorPool, NULL);
+        vkDestroyDescriptorPool(global.Renderer.Device, *descriptorPool, NULL);
         descriptorPool = VK_NULL_HANDLE;
     }
 }
 
-void Renderer_DestroyCommandBuffers(VkDescriptorPool* descriptorPool, VkCommandBuffer* commandBufferList)
+void Renderer_DestroyDescriptorSetLayout(VkDescriptorSet* descriptorSet)
 {
-    if (commandBufferList[0] != VK_NULL_HANDLE)
+    if (descriptorSet != VK_NULL_HANDLE)
     {
-        vkFreeCommandBuffers(global.Renderer.Device, descriptorPool, 1, &commandBufferList[0]);
+        vkDestroyDescriptorSetLayout(global.Renderer.Device, *descriptorSet, NULL);
+        descriptorSet = VK_NULL_HANDLE;
+    }
+}
+
+void Renderer_DestroyCommandBuffers(VkCommandPool* commandPool, VkCommandBuffer* commandBufferList)
+{
+    if (commandBufferList != VK_NULL_HANDLE)
+    {
+        vkFreeCommandBuffers(global.Renderer.Device, *commandPool, global.Renderer.SwapChain.SwapChainImageCount, &*commandBufferList);
         for (size_t x = 0; x < global.Renderer.SwapChain.SwapChainImageCount; x++)
         {
-            commandBufferList[x] = VK_NULL_HANDLE;
+            commandBufferList = VK_NULL_HANDLE;
         }
     }
 }
@@ -902,7 +910,7 @@ void Renderer_DestroyCommnadPool(VkCommandPool* commandPool)
 {
     if (commandPool != VK_NULL_HANDLE)
     {
-        vkDestroyCommandPool(global.Renderer.Device, commandPool, NULL);
+        vkDestroyCommandPool(global.Renderer.Device, *commandPool, NULL);
         commandPool = VK_NULL_HANDLE;
     }
 }

@@ -5,7 +5,7 @@ extern "C"
 }
 #include <ImGui/imgui.h>
 #include <ImGui/imgui_impl_vulkan.h>
-#include <ImGui/imgui_impl_sdl3.h>
+#include <ImGui/imgui_impl_sdl2.h>
 #include "Scene.h"
 
 int main()
@@ -13,39 +13,26 @@ int main()
 	GameEngine_CreateGraphicsWindow("Game", 1280, 720);
 	//ShaderCompiler::SetUpCompiler();
 	Renderer_RendererSetUp();
-
+	InterfaceRenderPass::StartUp();
+	
 	Scene scene;
-	//RenderPass2D renderPass2D;
-	//renderPass2D.BuildRenderPass();
-
-	while (global.Window.Event.type != SDL_QUIT)
-	{
-		GameEngine_PollEvents();
-
-		ImGui_ImplVulkan_NewFrame();
-		ImGui_ImplSDL3_NewFrame();
-		ImGui::NewFrame();
-		scene.ImGuiUpdate();
-		ImGui::Render();
-
-		if (global.Keyboard.KeyPressed[INPUTKEY_Z] == KS_Held)
+	scene.StartUp();
+    while (!global.Window.ExitWindow)
+    {
+		while (SDL_PollEvent(&global.Window.Event))
 		{
-			int a = 234;
+			GameEngine_PollEventHandler(&global.Window.Event);
+			ImGui_ImplSDL2_ProcessEvent(&global.Window.Event);
 		}
-		//int width = 0, height = 0;
-		//glfwGetFramebufferSize(global.Window.GLFWindow, &width, &height);
-		//while (width == 0 || height == 0) {
-		//	glfwGetFramebufferSize(global.Window.GLFWindow, &width, &height);
-		//	glfwWaitEvents();
-		//}
-		/*renderPass2D.Draw();*/
 		scene.Update();
+		scene.ImGuiUpdate();
 		scene.Draw();
-	}
+    }
 
+	vkDeviceWaitIdle(global.Renderer.Device);
 	//SDL_GameControllerClose();
+	InterfaceRenderPass::Destroy();
 	Renderer_DestroyRenderer();
 	GameEngine_DestroyWindow();
 	return 0;
 }
-
