@@ -1,4 +1,6 @@
 #pragma once
+#include "Window.h"
+#include "FrameTime.h"
 #include "Mouse.h"
 #include "Keyboard.h"
 #include "Window.h"
@@ -11,6 +13,7 @@ typedef struct global {
     KeyboardState       Keyboard;
     GameControllerState Controller;
     RendererState       Renderer;
+    Time_State      time;
 } Global;
 
 extern Global global;

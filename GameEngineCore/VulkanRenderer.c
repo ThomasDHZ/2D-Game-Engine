@@ -354,7 +354,7 @@ void Renderer_RendererSetUp()
     VkResult physicalDeviceResult = vkEnumeratePhysicalDevices(global.Renderer.Instance, &deviceCount, physicalDeviceList);
     if (physicalDeviceResult != VK_SUCCESS)
     {
-        fprintf(stderr, "Failed to find to create physical device: %s\n", physicalDeviceResult);
+        fprintf(stderr, "Failed to find to create physical device: %s\n", Renderer_GetError(physicalDeviceResult));
         Renderer_DestroyRenderer();
         free(extensions);
         return;
@@ -438,7 +438,7 @@ void Renderer_RendererSetUp()
     VkResult deviceResult = vkCreateDevice(global.Renderer.PhysicalDevice, &deviceCreateInfo, NULL, &global.Renderer.Device);
     if (deviceResult != VK_SUCCESS)
     {
-        fprintf(stderr, "Failed to find to create device: %s\n", deviceResult);
+        fprintf(stderr, "Failed to find to create device: %s\n", Renderer_GetError(deviceResult));
         Renderer_DestroyRenderer();
         free(extensions);
         return;
@@ -456,7 +456,7 @@ void Renderer_RendererSetUp()
     VkResult commandPoolResult = vkCreateCommandPool(global.Renderer.Device, &CommandPoolCreateInfo, NULL, &global.Renderer.CommandPool);
     if (commandPoolResult != VK_SUCCESS)
     {
-        fprintf(stderr, "Failed to find to create graphics command pool: %s\n", commandPoolResult);
+        fprintf(stderr, "Failed to find to create graphics command pool: %s\n", Renderer_GetError(commandPoolResult));
         Renderer_GetError(deviceResult);
         Renderer_DestroyRenderer();
         free(extensions);
@@ -519,7 +519,7 @@ void Renderer_CreateCommandBuffers(VkCommandBuffer* commandBufferList)
         VkResult result = vkAllocateCommandBuffers(global.Renderer.Device, &commandBufferAllocateInfo, &commandBufferList[x]);
         if (result != VK_SUCCESS) 
         {
-            fprintf(stderr, "Failed to create command buffers: %s\n", result);
+            fprintf(stderr, "Failed to create command buffers: %s\n", Renderer_GetError(result));
             Renderer_DestroyRenderer();
             GameEngine_DestroyWindow();
         }
@@ -533,7 +533,7 @@ void Renderer_CreateFrameBuffer(Renderer_CommandFrameBufferInfoStruct* createCom
         VkResult result = vkCreateFramebuffer(global.Renderer.Device, &createCommandBufferInfo->FrameBufferCreateInfo, NULL, &createCommandBufferInfo->pFrameBuffer[x]);
         if (result != VK_SUCCESS)
         {
-            fprintf(stderr, "Failed to create frame buffers: %s\n", result);
+            fprintf(stderr, "Failed to create frame buffers: %s\n", Renderer_GetError(result));
             Renderer_DestroyRenderer();
             GameEngine_DestroyWindow();
         }
@@ -556,7 +556,7 @@ void Renderer_CreateRenderPass(Renderer_RenderPassCreateInfoStruct* renderPassCr
     VkResult result = vkCreateRenderPass(global.Renderer.Device, &renderPassInfo, NULL, renderPassCreateInfo->pRenderPass);
     if (result)
     {
-        fprintf(stderr, "Failed to create render pass:%s\n", result);
+        fprintf(stderr, "Failed to create render pass:%s\n", Renderer_GetError(result));
         Renderer_DestroyRenderer();
         GameEngine_DestroyWindow();
     }
@@ -588,7 +588,7 @@ void Renderer_StartFrame()
     }
     else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
     {
-        fprintf(stderr, "Failed to create synchronization objects for a frame.\n");
+        fprintf(stderr, "Failed to create synchronization objects for a frame. %s\n", Renderer_GetError(result));
         Renderer_DestroyRenderer();
         GameEngine_DestroyWindow();
     }
@@ -645,7 +645,7 @@ void Renderer_BeginCommandBuffer(Renderer_BeginCommandBufferStruct* pBeginComman
     VkResult result = vkBeginCommandBuffer(*pBeginCommandBufferInfo->pCommandBuffer, pBeginCommandBufferInfo->pCommandBufferBegin);
     if (result != VK_SUCCESS) 
     {
-        fprintf(stderr, "Failed to begin recording command buffer.%s\n", result);
+        fprintf(stderr, "Failed to begin recording command buffer.%s\n", Renderer_GetError(result));
         Renderer_DestroyRenderer();
         GameEngine_DestroyWindow();
     }
@@ -656,7 +656,7 @@ void Renderer_EndCommandBuffer(VkCommandBuffer* pCommandBuffer)
     VkResult result = vkEndCommandBuffer(*pCommandBuffer);
     if (result != VK_SUCCESS)
     {
-        fprintf(stderr, "Failed to record command buffer.%s\n", result);
+        fprintf(stderr, "Failed to record command buffer.%s\n", Renderer_GetError(result));
         Renderer_DestroyRenderer();
         GameEngine_DestroyWindow();
     }
@@ -681,7 +681,7 @@ void Renderer_SubmitDraw(VkCommandBuffer* pCommandBufferSubmitList)
     VkResult QueueSubmit = vkQueueSubmit(global.Renderer.SwapChain.GraphicsQueue, 1, &SubmitInfo, global.Renderer.InFlightFences[global.Renderer.CommandIndex]);
     if (QueueSubmit != VK_SUCCESS)
     {
-        fprintf(stderr, "Failed to submit draw command buffer: %s\n", QueueSubmit);
+        fprintf(stderr, "Failed to submit draw command buffer: %s\n", Renderer_GetError(QueueSubmit));
         Renderer_DestroyRenderer();
         GameEngine_DestroyWindow();
     }
@@ -695,7 +695,6 @@ void Renderer_SubmitDraw(VkCommandBuffer* pCommandBufferSubmitList)
         .pSwapchains = &global.Renderer.SwapChain.Swapchain,
         .pImageIndices = &global.Renderer.ImageIndex
     };
-
     VkResult result = vkQueuePresentKHR(global.Renderer.SwapChain.PresentQueue, &PresentInfoKHR);
     if (result == VK_ERROR_OUT_OF_DATE_KHR)
     {
@@ -705,14 +704,34 @@ void Renderer_SubmitDraw(VkCommandBuffer* pCommandBufferSubmitList)
     else if (result != VK_SUCCESS && 
              result != VK_SUBOPTIMAL_KHR)
     {
-        fprintf(stderr, "Failed to present swap chain image: %s\n", QueueSubmit);
+        fprintf(stderr, "Failed to present swap chain image: %s\n", Renderer_GetError(QueueSubmit));
         Renderer_DestroyRenderer();
         GameEngine_DestroyWindow();
     }
 }
 
-VkCommandBuffer Renderer_BeginSingleTimeCommand()
+uint32_t Renderer_GetMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties)
 {
+    VkPhysicalDeviceMemoryProperties memProperties;
+    vkGetPhysicalDeviceMemoryProperties(global.Renderer.PhysicalDevice, &memProperties);
+
+    for (uint32_t x = 0; x < memProperties.memoryTypeCount; x++)
+    {
+        if ((typeFilter & (1 << x)) &&
+            (memProperties.memoryTypes[x].propertyFlags & properties) == properties)
+        {
+            return x;
+        }
+    }
+
+    fprintf(stderr, "Couldn't find suitable memory type.\n");
+    Renderer_DestroyRenderer();
+    GameEngine_DestroyWindow();
+}
+
+VkCommandBuffer Renderer_BeginSingleUseCommandBuffer()
+{
+    VkResult result = VK_RESULT_MAX_ENUM;
     VkCommandBuffer commandBuffer = VK_NULL_HANDLE;
     VkCommandBufferAllocateInfo allocInfo =
     {
@@ -721,11 +740,10 @@ VkCommandBuffer Renderer_BeginSingleTimeCommand()
         .commandPool = global.Renderer.CommandPool,
         .commandBufferCount = 1
     };
-
-    VkResult allocatResult = vkAllocateCommandBuffers(global.Renderer.Device, &allocInfo, &commandBuffer);
-    if(allocatResult)
+    result = vkAllocateCommandBuffers(global.Renderer.Device, &allocInfo, &commandBuffer);
+    if(result)
     {
-        fprintf(stderr, "Failed to allocate command buffer: %s\n", allocatResult);
+        fprintf(stderr, "Failed to allocate command buffer: %s\n", Renderer_GetError(result));
         Renderer_DestroyRenderer();
         GameEngine_DestroyWindow();
     }
@@ -735,10 +753,10 @@ VkCommandBuffer Renderer_BeginSingleTimeCommand()
         .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
         .flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT
     };
-    VkResult commandSubmitResult = vkBeginCommandBuffer(commandBuffer, &beginInfo);
-    if (commandSubmitResult)
+    result = vkBeginCommandBuffer(commandBuffer, &beginInfo);
+    if (result)
     {
-        fprintf(stderr, "Failed to submit command buffer: %s\n", commandSubmitResult);
+        fprintf(stderr, "Failed to submit command buffer: %s\n", Renderer_GetError(result));
         Renderer_DestroyRenderer();
         GameEngine_DestroyWindow();
     }
@@ -747,10 +765,11 @@ VkCommandBuffer Renderer_BeginSingleTimeCommand()
 
 void Renderer_EndSingleTimeCommand(VkCommandBuffer* commandBuffer)
 {
-    VkResult endCommandResult = vkEndCommandBuffer(commandBuffer);
-    if (endCommandResult)
+    VkResult result = VK_RESULT_MAX_ENUM;
+    result = vkEndCommandBuffer(commandBuffer);
+    if (result)
     {
-        fprintf(stderr, "Failed to end command buffer: %s\n", endCommandResult);
+        fprintf(stderr, "Failed to end command buffer: %s\n", Renderer_GetError(result));
         Renderer_DestroyRenderer();
         GameEngine_DestroyWindow();
     }
@@ -761,18 +780,18 @@ void Renderer_EndSingleTimeCommand(VkCommandBuffer* commandBuffer)
         .commandBufferCount = 1,
         .pCommandBuffers = &commandBuffer
     };
-    VkResult queueSubmitResult = vkQueueSubmit(global.Renderer.SwapChain.GraphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
-    if (queueSubmitResult)
+    result = vkQueueSubmit(global.Renderer.SwapChain.GraphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
+    if (result)
     {
-        fprintf(stderr, "Failed to submit queue: %s\n", queueSubmitResult);
+        fprintf(stderr, "Failed to submit queue: %s\n", Renderer_GetError(result));
         Renderer_DestroyRenderer();
         GameEngine_DestroyWindow();
     }
 
-    VkResult queueWaitResult = vkQueueWaitIdle(global.Renderer.SwapChain.GraphicsQueue);
-    if (queueWaitResult)
+    result = vkQueueWaitIdle(global.Renderer.SwapChain.GraphicsQueue);
+    if (result)
     {
-        fprintf(stderr, "Failed to get response: %s\n", queueWaitResult);
+        fprintf(stderr, "Failed to get response: %s\n", Renderer_GetError(result));
         Renderer_DestroyRenderer();
         GameEngine_DestroyWindow();
     }

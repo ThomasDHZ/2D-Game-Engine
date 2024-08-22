@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -19,6 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\External\ChiliTomatoNoodle\ChiliContainer.cpp" />
+    <ClCompile Include="..\External\ChiliTomatoNoodle\ChiliSingletons.cpp" />
     <ClCompile Include="..\External\ImGui\imgui.cpp" />
     <ClCompile Include="..\External\ImGui\imgui_demo.cpp" />
     <ClCompile Include="..\External\ImGui\imgui_draw.cpp" />
@@ -27,12 +29,21 @@
     <ClCompile Include="..\External\ImGui\imgui_impl_vulkan.cpp" />
     <ClCompile Include="..\External\ImGui\imgui_tables.cpp" />
     <ClCompile Include="..\External\ImGui\imgui_widgets.cpp" />
+    <ClCompile Include="FrameBuffer.cpp" />
     <ClCompile Include="HLSLShaderCompiler.cpp" />
     <ClCompile Include="InterfaceRenderPass.cpp" />
+    <ClCompile Include="LogBuilder.cpp" />
+    <ClCompile Include="Logger.cpp" />
+    <ClCompile Include="LogLevel.cpp" />
+    <ClCompile Include="LoggerLog.cpp" />
     <ClCompile Include="RenderPass.cpp" />
     <ClCompile Include="ShaderCompiler.cpp" />
+    <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="VulkanBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\External\ChiliTomatoNoodle\ChiliContainer.h" />
+    <ClInclude Include="..\External\ChiliTomatoNoodle\ChiliSingletons.h" />
     <ClInclude Include="..\External\ImGui\imconfig.h" />
     <ClInclude Include="..\External\ImGui\imgui.h" />
     <ClInclude Include="..\External\ImGui\imgui_impl_sdl2.h" />
@@ -42,10 +53,18 @@
     <ClInclude Include="..\External\ImGui\imstb_rectpack.h" />
     <ClInclude Include="..\External\ImGui\imstb_textedit.h" />
     <ClInclude Include="..\External\ImGui\imstb_truetype.h" />
+    <ClInclude Include="FrameBuffer.h" />
     <ClInclude Include="HLSLShaderCompiler.h" />
     <ClInclude Include="InterfaceRenderPass.h" />
+    <ClInclude Include="LogBuilder.h" />
+    <ClInclude Include="LogChannel.h" />
+    <ClInclude Include="Logger.h" />
+    <ClInclude Include="LogLevel.h" />
+    <ClInclude Include="LoggerLog.h" />
     <ClInclude Include="RenderPass.h" />
     <ClInclude Include="ShaderCompiler.h" />
+    <ClInclude Include="Texture.h" />
+    <ClInclude Include="VulkanBuffer.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

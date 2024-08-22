@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -137,6 +137,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Buffer.c" />
     <ClCompile Include="CArray.c" />
     <ClCompile Include="CList.c" />
     <ClCompile Include="CShaderCompiler.c" />
@@ -146,15 +147,20 @@
     <ClCompile Include="io.c" />
     <ClCompile Include="Keyboard.c" />
     <ClCompile Include="Mouse.c" />
-    <ClCompile Include="Texture.c" />
+    <ClCompile Include="TextureBase.c" />
+    <ClCompile Include="FrameTime.c" />
     <ClCompile Include="VulkanRenderer.c" />
     <ClCompile Include="VulkanSwapChain.c" />
     <ClCompile Include="Window.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Buffer.h" />
     <ClInclude Include="CArray.h" />
     <ClInclude Include="CList.h" />
     <ClInclude Include="CShaderCompiler.h" />
+    <ClInclude Include="enum.h">
+      <FileType>CppHeader</FileType>
+    </ClInclude>
     <ClInclude Include="GameController.h" />
     <ClInclude Include="Global.h" />
     <ClInclude Include="GraphicsDevice.h" />
@@ -162,7 +168,10 @@
     <ClInclude Include="Keyboard.h" />
     <ClInclude Include="Macro.h" />
     <ClInclude Include="Mouse.h" />
-    <ClInclude Include="Texture.h" />
+    <ClInclude Include="TextureBase.h">
+      <FileType>CppHeader</FileType>
+    </ClInclude>
+    <ClInclude Include="FrameTime.h" />
     <ClInclude Include="VulkanError.h" />
     <ClInclude Include="VulkanRenderer.h" />
     <ClInclude Include="VulkanRendererStruct.h" />

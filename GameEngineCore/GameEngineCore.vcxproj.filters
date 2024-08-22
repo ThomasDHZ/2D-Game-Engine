@@ -42,7 +42,7 @@
     <ClCompile Include="Mouse.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Texture.c">
+    <ClCompile Include="TextureBase.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="VulkanRenderer.c">
@@ -52,6 +52,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Window.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Buffer.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FrameTime.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -71,7 +77,7 @@
     <ClInclude Include="VulkanError.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Texture.h">
+    <ClInclude Include="TextureBase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Mouse.h">
@@ -102,6 +108,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="io.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="enum.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Buffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FrameTime.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

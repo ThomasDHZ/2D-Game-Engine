@@ -19,6 +19,12 @@
     <Filter Include="Source Files\ImGui">
       <UniqueIdentifier>{0b3a7136-56ca-4cd5-9e1e-ed0b125b312f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\ChiliTomatoNoodle">
+      <UniqueIdentifier>{aa58196b-cdd1-4d41-80b4-3f903a786b16}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ChiliTomatoNoodle">
+      <UniqueIdentifier>{eb5b335d-69c6-4e7f-847b-d4a468ff1939}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ShaderCompiler.cpp">
@@ -56,6 +62,33 @@
     </ClCompile>
     <ClCompile Include="..\External\ImGui\imgui_impl_sdl2.cpp">
       <Filter>Source Files\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="Logger.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LogLevel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LoggerLog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LogBuilder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FrameBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="VulkanBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\External\ChiliTomatoNoodle\ChiliSingletons.cpp">
+      <Filter>Source Files\ChiliTomatoNoodle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\External\ChiliTomatoNoodle\ChiliContainer.cpp">
+      <Filter>Source Files\ChiliTomatoNoodle</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -97,6 +130,36 @@
     </ClInclude>
     <ClInclude Include="..\External\ImGui\imgui_impl_sdl2.h">
       <Filter>Header Files\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="Logger.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LogLevel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LoggerLog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LogBuilder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LogChannel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FrameBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="VulkanBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\External\ChiliTomatoNoodle\ChiliContainer.h">
+      <Filter>Header Files\ChiliTomatoNoodle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\External\ChiliTomatoNoodle\ChiliSingletons.h">
+      <Filter>Header Files\ChiliTomatoNoodle</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

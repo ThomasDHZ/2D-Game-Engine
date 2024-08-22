@@ -43,8 +43,9 @@ void Renderer_BeginCommandBuffer(Renderer_BeginCommandBufferStruct* pBeginComman
 void Renderer_EndCommandBuffer(VkCommandBuffer* pCommandBuffer);
 void Renderer_SubmitDraw(VkCommandBuffer* pCommandBufferSubmitList);
 
-VkCommandBuffer Renderer_BeginSingleTimeCommand();
-void Renderer_EndSingleTimeCommand(VkCommandBuffer* commandBuffer);
+uint32_t Renderer_GetMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
+VkCommandBuffer Renderer_BeginSingleUseCommandBuffer();
+void Renderer_EndSingleUseCommandBuffer(VkCommandBuffer* commandBuffer);
 
 void Renderer_DestroyRenderer();
 void Renderer_DestroyFences();
