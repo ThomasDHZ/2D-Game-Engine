@@ -21,7 +21,6 @@ Texture::Texture()
 	Memory = VK_NULL_HANDLE;
 	View = VK_NULL_HANDLE;
 	Sampler = VK_NULL_HANDLE;
-	ImGuiDescriptorSet = ImGui_ImplVulkan_AddTexture(Sampler, View, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
 	TextureUsage = TextureUsageEnum::kUse_Undefined;
 	TextureType = TextureTypeEnum::kType_UndefinedTexture;
@@ -30,7 +29,12 @@ Texture::Texture()
 	SampleCount = VK_SAMPLE_COUNT_1_BIT;
 }
 
-Texture::Texture(const std::string& filePath, VkFormat textureByteFormat, TextureTypeEnum TextureType)
+Texture::Texture(TextureUsageEnum textureUsage)
+{
+	TextureUsage = TextureUsageEnum::kUse_Undefined;
+}
+
+Texture::Texture(const std::string& filePath, VkFormat textureByteFormat, TextureTypeEnum textureType)
 {
 	TextureBufferIndex = 0;
 	Width = 1;
@@ -45,15 +49,22 @@ Texture::Texture(const std::string& filePath, VkFormat textureByteFormat, Textur
 	Sampler = VK_NULL_HANDLE;
 
 	TextureUsage = TextureUsageEnum::kUse_Undefined;
-	TextureType = TextureType;
+	TextureType = textureType;
 	TextureByteFormat = textureByteFormat;
 	TextureImageLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 	SampleCount = VK_SAMPLE_COUNT_1_BIT;
 
-	LoadTexture(filePath);
+	CreateImageTexture(filePath);
+	CreateTextureView();
+	CreateTextureSampler();
+	ImGuiDescriptorSet = ImGui_ImplVulkan_AddTexture(Sampler, View, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 }
 
-void Texture::LoadTexture(const std::string& FilePath)
+Texture::~Texture()
+{
+}
+
+void Texture::CreateImageTexture(const std::string& FilePath)
 {
 	int* width = &Width;
 	int* height = &Height;
@@ -66,9 +77,6 @@ void Texture::LoadTexture(const std::string& FilePath)
 	Texture_TransitionImageLayout(SendCTextureInfo().get(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 	Texture_CopyBufferToTexture(SendCTextureInfo().get(), &buffer.Buffer);
 	Texture_GenerateMipmaps(SendCTextureInfo().get());
-	CreateTextureView();
-	CreateTextureSampler();
-	ImGuiShowTexture(ImVec2((float)Width, (float)Height));
 	Buffer_DestroyBuffer(buffer.SendCBufferInfo().get());
 }
 

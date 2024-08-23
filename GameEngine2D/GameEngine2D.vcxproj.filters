@@ -25,6 +25,18 @@
     <Filter Include="Source Files\ChiliTomatoNoodle">
       <UniqueIdentifier>{eb5b335d-69c6-4e7f-847b-d4a468ff1939}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Texture">
+      <UniqueIdentifier>{3eeb5661-099e-4314-aea5-191ef864776f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Texture">
+      <UniqueIdentifier>{02910292-1169-47ac-8ac8-5addd0cb0b3f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Logger">
+      <UniqueIdentifier>{2a96f39a-c839-497c-b045-3f1c20372c31}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Logger">
+      <UniqueIdentifier>{8b1b5df1-971f-4ed7-adcb-bf8f89490aa7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ShaderCompiler.cpp">
@@ -63,22 +75,7 @@
     <ClCompile Include="..\External\ImGui\imgui_impl_sdl2.cpp">
       <Filter>Source Files\ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="LogEntry.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="LogLevel.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="LoggerLog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="LogBuilder.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="FrameBuffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Texture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="VulkanBuffer.cpp">
@@ -90,11 +87,32 @@
     <ClCompile Include="..\External\ChiliTomatoNoodle\ChiliContainer.cpp">
       <Filter>Source Files\ChiliTomatoNoodle</Filter>
     </ClCompile>
-    <ClCompile Include="LogChannel.cpp">
+    <ClCompile Include="FrameBufferRenderPass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="RendereredColorTexture2D.cpp">
+      <Filter>Source Files\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Source Files\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="LogLevel.cpp">
+      <Filter>Source Files\Logger</Filter>
+    </ClCompile>
+    <ClCompile Include="LogBuilder.cpp">
+      <Filter>Source Files\Logger</Filter>
+    </ClCompile>
+    <ClCompile Include="LogChannel.cpp">
+      <Filter>Source Files\Logger</Filter>
+    </ClCompile>
     <ClCompile Include="LogDriver.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Logger</Filter>
+    </ClCompile>
+    <ClCompile Include="LogEntry.cpp">
+      <Filter>Source Files\Logger</Filter>
+    </ClCompile>
+    <ClCompile Include="LoggerLog.cpp">
+      <Filter>Source Files\Logger</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -137,25 +155,7 @@
     <ClInclude Include="..\External\ImGui\imgui_impl_sdl2.h">
       <Filter>Header Files\ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="LogEntry.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="LogLevel.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="LoggerLog.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="LogBuilder.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="LogChannel.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="FrameBuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Texture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="VulkanBuffer.h">
@@ -167,8 +167,32 @@
     <ClInclude Include="..\External\ChiliTomatoNoodle\ChiliSingletons.h">
       <Filter>Header Files\ChiliTomatoNoodle</Filter>
     </ClInclude>
-    <ClInclude Include="LogDriver.h">
+    <ClInclude Include="FrameBufferRenderPass.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Header Files\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="RendereredColorTexture2D.h">
+      <Filter>Header Files\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="LogLevel.h">
+      <Filter>Header Files\Logger</Filter>
+    </ClInclude>
+    <ClInclude Include="LogBuilder.h">
+      <Filter>Header Files\Logger</Filter>
+    </ClInclude>
+    <ClInclude Include="LogChannel.h">
+      <Filter>Header Files\Logger</Filter>
+    </ClInclude>
+    <ClInclude Include="LogDriver.h">
+      <Filter>Header Files\Logger</Filter>
+    </ClInclude>
+    <ClInclude Include="LogEntry.h">
+      <Filter>Header Files\Logger</Filter>
+    </ClInclude>
+    <ClInclude Include="LoggerLog.h">
+      <Filter>Header Files\Logger</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

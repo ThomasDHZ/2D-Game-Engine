@@ -29,6 +29,7 @@
     <ClCompile Include="..\External\ImGui\imgui_impl_vulkan.cpp" />
     <ClCompile Include="..\External\ImGui\imgui_tables.cpp" />
     <ClCompile Include="..\External\ImGui\imgui_widgets.cpp" />
+    <ClCompile Include="FrameBufferRenderPass.cpp" />
     <ClCompile Include="LogDriver.cpp" />
     <ClCompile Include="FrameBuffer.cpp" />
     <ClCompile Include="HLSLShaderCompiler.cpp" />
@@ -38,6 +39,7 @@
     <ClCompile Include="LogEntry.cpp" />
     <ClCompile Include="LogLevel.cpp" />
     <ClCompile Include="LoggerLog.cpp" />
+    <ClCompile Include="RendereredColorTexture2D.cpp" />
     <ClCompile Include="RenderPass.cpp" />
     <ClCompile Include="ShaderCompiler.cpp" />
     <ClCompile Include="Texture.cpp" />
@@ -55,6 +57,7 @@
     <ClInclude Include="..\External\ImGui\imstb_rectpack.h" />
     <ClInclude Include="..\External\ImGui\imstb_textedit.h" />
     <ClInclude Include="..\External\ImGui\imstb_truetype.h" />
+    <ClInclude Include="FrameBufferRenderPass.h" />
     <ClInclude Include="LogDriver.h" />
     <ClInclude Include="FrameBuffer.h" />
     <ClInclude Include="HLSLShaderCompiler.h" />
@@ -64,6 +67,7 @@
     <ClInclude Include="LogEntry.h" />
     <ClInclude Include="LogLevel.h" />
     <ClInclude Include="LoggerLog.h" />
+    <ClInclude Include="RendereredColorTexture2D.h" />
     <ClInclude Include="RenderPass.h" />
     <ClInclude Include="ShaderCompiler.h" />
     <ClInclude Include="Texture.h" />

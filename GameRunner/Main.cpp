@@ -15,23 +15,15 @@ int main()
 {
     time_init(160);
     GameEngine_CreateGraphicsWindow("Game", 1280, 720);
-
-    // Setup your Vulkan Renderer here
     Renderer_RendererSetUp();
-
-    // Make sure the interface render pass is started after the graphics window is created
     InterfaceRenderPass::StartUp();
 
     Scene scene;
     scene.StartUp();
 
-    Texture texture("../Texture/awesomeface.png", VkFormat::VK_FORMAT_R8G8B8A8_SRGB, TextureTypeEnum::kType_DiffuseTextureMap);
-
     while (!global.Window.ExitWindow)
     {
         time_update();
-
-        // Event polling and handling
         while (SDL_PollEvent(&global.Window.Event))
         {
             GameEngine_PollEventHandler(&global.Window.Event);

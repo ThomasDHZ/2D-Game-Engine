@@ -1,7 +1,9 @@
 #include "Scene.h"
+#include <Global.h>
 
 void Scene::StartUp()
 {
+	frameRenderPass.BuildRenderPass();
 	BuildRenderers();
 }
 
@@ -16,6 +18,7 @@ void Scene::ImGuiUpdate()
 	ImGui::NewFrame();
 	ImGui::Begin("Button Window");
 	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / global.time.frame_time, global.time.frame_rate);
+	texture.ImGuiShowTexture(ImVec2(256, 128));
 	ImGui::End();
 	ImGui::Render();
 }

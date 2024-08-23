@@ -14,7 +14,6 @@ private:
     static VkCommandPool ImGuiCommandPool;
     static std::vector<VkFramebuffer> SwapChainFramebuffers;
    
-
     static void CreateRenderPass()
     {
         VkAttachmentDescription colorAttachment{};

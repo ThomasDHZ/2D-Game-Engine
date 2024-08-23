@@ -6,12 +6,16 @@ extern "C"
 }
 #include <array>
 #include <vector>
+#include "RendereredColorTexture2D.h"
 
 class RenderPass
 {
 	private:
 	protected:
-		VkRenderPass RenderPassPtr = VK_NULL_HANDLE;
+		glm::ivec2 RenderPassResolution;
+		VkSampleCountFlagBits SampleCount;
+
+		VkRenderPass RenderPassPtr;
 		VkRenderPassBeginInfo RenderPassInfo;
 		std::vector<VkCommandBuffer> CommandBufferList;
 		std::vector<VkFramebuffer> FrameBufferList;

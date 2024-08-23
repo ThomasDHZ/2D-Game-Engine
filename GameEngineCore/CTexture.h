@@ -6,9 +6,11 @@ enum TextureUsageEnum
     kUse_Undefined,
     kUse_2DImageTexture,
     kUse_2DDataTexture,
+    kUse_2DRenderedTexture,
     kUse_2DDepthTexture,
     kUse_3DImageTexture,
     kUse_3DDataTexture,
+    kUse_3DRenderedTexture,
     kUse_3DDepthTexture,
     kUse_CubeMapTexture,
     kUse_CubeMapDepthTexture

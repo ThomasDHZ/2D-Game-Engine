@@ -8,18 +8,17 @@ extern "C"
 #include <cmath>
 #include <algorithm>
 #include <string>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include "VulkanBuffer.h"
-#include "ImGui/imgui_impl_vulkan.h"
+#include <ImGui/imgui.h>
+#include <ImGui/imgui_impl_vulkan.h>
 
 class Texture
 {
 	private:
 		uint64_t TextureBufferIndex;
-		VkDescriptorSet ImGuiDescriptorSet;
-		VkImage Image;
-		VkDeviceMemory Memory;
-		VkImageView View;
-		VkSampler Sampler;
 
 	protected:
 		int Width;
@@ -27,20 +26,31 @@ class Texture
 		int Depth;
 		uint32_t MipMapLevels;
 
-		TextureUsageEnum TextureUsage = TextureUsageEnum::kUse_Undefined;
-		TextureTypeEnum TextureType = TextureTypeEnum::kType_UndefinedTexture;
-		VkFormat TextureByteFormat = VK_FORMAT_UNDEFINED;
-		VkImageLayout TextureImageLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-		VkSampleCountFlagBits SampleCount = VK_SAMPLE_COUNT_1_BIT;
+		TextureUsageEnum TextureUsage;
+		TextureTypeEnum TextureType;
+		VkFormat TextureByteFormat;
+		VkImageLayout TextureImageLayout;
+		VkSampleCountFlagBits SampleCount;
 
 		std::unique_ptr<TextureInfo> SendCTextureInfo();
-		void LoadTexture(const std::string& FilePath);
-		void CreateTextureView();
-		void CreateTextureSampler();
-		void ImGuiShowTexture(const ImVec2& TextureDisplaySize);
+		virtual void CreateImageTexture(const std::string& FilePath);
+		virtual void CreateTextureView();
+		virtual void CreateTextureSampler();
 
 	public:
+		VkDescriptorSet ImGuiDescriptorSet;
+		VkImage Image;
+		VkDeviceMemory Memory;
+		VkImageView View;
+		VkSampler Sampler;
+
 		Texture();
+		Texture(TextureUsageEnum TextureUsage);
 		Texture(const std::string& filePath, VkFormat textureByteFormat, TextureTypeEnum TextureType);
+		virtual ~Texture();
+		void ImGuiShowTexture(const ImVec2& TextureDisplaySize);
+		const VkFormat GetTextureByteFormat() { return TextureByteFormat; }
+		const VkSampleCountFlagBits GetSampleCount() { return SampleCount; }
+
 };
 

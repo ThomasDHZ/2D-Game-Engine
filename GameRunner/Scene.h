@@ -6,10 +6,16 @@ extern "C"
 }
 #include <InterfaceRenderPass.h>
 #include "RenderPass2D.h"
+#include <Texture.h>
+#include <FrameBufferRenderPass.h>
+#include <RendereredColorTexture2D.h>
 
 class Scene
 {
 	private:
+		Texture texture;
+		RendereredColorTexture2D rendereredColorTexture2D;
+		FrameBufferRenderPass frameRenderPass;
 	public:
 		void StartUp();
 		void Update();
