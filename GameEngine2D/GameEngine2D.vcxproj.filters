@@ -63,7 +63,7 @@
     <ClCompile Include="..\External\ImGui\imgui_impl_sdl2.cpp">
       <Filter>Source Files\ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="Logger.cpp">
+    <ClCompile Include="LogEntry.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="LogLevel.cpp">
@@ -89,6 +89,12 @@
     </ClCompile>
     <ClCompile Include="..\External\ChiliTomatoNoodle\ChiliContainer.cpp">
       <Filter>Source Files\ChiliTomatoNoodle</Filter>
+    </ClCompile>
+    <ClCompile Include="LogChannel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LogDriver.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -131,7 +137,7 @@
     <ClInclude Include="..\External\ImGui\imgui_impl_sdl2.h">
       <Filter>Header Files\ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="Logger.h">
+    <ClInclude Include="LogEntry.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="LogLevel.h">
@@ -160,6 +166,9 @@
     </ClInclude>
     <ClInclude Include="..\External\ChiliTomatoNoodle\ChiliSingletons.h">
       <Filter>Header Files\ChiliTomatoNoodle</Filter>
+    </ClInclude>
+    <ClInclude Include="LogDriver.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

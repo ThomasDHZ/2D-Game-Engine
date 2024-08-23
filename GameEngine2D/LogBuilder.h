@@ -1,17 +1,24 @@
 #pragma once
-#include "logger.h"
-
-class IChannel;
-class LogBuilder : public LogEntry
+#include "LogEntry.h"
+namespace Logger
 {
-private:
-	IChannel* pDestination = nullptr;
-public:
-	LogBuilder(const wchar_t* sourceFile, const wchar_t* sourceFunctionName, int sourceLine);
-	~LogBuilder();
+	class IChannel;
 
-	LogBuilder& Body(std::wstring body);
-	LogBuilder& Level(LogLevel logLevel);
-	LogBuilder& Channel(IChannel* channel);
-
-};
+	class EntryBuilder : private Entry
+	{
+	public:
+		EntryBuilder(const wchar_t* sourceFile, const wchar_t* sourceFunctionName, int sourceLine);
+		EntryBuilder& note(std::wstring note);
+		EntryBuilder& level(Level);
+		EntryBuilder& chan(IChannel*);
+		EntryBuilder& Trace(std::wstring body = L"");
+		EntryBuilder& Debug(std::wstring body = L"");
+		EntryBuilder& Info(std::wstring body = L"");
+		EntryBuilder& Warning(std::wstring body = L"");
+		EntryBuilder& Error(std::wstring body = L"");
+		EntryBuilder& Fatal(std::wstring body = L"");
+		~EntryBuilder();
+	private:
+		IChannel* pDest_ = nullptr;
+	};
+}

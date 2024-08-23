@@ -1,6 +1,5 @@
 #pragma once
-#include <stdint.h>
-#include <vulkan/vulkan.h>
+#include "VulkanRenderer.h"
 
 enum TextureUsageEnum 
 {
@@ -42,9 +41,9 @@ enum TextureTypeEnum
 
 typedef struct TextureInfo 
 {
-    uint32_t* Width;
-    uint32_t* Height;
-    uint32_t* Depth;
+    int* Width;
+    int* Height;
+    int* Depth;
     uint32_t* MipMapLevels;
 
     VkDescriptorSet* ImGuiDescriptorSet;
@@ -55,7 +54,6 @@ typedef struct TextureInfo
 
     enum TextureUsageEnum* TextureUsage;
     enum TextureTypeEnum* TextureType;
-    VkFormat* StartTextureByteFormat;
     VkFormat* TextureByteFormat;
     VkImageLayout* TextureImageLayout;
     VkSampleCountFlagBits* SampleCount;
@@ -65,3 +63,5 @@ void Texture_CreateTextureImage(struct TextureInfo* textureInfo);
 void Texture_TransitionImageLayout(struct TextureInfo* textureInfo, VkImageLayout imageLayout);
 void Texture_CopyBufferToTexture(struct TextureInfo* textureInfo, VkBuffer* buffer);
 void Texture_GenerateMipmaps(struct TextureInfo* textureInfo);
+VkResult Texture_CreateTextureView(struct TextureInfo* textureInfo, VkImageViewCreateInfo* imageViewCreateInfo);
+VkResult Texture_CreateTextureSampler(struct TextureInfo* textureInfo, VkSamplerCreateInfo* samplerCreateInfo);

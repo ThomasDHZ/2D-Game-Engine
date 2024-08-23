@@ -1,14 +1,17 @@
 #pragma once
 #include <string>
 
-enum LogLevel
+namespace Logger
 {
-	Trace,
-	Debug,
-	Info,
-	Warning,
-	Error,
-	Fatal
-};
+	enum Level
+	{
+		Trace,
+		Debug,
+		Info,
+		Warning,
+		Error,
+		Fatal
+	};
 
-std::wstring Logger_GetLevelName(LogLevel logLevel);
+	std::wstring Logger_GetLevelName(Level logLevel);
+}

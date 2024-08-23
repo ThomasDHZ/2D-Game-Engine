@@ -42,7 +42,7 @@
     <ClCompile Include="Mouse.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TextureBase.c">
+    <ClCompile Include="CTexture.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="VulkanRenderer.c">
@@ -54,7 +54,7 @@
     <ClCompile Include="Window.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Buffer.c">
+    <ClCompile Include="CBuffer.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="FrameTime.c">
@@ -77,7 +77,7 @@
     <ClInclude Include="VulkanError.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TextureBase.h">
+    <ClInclude Include="CTexture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Mouse.h">
@@ -113,7 +113,7 @@
     <ClInclude Include="enum.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Buffer.h">
+    <ClInclude Include="CBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FrameTime.h">

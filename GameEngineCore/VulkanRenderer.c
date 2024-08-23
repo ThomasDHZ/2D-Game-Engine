@@ -763,10 +763,9 @@ VkCommandBuffer Renderer_BeginSingleUseCommandBuffer()
     return commandBuffer;
 }
 
-void Renderer_EndSingleTimeCommand(VkCommandBuffer* commandBuffer)
+VkResult Renderer_EndSingleUseCommandBuffer(VkCommandBuffer* commandBuffer)
 {
-    VkResult result = VK_RESULT_MAX_ENUM;
-    result = vkEndCommandBuffer(commandBuffer);
+    VkResult result = vkEndCommandBuffer(commandBuffer);
     if (result)
     {
         fprintf(stderr, "Failed to end command buffer: %s\n", Renderer_GetError(result));
@@ -796,7 +795,8 @@ void Renderer_EndSingleTimeCommand(VkCommandBuffer* commandBuffer)
         GameEngine_DestroyWindow();
     }
 
-    vkFreeCommandBuffers(global.Renderer.Device, global.Renderer.CommandPool, 1, commandBuffer);
+    vkFreeCommandBuffers(global.Renderer.Device, global.Renderer.CommandPool, 1, &commandBuffer);
+    return result;
 }
 
 void Renderer_DestroyRenderer()
@@ -876,7 +876,7 @@ void Renderer_DestroyInstance()
 
 void Renderer_DestroyRenderPass(VkRenderPass* renderPass)
 {
-    if (renderPass != VK_NULL_HANDLE)
+    if (*renderPass != VK_NULL_HANDLE)
     {
         vkDestroyRenderPass(global.Renderer.Device, *renderPass, NULL);
         *renderPass = VK_NULL_HANDLE;
@@ -887,49 +887,76 @@ void Renderer_DestroyFrameBuffers(VkFramebuffer* frameBufferList)
 {
     for (size_t x = 0; x < global.Renderer.SwapChain.SwapChainImageCount; x++)
     {
-        if (frameBufferList != VK_NULL_HANDLE)
+        if (*frameBufferList != VK_NULL_HANDLE)
         {
             vkDestroyFramebuffer(global.Renderer.Device, *frameBufferList, NULL);
-            frameBufferList = VK_NULL_HANDLE;
+            *frameBufferList = VK_NULL_HANDLE;
         }
     }
 }
 
 void Renderer_DestroyDescriptorPool(VkDescriptorPool* descriptorPool)
 {
-    if (descriptorPool != VK_NULL_HANDLE)
+    if (*descriptorPool != VK_NULL_HANDLE)
     {
         vkDestroyDescriptorPool(global.Renderer.Device, *descriptorPool, NULL);
-        descriptorPool = VK_NULL_HANDLE;
+        *descriptorPool = VK_NULL_HANDLE;
     }
 }
 
 void Renderer_DestroyDescriptorSetLayout(VkDescriptorSet* descriptorSet)
 {
-    if (descriptorSet != VK_NULL_HANDLE)
+    if (*descriptorSet != VK_NULL_HANDLE)
     {
         vkDestroyDescriptorSetLayout(global.Renderer.Device, *descriptorSet, NULL);
-        descriptorSet = VK_NULL_HANDLE;
+        *descriptorSet = VK_NULL_HANDLE;
     }
 }
 
 void Renderer_DestroyCommandBuffers(VkCommandPool* commandPool, VkCommandBuffer* commandBufferList)
 {
-    if (commandBufferList != VK_NULL_HANDLE)
+    if (*commandBufferList != VK_NULL_HANDLE)
     {
         vkFreeCommandBuffers(global.Renderer.Device, *commandPool, global.Renderer.SwapChain.SwapChainImageCount, &*commandBufferList);
         for (size_t x = 0; x < global.Renderer.SwapChain.SwapChainImageCount; x++)
         {
-            commandBufferList = VK_NULL_HANDLE;
+            *commandBufferList = VK_NULL_HANDLE;
         }
     }
 }
 
 void Renderer_DestroyCommnadPool(VkCommandPool* commandPool)
 {
-    if (commandPool != VK_NULL_HANDLE)
+    if (*commandPool != VK_NULL_HANDLE)
     {
         vkDestroyCommandPool(global.Renderer.Device, *commandPool, NULL);
-        commandPool = VK_NULL_HANDLE;
+        *commandPool = VK_NULL_HANDLE;
+    }
+}
+
+void Renderer_DestroyBufferMemory(VkDeviceMemory* deviceMemory)
+{
+    if (*deviceMemory != VK_NULL_HANDLE)
+    {
+        vkDestroyCommandPool(global.Renderer.Device, *deviceMemory, NULL);
+        *deviceMemory = VK_NULL_HANDLE;
+    }
+}
+
+void Renderer_DestroyBuffer(VkBuffer* buffer)
+{
+    if (*buffer != VK_NULL_HANDLE)
+    {
+        vkDestroyBuffer(global.Renderer.Device, *buffer, NULL);
+        *buffer = VK_NULL_HANDLE;
+    }
+}
+
+void Renderer_FreeMemory(VkDeviceMemory* memory)
+{
+    if (*memory != VK_NULL_HANDLE)
+    {
+        vkFreeMemory(global.Renderer.Device, *memory, NULL);
+        *memory = VK_NULL_HANDLE;
     }
 }

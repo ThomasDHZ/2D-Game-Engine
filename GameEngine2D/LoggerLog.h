@@ -1,9 +1,11 @@
 #pragma once
-#include "Logger.h"
+#include "LogEntry.h"
 
-void f(LogEntry* logEntry);
-class LoggerLog : public LogEntry
+namespace Logger
 {
-	void g() { f(this); };
-};
-
+	void f(Entry* entry);
+	class LoggerLog : public Entry
+	{
+		void g() { f(this); };
+	};
+}

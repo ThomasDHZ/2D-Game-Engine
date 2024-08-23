@@ -3,8 +3,9 @@ extern "C"
 {
 	#include <Global.h>
 	#include <VulkanRenderer.h>
-	#include <Buffer.h>
+	#include <CBuffer.h>
 }
+#include <memory>
 
 class VulkanBuffer
 {
@@ -17,14 +18,19 @@ class VulkanBuffer
 		VkAccelerationStructureKHR BufferHandle = VK_NULL_HANDLE;
 		void* BufferData;
 
-		BufferInfo* SendCBufferInfo();
-
 	public:
 		VkBuffer Buffer = VK_NULL_HANDLE;
 
 		VulkanBuffer();
 		VulkanBuffer(void* BufferData, VkDeviceSize BufferSize, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties);
-		~VulkanBuffer();
+		virtual ~VulkanBuffer();
+
+		VkResult CreateBuffer(void* BufferData, VkDeviceSize BufferSize, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties);
+		VkResult CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
+		void UpdateBufferMemory(void* DataToCopy, VkDeviceSize BufferSize);
+		VkResult UpdateBufferSize(VkDeviceSize bufferSize);
+		std::unique_ptr<BufferInfo> SendCBufferInfo();
+		void DestroyBuffer(BufferInfo* buffer);
 
 		VkBuffer GetBuffer() { return Buffer; }
 		VkBuffer* GetBufferPtr() { return &Buffer; }
