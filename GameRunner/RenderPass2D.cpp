@@ -116,7 +116,7 @@ void RenderPass2D::BuildRenderPass()
     //Renderer_CreateFrameBuffer(&commandFrameBufferInfo);
 }
 
-void RenderPass2D::Draw()
+VkCommandBuffer RenderPass2D::Draw()
 {
     Renderer_StartFrame();
 
@@ -180,6 +180,8 @@ void RenderPass2D::Draw()
     Renderer_EndCommandBuffer(&CommandBufferList[global.Renderer.CommandIndex]);
 
     Renderer_SubmitDraw(CommandBufferList.data());
+
+    return CommandBufferList[global.Renderer.CommandIndex];
 }
 
 void RenderPass2D::Destroy()

@@ -32,7 +32,6 @@
     <ClCompile Include="FrameBufferRenderPass.cpp" />
     <ClCompile Include="LogDriver.cpp" />
     <ClCompile Include="FrameBuffer.cpp" />
-    <ClCompile Include="HLSLShaderCompiler.cpp" />
     <ClCompile Include="InterfaceRenderPass.cpp" />
     <ClCompile Include="LogBuilder.cpp" />
     <ClCompile Include="LogChannel.cpp" />
@@ -60,7 +59,6 @@
     <ClInclude Include="FrameBufferRenderPass.h" />
     <ClInclude Include="LogDriver.h" />
     <ClInclude Include="FrameBuffer.h" />
-    <ClInclude Include="HLSLShaderCompiler.h" />
     <ClInclude Include="InterfaceRenderPass.h" />
     <ClInclude Include="LogBuilder.h" />
     <ClInclude Include="LogChannel.h" />

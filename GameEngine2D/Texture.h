@@ -45,7 +45,6 @@ class Texture
 		VkSampler Sampler;
 
 		Texture();
-		Texture(TextureUsageEnum TextureUsage);
 		Texture(const std::string& filePath, VkFormat textureByteFormat, TextureTypeEnum TextureType);
 		virtual ~Texture();
 		void ImGuiShowTexture(const ImVec2& TextureDisplaySize);

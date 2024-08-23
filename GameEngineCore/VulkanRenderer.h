@@ -12,6 +12,7 @@
 #include "Window.h"
 #include "CArray.h"
 
+
 static const int MAX_FRAMES_IN_FLIGHT = 3;
 
 typedef struct rendererState

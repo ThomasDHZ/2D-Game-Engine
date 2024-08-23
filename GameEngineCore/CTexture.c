@@ -55,8 +55,8 @@ void Texture_CreateTextureImage(struct TextureInfo* textureInfo)
 
 void Texture_TransitionImageLayout(struct TextureInfo* textureInfo, VkImageLayout newImageLayout)
 {
-	VkPipelineStageFlags sourceStage;
-	VkPipelineStageFlags destinationStage;
+	VkPipelineStageFlags sourceStage = VK_PIPELINE_STAGE_FLAG_BITS_MAX_ENUM;
+	VkPipelineStageFlags destinationStage = VK_PIPELINE_STAGE_FLAG_BITS_MAX_ENUM;
 	VkCommandBuffer* commandBuffer = Renderer_BeginSingleUseCommandBuffer();
 
 	VkImageMemoryBarrier barrier =
@@ -129,7 +129,7 @@ void Texture_CopyBufferToTexture(struct TextureInfo* textureInfo, VkBuffer* buff
 
 void Texture_GenerateMipmaps(struct TextureInfo* textureInfo)
 {
-	if (textureInfo->MipMapLevels > 1)
+	if ((int)textureInfo->MipMapLevels > 1)
 	{
 		int32_t mipWidth = *textureInfo->Width;
 		int32_t mipHeight = *textureInfo->Height;

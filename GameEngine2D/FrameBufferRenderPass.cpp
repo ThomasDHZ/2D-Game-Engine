@@ -1,6 +1,7 @@
 #include "FrameBufferRenderPass.h"
 #include <Global.h>
 #include "ShaderCompiler.h"
+#include <stdexcept>
 
 FrameBufferRenderPass::FrameBufferRenderPass() : RenderPass()
 {
@@ -10,20 +11,16 @@ FrameBufferRenderPass::~FrameBufferRenderPass()
 {
 }
 
-void FrameBufferRenderPass::BuildRenderPass(std::shared_ptr<RendereredColorTexture2D> renderedTexture)
+void FrameBufferRenderPass::BuildRenderPass(std::shared_ptr<Texture> texture)
 {
-    RenderedTexture = renderedTexture;
-
-    std::vector<VkImageView> TextureAttachmentList;
-    TextureAttachmentList.emplace_back(RenderedTexture->View);
-    TextureAttachmentList.emplace_back(BloomTexture->View);
+    RenderedTexture = texture;
 
     std::vector<VkAttachmentDescription> attachmentDescriptionList
     {
         VkAttachmentDescription
             {
-                .format = RenderedTexture->GetTextureByteFormat(),
-                .samples = RenderedTexture->GetSampleCount(),
+                .format = VK_FORMAT_B8G8R8A8_UNORM,
+                .samples = VK_SAMPLE_COUNT_1_BIT,
                 .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
                 .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
                 .stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
@@ -31,17 +28,6 @@ void FrameBufferRenderPass::BuildRenderPass(std::shared_ptr<RendereredColorTextu
                 .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
                 .finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
             }
-        //VkAttachmentDescription
-        //    {
-        //        .format = BloomTexture->GetTextureByteFormat(),
-        //        .samples = BloomTexture->GetSampleCount(),
-        //        .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
-        //        .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
-        //        .stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-        //        .stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
-        //        .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-        //        .finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
-        //    }
     };
 
     std::vector<VkAttachmentReference> colorRefsList
@@ -51,11 +37,6 @@ void FrameBufferRenderPass::BuildRenderPass(std::shared_ptr<RendereredColorTextu
             .attachment = 0,
             .layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
         }
-        //VkAttachmentReference
-        //{
-        //    .attachment = 1,
-        //    .layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
-        //}
     };
 
     std::vector<VkAttachmentReference> multiSampleReferenceList{};
@@ -79,22 +60,11 @@ void FrameBufferRenderPass::BuildRenderPass(std::shared_ptr<RendereredColorTextu
         {
             .srcSubpass = VK_SUBPASS_EXTERNAL,
             .dstSubpass = 0,
-            .srcStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
-            .dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-            .srcAccessMask = VK_ACCESS_SHADER_READ_BIT,
-            .dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-            .dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT
-        },
-        VkSubpassDependency
-        {
-            .srcSubpass = 0,
-            .dstSubpass = VK_SUBPASS_EXTERNAL,
             .srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-            .dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
-            .srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-            .dstAccessMask = VK_ACCESS_SHADER_READ_BIT,
-            .dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT
-        }
+            .dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+            .srcAccessMask = 0,
+            .dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT
+        },
     };
 
     Renderer_RenderPassCreateInfoStruct renderPassCreateInfo
@@ -111,10 +81,12 @@ void FrameBufferRenderPass::BuildRenderPass(std::shared_ptr<RendereredColorTextu
     };
     Renderer_CreateRenderPass(&renderPassCreateInfo);
 
-    Renderer_CommandFrameBufferInfoStruct commandFrameBufferInfo
+    for (size_t x = 0; x < global.Renderer.SwapChain.SwapChainImageCount; x++)
     {
-        .pFrameBuffer = FrameBufferList.data(),
-        .FrameBufferCreateInfo =
+        std::vector<VkImageView> TextureAttachmentList;
+        TextureAttachmentList.emplace_back(global.Renderer.SwapChain.SwapChainImageViews[x]);
+
+        VkFramebufferCreateInfo framebufferInfo
         {
             .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
             .renderPass = RenderPassPtr,
@@ -123,39 +95,22 @@ void FrameBufferRenderPass::BuildRenderPass(std::shared_ptr<RendereredColorTextu
             .width = static_cast<uint32_t>(RenderPassResolution.x),
             .height = static_cast<uint32_t>(RenderPassResolution.y),
             .layers = 1
-        }
-    };
-
-    for (size_t x = 0; x < global.Renderer.SwapChain.SwapChainImageCount; x++)
-    {
-        std::vector<VkImageView> AttachmentList;
-        AttachmentList.emplace_back(RenderedTexture->View);
-        AttachmentList.emplace_back(BloomTexture->View);
-
-        VkFramebufferCreateInfo framebufferInfo
-        {
-            .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
-            .renderPass = RenderPassPtr,
-            .attachmentCount = static_cast<uint32_t>(AttachmentList.size()),
-            .pAttachments = AttachmentList.data(),
-            .width = static_cast<uint32_t>(RenderPassResolution.x),
-            .height = static_cast<uint32_t>(RenderPassResolution.y),
-            .layers = 1
         };
 
-        if (vkCreateFramebuffer(global.Renderer.Device, &framebufferInfo, nullptr, &FrameBufferList[x]) != VK_SUCCESS) {
+        if (vkCreateFramebuffer(global.Renderer.Device, &framebufferInfo, nullptr, &FrameBufferList[x]) != VK_SUCCESS)
+        {
             //throw std::runtime_error("failed to create framebuffer!");
         }
     }
-    Renderer_CreateFrameBuffer(&commandFrameBufferInfo);
+    BuildRenderPipeline();
 }
 
 void FrameBufferRenderPass::BuildRenderPipeline()
 {
     std::vector<VkPipelineShaderStageCreateInfo> PipelineShaderStageList
     {
-        ShaderCompiler::CompileGLSLShaderFile("../Shaders/FrameBufferVert.spv"),
-        ShaderCompiler::CompileGLSLShaderFile("../Shaders/FrameBufferFrag.spv")
+        ShaderCompiler::CreateShader("C:/Users/DHZ/Documents/GitHub/2D-Game-Engine/Shaders/FrameBufferShaderVert.spv", VK_SHADER_STAGE_VERTEX_BIT),
+        ShaderCompiler::CreateShader("C:/Users/DHZ/Documents/GitHub/2D-Game-Engine/Shaders/FrameBufferShaderFrag.spv", VK_SHADER_STAGE_FRAGMENT_BIT)
     };
 
     std::vector<VkDescriptorImageInfo> ColorDescriptorImage
@@ -212,7 +167,7 @@ void FrameBufferRenderPass::BuildRenderPipeline()
 
     VkDescriptorSetLayoutCreateInfo layoutInfo = {};
     layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-    layoutInfo.bindingCount = static_cast<uint32_t>(LayoutBindingList.size());
+    layoutInfo.bindingCount = 1;
     layoutInfo.pBindings = LayoutBindingList.data();
 
     if (vkCreateDescriptorSetLayout(global.Renderer.Device, &layoutInfo, nullptr, &DescriptorSetLayout) != VK_SUCCESS) {
@@ -255,19 +210,32 @@ void FrameBufferRenderPass::BuildRenderPipeline()
     VkPipelineViewportStateCreateInfo viewportState{};
     viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
 
-    VkPipelineColorBlendAttachmentState blendAttachment = 
+    std::vector<VkPipelineColorBlendAttachmentState> blendAttachmentList
     {
+        VkPipelineColorBlendAttachmentState
+        {
             .blendEnable = VK_TRUE,
-    .srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA,
-    .dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,
-    .colorBlendOp = VK_BLEND_OP_ADD,
-    .srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE,
-    .dstAlphaBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,
-    .alphaBlendOp = VK_BLEND_OP_ADD,
-    .colorWriteMask = VK_COLOR_COMPONENT_R_BIT |
-        VK_COLOR_COMPONENT_G_BIT |
-        VK_COLOR_COMPONENT_B_BIT |
-        VK_COLOR_COMPONENT_A_BIT
+            .srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA,
+            .dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,
+            .colorBlendOp = VK_BLEND_OP_ADD,
+            .srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE,
+            .dstAlphaBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,
+            .alphaBlendOp = VK_BLEND_OP_ADD,
+            .colorWriteMask = VK_COLOR_COMPONENT_R_BIT |
+                VK_COLOR_COMPONENT_G_BIT |
+                VK_COLOR_COMPONENT_B_BIT |
+                VK_COLOR_COMPONENT_A_BIT
+        }
+    };
+
+    VkPipelineDepthStencilStateCreateInfo blendDepthAttachment
+    {
+        .sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO,
+        .depthTestEnable = VK_TRUE,
+        .depthWriteEnable = VK_TRUE,
+        .depthCompareOp = VK_COMPARE_OP_LESS,
+        .depthBoundsTestEnable = VK_FALSE,
+        .stencilTestEnable = VK_FALSE
     };
 
     VkPipelineRasterizationStateCreateInfo rasterizer{};
@@ -277,18 +245,18 @@ void FrameBufferRenderPass::BuildRenderPipeline()
     rasterizer.lineWidth = 1.0f;
     rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
     rasterizer.cullMode = VK_CULL_MODE_NONE;
-    rasterizer.polygonMode = buildPipelineInfo.VertexDescription.PolygonMode;
+    rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
     rasterizer.depthBiasEnable = VK_FALSE;
 
     VkPipelineMultisampleStateCreateInfo multisampling{};
     multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
     multisampling.sampleShadingEnable = VK_TRUE;
-    multisampling.rasterizationSamples = buildPipelineInfo.RenderPassDescription.sampleCount;
+    multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
 
     VkPipelineColorBlendStateCreateInfo colorBlending{};
     colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
-    colorBlending.attachmentCount = static_cast<uint32_t>(buildPipelineInfo.RenderPassDescription.ColorAttachments.size());
-    colorBlending.pAttachments = buildPipelineInfo.RenderPassDescription.ColorAttachments.data();
+    colorBlending.attachmentCount = static_cast<uint32_t>(blendAttachmentList.size());
+    colorBlending.pAttachments = blendAttachmentList.data();
 
     VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
     pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
@@ -309,17 +277,17 @@ void FrameBufferRenderPass::BuildRenderPipeline()
 
     VkGraphicsPipelineCreateInfo pipelineInfo{};
     pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
-    pipelineInfo.stageCount = static_cast<uint32_t>(buildPipelineInfo.RenderPassDescription.PipelineShaderStageList.size());
-    pipelineInfo.pStages = buildPipelineInfo.RenderPassDescription.PipelineShaderStageList.data();
+    pipelineInfo.stageCount = static_cast<uint32_t>(PipelineShaderStageList.size());
+    pipelineInfo.pStages = PipelineShaderStageList.data();
     pipelineInfo.pVertexInputState = &vertexInputInfo;
     pipelineInfo.pInputAssemblyState = &inputAssembly;
     pipelineInfo.pViewportState = &viewportState;
     pipelineInfo.pRasterizationState = &rasterizer;
     pipelineInfo.pMultisampleState = &multisampling;
-    pipelineInfo.pDepthStencilState = &buildPipelineInfo.RenderPassDescription.DepthStencilInfo;
+    pipelineInfo.pDepthStencilState = &blendDepthAttachment;
     pipelineInfo.pColorBlendState = &colorBlending;
     pipelineInfo.layout = ShaderPipelineLayout;
-    pipelineInfo.renderPass = buildPipelineInfo.RenderPassDescription.renderPass;
+    pipelineInfo.renderPass = RenderPassPtr;
     pipelineInfo.subpass = 0;
     pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 
@@ -329,7 +297,7 @@ void FrameBufferRenderPass::BuildRenderPipeline()
     }
 }
 
-void FrameBufferRenderPass::Draw()
+VkCommandBuffer FrameBufferRenderPass::Draw()
 {
     Renderer_StartFrame();
 
@@ -389,10 +357,14 @@ void FrameBufferRenderPass::Draw()
     vkCmdBeginRenderPass(CommandBufferList[global.Renderer.CommandIndex], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
     vkCmdSetViewport(CommandBufferList[global.Renderer.CommandIndex], 0, 1, &viewport);
     vkCmdSetScissor(CommandBufferList[global.Renderer.CommandIndex], 0, 1, &rect2D);
+    vkCmdBindPipeline(CommandBufferList[global.Renderer.CommandIndex], VK_PIPELINE_BIND_POINT_GRAPHICS, ShaderPipeline);
+    vkCmdBindDescriptorSets(CommandBufferList[global.Renderer.CommandIndex], VK_PIPELINE_BIND_POINT_GRAPHICS, ShaderPipelineLayout, 0, 1, &DescriptorSet, 0, nullptr);
+    vkCmdDraw(CommandBufferList[global.Renderer.CommandIndex], 6, 1, 0, 0);
     vkCmdEndRenderPass(CommandBufferList[global.Renderer.CommandIndex]);
     Renderer_EndCommandBuffer(&CommandBufferList[global.Renderer.CommandIndex]);
-
     Renderer_SubmitDraw(CommandBufferList.data());
+
+    return CommandBufferList[global.Renderer.CommandIndex];
 }
 
 void FrameBufferRenderPass::Destroy()

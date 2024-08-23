@@ -3,22 +3,22 @@
 #include "Global.h"
 
 static const char* DeviceExtensionList[] = { VK_KHR_SWAPCHAIN_EXTENSION_NAME,
-										     VK_KHR_MAINTENANCE3_EXTENSION_NAME,
-										     VK_KHR_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME,
-										     VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME,
-										     VK_KHR_SPIRV_1_4_EXTENSION_NAME,
-										     VK_KHR_SHADER_FLOAT_CONTROLS_EXTENSION_NAME,
-										     VK_KHR_SHADER_NON_SEMANTIC_INFO_EXTENSION_NAME};
+                                             VK_KHR_MAINTENANCE3_EXTENSION_NAME,
+                                             VK_KHR_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME,
+                                             VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME,
+                                             VK_KHR_SPIRV_1_4_EXTENSION_NAME,
+                                             VK_KHR_SHADER_FLOAT_CONTROLS_EXTENSION_NAME,
+                                             VK_KHR_SHADER_NON_SEMANTIC_INFO_EXTENSION_NAME };
 
 static const char* ValidationLayers[] = { "VK_LAYER_KHRONOS_validation" };
 
-static VkValidationFeatureEnableEXT enabledList[] = { VK_VALIDATION_FEATURE_ENABLE_DEBUG_PRINTF_EXT, 
-													  VK_VALIDATION_FEATURE_ENABLE_GPU_ASSISTED_RESERVE_BINDING_SLOT_EXT };
+static VkValidationFeatureEnableEXT enabledList[] = { VK_VALIDATION_FEATURE_ENABLE_DEBUG_PRINTF_EXT,
+                                                      VK_VALIDATION_FEATURE_ENABLE_GPU_ASSISTED_RESERVE_BINDING_SLOT_EXT };
 
 static VkValidationFeatureDisableEXT disabledList[] = { VK_VALIDATION_FEATURE_DISABLE_THREAD_SAFETY_EXT,
-														VK_VALIDATION_FEATURE_DISABLE_API_PARAMETERS_EXT,
-														VK_VALIDATION_FEATURE_DISABLE_OBJECT_LIFETIMES_EXT,
-														VK_VALIDATION_FEATURE_DISABLE_CORE_CHECKS_EXT };
+                                                        VK_VALIDATION_FEATURE_DISABLE_API_PARAMETERS_EXT,
+                                                        VK_VALIDATION_FEATURE_DISABLE_OBJECT_LIFETIMES_EXT,
+                                                        VK_VALIDATION_FEATURE_DISABLE_CORE_CHECKS_EXT };
 
 static bool Array_RendererExtensionPropertiesSearch(VkExtensionProperties* array, uint32_t arrayCount, const char* target)
 {
@@ -121,7 +121,7 @@ static VkPresentModeKHR* GetPresentModes(VkPhysicalDevice* physicalDevice)
 }
 
 static bool GetRayTracingSupport()
-{   
+{
     uint32_t deviceExtensionCount = INT32_MAX;
     VkExtensionProperties* deviceExtensions = GetDeviceExtensions(global.Renderer.PhysicalDevice, &deviceExtensionCount);
     VkPhysicalDeviceAccelerationStructureFeaturesKHR physicalDeviceAccelerationStructureFeatures =
@@ -129,13 +129,13 @@ static bool GetRayTracingSupport()
         .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR
     };
 
-    VkPhysicalDeviceRayTracingPipelineFeaturesKHR physicalDeviceRayTracingPipelineFeatures = 
+    VkPhysicalDeviceRayTracingPipelineFeaturesKHR physicalDeviceRayTracingPipelineFeatures =
     {
         .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR,
         .pNext = &physicalDeviceAccelerationStructureFeatures
     };
 
-    VkPhysicalDeviceFeatures2 physicalDeviceFeatures2 = 
+    VkPhysicalDeviceFeatures2 physicalDeviceFeatures2 =
     {
         .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2,
         .pNext = &physicalDeviceRayTracingPipelineFeatures
@@ -153,7 +153,7 @@ static bool GetRayTracingSupport()
 
             const char** extensions = malloc(sizeof(const char*) * (extensionCount + 3));
             SDL_Vulkan_GetInstanceExtensions(global.Window.SDLWindow, &extensionCount, extensions);
-            if (!extensions) 
+            if (!extensions)
             {
                 fprintf(stderr, "Failed to allocate memory for Vulkan.\n");
                 free(deviceExtensions);
@@ -314,11 +314,11 @@ void Renderer_RendererSetUp()
 #endif
 
     VkResult instanceResult = vkCreateInstance(&vulkanCreateInfo, NULL, &global.Renderer.Instance);
-    if (instanceResult != VK_SUCCESS) 
+    if (instanceResult != VK_SUCCESS)
     {
         Renderer_GetError(instanceResult);
         free(extensions);
-        return; 
+        return;
     }
 
 #ifdef NDEBUG
@@ -332,7 +332,7 @@ void Renderer_RendererSetUp()
     }
 #endif
 
-    if (!SDL_Vulkan_CreateSurface(global.Window.SDLWindow, global.Renderer.Instance, &global.Renderer.Surface)) 
+    if (!SDL_Vulkan_CreateSurface(global.Window.SDLWindow, global.Renderer.Instance, &global.Renderer.Surface))
     {
         fprintf(stderr, "Failed to create Vulkan surface: %s\n", SDL_GetError());
         Renderer_DestroyRenderer();
@@ -446,7 +446,7 @@ void Renderer_RendererSetUp()
 
     Vulkan_SetUpSwapChain();
 
-    VkCommandPoolCreateInfo CommandPoolCreateInfo = 
+    VkCommandPoolCreateInfo CommandPoolCreateInfo =
     {
         .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
         .flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
@@ -463,7 +463,7 @@ void Renderer_RendererSetUp()
         return;
     }
 
-    global.Renderer.InFlightFences = malloc(sizeof(VkFence)* MAX_FRAMES_IN_FLIGHT);
+    global.Renderer.InFlightFences = malloc(sizeof(VkFence) * MAX_FRAMES_IN_FLIGHT);
     VkSemaphoreTypeCreateInfo semaphoreTypeCreateInfo =
     {
         .sType = VK_STRUCTURE_TYPE_SEMAPHORE_TYPE_CREATE_INFO,
@@ -485,7 +485,7 @@ void Renderer_RendererSetUp()
         .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
         .flags = VK_FENCE_CREATE_SIGNALED_BIT
     };
-    
+
     for (size_t x = 0; x < MAX_FRAMES_IN_FLIGHT; x++)
     {
         if (vkCreateSemaphore(global.Renderer.Device, &semaphoreCreateInfo, NULL, &global.Renderer.AcquireImageSemaphores[x]) != VK_SUCCESS ||
@@ -517,7 +517,7 @@ void Renderer_CreateCommandBuffers(VkCommandBuffer* commandBufferList)
         };
 
         VkResult result = vkAllocateCommandBuffers(global.Renderer.Device, &commandBufferAllocateInfo, &commandBufferList[x]);
-        if (result != VK_SUCCESS) 
+        if (result != VK_SUCCESS)
         {
             fprintf(stderr, "Failed to create command buffers: %s\n", Renderer_GetError(result));
             Renderer_DestroyRenderer();
@@ -610,7 +610,7 @@ void Renderer_EndFrame(VkCommandBuffer* pCommandBufferSubmitList, uint32_t comma
         .pSignalSemaphores = &global.Renderer.PresentImageSemaphores[global.Renderer.CommandIndex]
     };
     VkResult QueueSubmit = vkQueueSubmit(global.Renderer.SwapChain.GraphicsQueue, 1, &SubmitInfo, global.Renderer.InFlightFences[global.Renderer.CommandIndex]);
-    if (QueueSubmit != VK_SUCCESS) 
+    if (QueueSubmit != VK_SUCCESS)
     {
         fprintf(stderr, "Failed to submit draw command buffer.\n");
         Renderer_DestroyRenderer();
@@ -643,7 +643,7 @@ void Renderer_EndFrame(VkCommandBuffer* pCommandBufferSubmitList, uint32_t comma
 void Renderer_BeginCommandBuffer(Renderer_BeginCommandBufferStruct* pBeginCommandBufferInfo)
 {
     VkResult result = vkBeginCommandBuffer(*pBeginCommandBufferInfo->pCommandBuffer, pBeginCommandBufferInfo->pCommandBufferBegin);
-    if (result != VK_SUCCESS) 
+    if (result != VK_SUCCESS)
     {
         fprintf(stderr, "Failed to begin recording command buffer.%s\n", Renderer_GetError(result));
         Renderer_DestroyRenderer();
@@ -701,8 +701,8 @@ void Renderer_SubmitDraw(VkCommandBuffer* pCommandBufferSubmitList)
         // RebuildSwapChain();
         return result;
     }
-    else if (result != VK_SUCCESS && 
-             result != VK_SUBOPTIMAL_KHR)
+    else if (result != VK_SUCCESS &&
+        result != VK_SUBOPTIMAL_KHR)
     {
         fprintf(stderr, "Failed to present swap chain image: %s\n", Renderer_GetError(QueueSubmit));
         Renderer_DestroyRenderer();
@@ -741,7 +741,7 @@ VkCommandBuffer Renderer_BeginSingleUseCommandBuffer()
         .commandBufferCount = 1
     };
     result = vkAllocateCommandBuffers(global.Renderer.Device, &allocInfo, &commandBuffer);
-    if(result)
+    if (result)
     {
         fprintf(stderr, "Failed to allocate command buffer: %s\n", Renderer_GetError(result));
         Renderer_DestroyRenderer();
@@ -773,7 +773,7 @@ VkResult Renderer_EndSingleUseCommandBuffer(VkCommandBuffer* commandBuffer)
         GameEngine_DestroyWindow();
     }
 
-    VkSubmitInfo submitInfo = 
+    VkSubmitInfo submitInfo =
     {
         .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
         .commandBufferCount = 1,

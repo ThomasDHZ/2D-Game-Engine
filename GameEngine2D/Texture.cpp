@@ -29,11 +29,6 @@ Texture::Texture()
 	SampleCount = VK_SAMPLE_COUNT_1_BIT;
 }
 
-Texture::Texture(TextureUsageEnum textureUsage)
-{
-	TextureUsage = TextureUsageEnum::kUse_Undefined;
-}
-
 Texture::Texture(const std::string& filePath, VkFormat textureByteFormat, TextureTypeEnum textureType)
 {
 	TextureBufferIndex = 0;

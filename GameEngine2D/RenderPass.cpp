@@ -20,8 +20,9 @@ void RenderPass::BuildRenderPass()
 {
 }
 
-void RenderPass::Draw()
+VkCommandBuffer RenderPass::Draw()
 {
+	return VK_NULL_HANDLE;
 }
 
 void RenderPass::Destroy()

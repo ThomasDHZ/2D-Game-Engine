@@ -13,7 +13,6 @@ RendereredColorTexture2D::RendereredColorTexture2D(glm::ivec2& textureResolution
     TextureByteFormat = format;
 
     Texture_CreateTextureImage(SendCTextureInfo().get());
-    Texture_GenerateMipmaps(SendCTextureInfo().get());
     CreateTextureView();
     CreateTextureSampler();
 

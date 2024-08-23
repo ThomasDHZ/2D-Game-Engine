@@ -22,6 +22,7 @@ static VkResult Buffer_AllocateMemory(struct BufferInfo* bufferInfo, VkMemoryPro
     {
         return VK_ERROR_OUT_OF_DEVICE_MEMORY;
     }
+    return VK_SUCCESS;
 }
 
 VkResult Buffer_CreateBuffer(struct BufferInfo* bufferInfo, void* BufferData, VkDeviceSize bufferSize, VkBufferUsageFlags bufferUsage, VkMemoryPropertyFlags properties) 

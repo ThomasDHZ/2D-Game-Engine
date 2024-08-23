@@ -92,7 +92,7 @@ void Vulkan_SetUpSwapChain()
 		SwapChainImageCount = surfaceCapabilities.maxImageCount;
 	}
 
-	VkSwapchainCreateInfoKHR SwapChainCreateInfo = 
+	VkSwapchainCreateInfoKHR SwapChainCreateInfo =
 	{
 		.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,
 		.surface = global.Renderer.Surface,

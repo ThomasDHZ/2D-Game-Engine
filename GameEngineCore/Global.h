@@ -7,6 +7,7 @@
 #include "GameController.h"
 #include "VulkanRenderer.h"
 
+
 typedef struct global {
     WindowState         Window;
     MouseState          Mouse;

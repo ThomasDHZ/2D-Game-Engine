@@ -1,4 +1,5 @@
 #pragma once
+#include <vulkan/vulkan.h>
 #include "RenderPass.h"
 #include "RendereredColorTexture2D.h"
 #include "vertex.h"
@@ -6,8 +7,8 @@
 class FrameBufferRenderPass : public RenderPass
 {
 private:
-	std::shared_ptr<RendereredColorTexture2D> RenderedTexture;
-	std::shared_ptr<RendereredColorTexture2D> BloomTexture;
+	std::shared_ptr<Texture> RenderedTexture;
+	std::shared_ptr<Texture> BloomTexture;
 
 	VkDescriptorPool DescriptorPool = VK_NULL_HANDLE;
 	VkDescriptorSetLayout DescriptorSetLayout = VK_NULL_HANDLE;
@@ -20,8 +21,8 @@ public:
 	FrameBufferRenderPass();
 	virtual ~FrameBufferRenderPass();
 
-	void BuildRenderPass(std::shared_ptr<RendereredColorTexture2D> renderedTexture);
+	void BuildRenderPass(std::shared_ptr<Texture> renderedTexture);
 	void BuildRenderPipeline();
-	void Draw();
+	VkCommandBuffer Draw();
 	void Destroy();
 };

@@ -14,7 +14,7 @@ VkPipelineShaderStageCreateInfo Shader_CreateShader(VkShaderModule shaderModule,
     return pipelineShaderStageCreateInfo;
 }
 
-VkShaderModule Shader_CompileGLSLShaderFile(const char* path)
+VkShaderModule Shader_BuildGLSLShaderFile(const char* path)
 {
     FileState file = File_Read(path);
 
@@ -22,7 +22,7 @@ VkShaderModule Shader_CompileGLSLShaderFile(const char* path)
     {
         .sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
         .codeSize = file.Size,
-        .pCode = (uint32_t)file.Data,
+        .pCode = (const uint32_t*)file.Data
     };
 
     VkShaderModule shaderModule = VK_NULL_HANDLE;

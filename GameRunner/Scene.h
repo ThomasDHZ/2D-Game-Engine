@@ -13,7 +13,7 @@ extern "C"
 class Scene
 {
 	private:
-		Texture texture;
+		std::shared_ptr<Texture> texture;
 		RendereredColorTexture2D rendereredColorTexture2D;
 		FrameBufferRenderPass frameRenderPass;
 	public:

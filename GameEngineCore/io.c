@@ -36,6 +36,24 @@ char* File_RemoveFileExtention(const char* fileName)
     return baseFileName;
 }
 
+char* File_GetFileExtention(const char* fileName)
+{
+    const char* dot = strrchr(fileName, '.');
+    if (!dot || dot == fileName) 
+    {
+        return NULL;
+    }
+
+    char* extension = (char*)malloc(strlen(dot));
+    if (extension == NULL) 
+    {
+        return NULL;
+    }
+
+    strcpy(extension, dot + 1);
+    return extension;
+}
+
 char* File_GetFileNameFromPath(const char* fileName)
 {
     char baseFileName[256];
