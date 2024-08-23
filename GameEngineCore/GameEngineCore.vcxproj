@@ -149,6 +149,7 @@
     <ClCompile Include="Mouse.c" />
     <ClCompile Include="CTexture.c" />
     <ClCompile Include="FrameTime.c" />
+    <ClCompile Include="Vertex.cpp" />
     <ClCompile Include="VulkanRenderer.c" />
     <ClCompile Include="VulkanSwapChain.c" />
     <ClCompile Include="Window.c" />
@@ -172,6 +173,7 @@
       <FileType>CppHeader</FileType>
     </ClInclude>
     <ClInclude Include="FrameTime.h" />
+    <ClInclude Include="Vertex.h" />
     <ClInclude Include="VulkanError.h" />
     <ClInclude Include="VulkanRenderer.h" />
     <ClInclude Include="VulkanRendererStruct.h" />

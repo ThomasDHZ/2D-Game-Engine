@@ -31,4 +31,6 @@ VkShaderModule Shader_CompileGLSLShaderFile(const char* path)
     {
         fprintf(stderr, "Failed to create shader module: \nFilePath: %s\n Error%s\n", path, result);
     }
+
+    return shaderModule;
 }

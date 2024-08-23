@@ -1,5 +1,6 @@
 #include "FrameBufferRenderPass.h"
 #include <Global.h>
+#include "ShaderCompiler.h"
 
 FrameBufferRenderPass::FrameBufferRenderPass() : RenderPass()
 {
@@ -9,39 +10,20 @@ FrameBufferRenderPass::~FrameBufferRenderPass()
 {
 }
 
-void FrameBufferRenderPass::BuildRenderPass()
+void FrameBufferRenderPass::BuildRenderPass(std::shared_ptr<RendereredColorTexture2D> renderedTexture)
 {
-    if (RenderPassPtr == VK_NULL_HANDLE)
-    {
-        ColorTexture = std::make_shared<RendereredColorTexture2D>(RendereredColorTexture2D(RenderPassResolution, VK_FORMAT_R8G8B8A8_UNORM));
-        BloomTexture = std::make_shared<RendereredColorTexture2D>(RendereredColorTexture2D(RenderPassResolution, VK_FORMAT_R8G8B8A8_UNORM));
-    }
-    else
-    {
-
-    }
+    RenderedTexture = renderedTexture;
 
     std::vector<VkImageView> TextureAttachmentList;
-    TextureAttachmentList.emplace_back(ColorTexture->View);
+    TextureAttachmentList.emplace_back(RenderedTexture->View);
     TextureAttachmentList.emplace_back(BloomTexture->View);
 
     std::vector<VkAttachmentDescription> attachmentDescriptionList
     {
         VkAttachmentDescription
             {
-                .format = ColorTexture->GetTextureByteFormat(),
-                .samples = ColorTexture->GetSampleCount(),
-                .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
-                .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
-                .stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-                .stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
-                .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-                .finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
-            },
-        VkAttachmentDescription
-            {
-                .format = BloomTexture->GetTextureByteFormat(),
-                .samples = BloomTexture->GetSampleCount(),
+                .format = RenderedTexture->GetTextureByteFormat(),
+                .samples = RenderedTexture->GetSampleCount(),
                 .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
                 .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
                 .stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
@@ -49,6 +31,17 @@ void FrameBufferRenderPass::BuildRenderPass()
                 .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
                 .finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
             }
+        //VkAttachmentDescription
+        //    {
+        //        .format = BloomTexture->GetTextureByteFormat(),
+        //        .samples = BloomTexture->GetSampleCount(),
+        //        .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
+        //        .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
+        //        .stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+        //        .stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
+        //        .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+        //        .finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
+        //    }
     };
 
     std::vector<VkAttachmentReference> colorRefsList
@@ -57,12 +50,12 @@ void FrameBufferRenderPass::BuildRenderPass()
         {
             .attachment = 0,
             .layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
-        },
-        VkAttachmentReference
-        {
-            .attachment = 1,
-            .layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
         }
+        //VkAttachmentReference
+        //{
+        //    .attachment = 1,
+        //    .layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+        //}
     };
 
     std::vector<VkAttachmentReference> multiSampleReferenceList{};
@@ -136,7 +129,7 @@ void FrameBufferRenderPass::BuildRenderPass()
     for (size_t x = 0; x < global.Renderer.SwapChain.SwapChainImageCount; x++)
     {
         std::vector<VkImageView> AttachmentList;
-        AttachmentList.emplace_back(ColorTexture->View);
+        AttachmentList.emplace_back(RenderedTexture->View);
         AttachmentList.emplace_back(BloomTexture->View);
 
         VkFramebufferCreateInfo framebufferInfo
@@ -157,14 +150,193 @@ void FrameBufferRenderPass::BuildRenderPass()
     Renderer_CreateFrameBuffer(&commandFrameBufferInfo);
 }
 
+void FrameBufferRenderPass::BuildRenderPipeline()
+{
+    std::vector<VkPipelineShaderStageCreateInfo> PipelineShaderStageList
+    {
+        ShaderCompiler::CompileGLSLShaderFile("../Shaders/FrameBufferVert.spv"),
+        ShaderCompiler::CompileGLSLShaderFile("../Shaders/FrameBufferFrag.spv")
+    };
+
+    std::vector<VkDescriptorImageInfo> ColorDescriptorImage
+    {
+        VkDescriptorImageInfo
+        {
+            .sampler = RenderedTexture->Sampler,
+            .imageView = RenderedTexture->View,
+            .imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
+        }
+    };
+
+    uint32_t variableDescCounts[] = { 1 };
+
+    VkDescriptorSetVariableDescriptorCountAllocateInfoEXT VariableDescriptorCountAllocateInfo
+    {
+        .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_VARIABLE_DESCRIPTOR_COUNT_ALLOCATE_INFO_EXT,
+        .descriptorSetCount = 1,
+        .pDescriptorCounts = variableDescCounts
+    };
+
+    std::vector<VkDescriptorPoolSize> DescriptorPoolBinding =
+    {
+        VkDescriptorPoolSize
+        {
+            .type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+            .descriptorCount = 1
+        }
+    };
+
+    VkDescriptorPoolCreateInfo poolInfo =
+    {
+        .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,
+        .maxSets = global.Renderer.SwapChain.SwapChainImageCount,
+        .poolSizeCount = static_cast<uint32_t>(DescriptorPoolBinding.size()),
+        .pPoolSizes = DescriptorPoolBinding.data(),
+    };
+
+    if (vkCreateDescriptorPool(global.Renderer.Device, &poolInfo, nullptr, &DescriptorPool) != VK_SUCCESS) {
+        throw std::runtime_error("Failed to create descriptor pool.");
+    }
+
+    std::vector<VkDescriptorSetLayoutBinding> LayoutBindingList =
+    {
+        VkDescriptorSetLayoutBinding
+        {
+            .binding = 0,
+            .descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+            .descriptorCount = static_cast<uint32_t>(ColorDescriptorImage.size()),
+            .stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT | VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR,
+            .pImmutableSamplers = nullptr,
+        }
+    };
+
+    VkDescriptorSetLayoutCreateInfo layoutInfo = {};
+    layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+    layoutInfo.bindingCount = static_cast<uint32_t>(LayoutBindingList.size());
+    layoutInfo.pBindings = LayoutBindingList.data();
+
+    if (vkCreateDescriptorSetLayout(global.Renderer.Device, &layoutInfo, nullptr, &DescriptorSetLayout) != VK_SUCCESS) {
+        throw std::runtime_error("Failed to create descriptor set layout.");
+    }
+
+    VkDescriptorSetAllocateInfo allocInfo = {};
+    allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+    allocInfo.descriptorPool = DescriptorPool;
+    allocInfo.descriptorSetCount = 1;
+    allocInfo.pSetLayouts = &DescriptorSetLayout;
+    allocInfo.pNext = &VariableDescriptorCountAllocateInfo;
+
+    VkDescriptorSet DescriptorSets;
+    if (vkAllocateDescriptorSets(global.Renderer.Device, &allocInfo, &DescriptorSets) != VK_SUCCESS) {
+        throw std::runtime_error("Failed to allocate descriptor sets.");
+    }
+
+    std::vector<VkVertexInputBindingDescription> bindingDescriptions
+    {
+        Vertex2D::GetBindingDescriptions()
+    };
+    std::vector<VkVertexInputAttributeDescription> attributeDescriptions
+    {
+        Vertex2D::GetAttributeDescriptions()
+    };
+
+    VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
+    vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+    vertexInputInfo.vertexBindingDescriptionCount = static_cast<uint32_t>(bindingDescriptions.size());
+    vertexInputInfo.pVertexBindingDescriptions = bindingDescriptions.data();
+    vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
+    vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
+
+    VkPipelineInputAssemblyStateCreateInfo inputAssembly = {};
+    inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+    inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+    inputAssembly.primitiveRestartEnable = VK_FALSE;
+
+    VkPipelineViewportStateCreateInfo viewportState{};
+    viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+
+    VkPipelineColorBlendAttachmentState blendAttachment = 
+    {
+            .blendEnable = VK_TRUE,
+    .srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA,
+    .dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,
+    .colorBlendOp = VK_BLEND_OP_ADD,
+    .srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE,
+    .dstAlphaBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,
+    .alphaBlendOp = VK_BLEND_OP_ADD,
+    .colorWriteMask = VK_COLOR_COMPONENT_R_BIT |
+        VK_COLOR_COMPONENT_G_BIT |
+        VK_COLOR_COMPONENT_B_BIT |
+        VK_COLOR_COMPONENT_A_BIT
+    };
+
+    VkPipelineRasterizationStateCreateInfo rasterizer{};
+    rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+    rasterizer.depthClampEnable = VK_FALSE;
+    rasterizer.rasterizerDiscardEnable = VK_FALSE;
+    rasterizer.lineWidth = 1.0f;
+    rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
+    rasterizer.cullMode = VK_CULL_MODE_NONE;
+    rasterizer.polygonMode = buildPipelineInfo.VertexDescription.PolygonMode;
+    rasterizer.depthBiasEnable = VK_FALSE;
+
+    VkPipelineMultisampleStateCreateInfo multisampling{};
+    multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+    multisampling.sampleShadingEnable = VK_TRUE;
+    multisampling.rasterizationSamples = buildPipelineInfo.RenderPassDescription.sampleCount;
+
+    VkPipelineColorBlendStateCreateInfo colorBlending{};
+    colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+    colorBlending.attachmentCount = static_cast<uint32_t>(buildPipelineInfo.RenderPassDescription.ColorAttachments.size());
+    colorBlending.pAttachments = buildPipelineInfo.RenderPassDescription.ColorAttachments.data();
+
+    VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
+    pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+    pipelineLayoutInfo.setLayoutCount = 1;
+    pipelineLayoutInfo.pSetLayouts = &DescriptorSetLayout;
+
+    //pipelineLayoutInfo.pushConstantRangeCount = 1;
+
+    //VkPushConstantRange pushConstantRange{};
+    //pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+    //pushConstantRange.offset = 0;
+    //pushConstantRange.size = buildPipelineInfo.RenderPassDescription.ConstBufferSize;
+    //pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
+
+    if (vkCreatePipelineLayout(global.Renderer.Device, &pipelineLayoutInfo, nullptr, &ShaderPipelineLayout) != VK_SUCCESS) {
+        throw std::runtime_error("Failed to create pipeline layout.");
+    }
+
+    VkGraphicsPipelineCreateInfo pipelineInfo{};
+    pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+    pipelineInfo.stageCount = static_cast<uint32_t>(buildPipelineInfo.RenderPassDescription.PipelineShaderStageList.size());
+    pipelineInfo.pStages = buildPipelineInfo.RenderPassDescription.PipelineShaderStageList.data();
+    pipelineInfo.pVertexInputState = &vertexInputInfo;
+    pipelineInfo.pInputAssemblyState = &inputAssembly;
+    pipelineInfo.pViewportState = &viewportState;
+    pipelineInfo.pRasterizationState = &rasterizer;
+    pipelineInfo.pMultisampleState = &multisampling;
+    pipelineInfo.pDepthStencilState = &buildPipelineInfo.RenderPassDescription.DepthStencilInfo;
+    pipelineInfo.pColorBlendState = &colorBlending;
+    pipelineInfo.layout = ShaderPipelineLayout;
+    pipelineInfo.renderPass = buildPipelineInfo.RenderPassDescription.renderPass;
+    pipelineInfo.subpass = 0;
+    pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
+
+    VkResult result = vkCreateGraphicsPipelines(global.Renderer.Device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &ShaderPipeline);
+    if (result != VK_SUCCESS) {
+        throw std::runtime_error("Failed to create pipeline.");
+    }
+}
+
 void FrameBufferRenderPass::Draw()
 {
     Renderer_StartFrame();
 
     std::vector<VkClearValue> clearValues
     {
-        VkClearValue{.color = { {0.0f, 0.0f, 0.0f, 1.0f} } },
-        VkClearValue{.color = { {0.0f, 0.0f, 0.0f, 1.0f} } },
+        VkClearValue{.color = { {0.0f, 0.0f, 0.0f, 1.0f} } }
+        //VkClearValue{.color = { {0.0f, 0.0f, 0.0f, 1.0f} } },
     };
 
     VkViewport viewport

@@ -73,6 +73,10 @@
     <ClInclude Include="Texture.h" />
     <ClInclude Include="VulkanBuffer.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Shaders\FrameBufferShader.frag" />
+    <None Include="..\Shaders\FrameBufferShader.vert" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
