@@ -18,16 +18,17 @@ void FrameBufferRenderPass::BuildRenderPass(std::shared_ptr<Texture> texture)
     std::vector<VkAttachmentDescription> attachmentDescriptionList
     {
         VkAttachmentDescription
-            {
-                .format = VK_FORMAT_B8G8R8A8_UNORM,
-                .samples = VK_SAMPLE_COUNT_1_BIT,
-                .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
-                .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
-                .stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-                .stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
-                .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-                .finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
-            }
+        {
+            .format = VK_FORMAT_R8G8B8A8_UNORM,
+            .samples = VK_SAMPLE_COUNT_1_BIT,
+            .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
+            .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
+            .stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+            .stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
+            .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+            // Keep this layout as the expected final layout after rendering
+            .finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR
+        }
     };
 
     std::vector<VkAttachmentReference> colorRefsList
@@ -123,15 +124,6 @@ void FrameBufferRenderPass::BuildRenderPipeline()
         }
     };
 
-    uint32_t variableDescCounts[] = { 1 };
-
-    VkDescriptorSetVariableDescriptorCountAllocateInfoEXT VariableDescriptorCountAllocateInfo
-    {
-        .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_VARIABLE_DESCRIPTOR_COUNT_ALLOCATE_INFO_EXT,
-        .descriptorSetCount = 1,
-        .pDescriptorCounts = variableDescCounts
-    };
-
     std::vector<VkDescriptorPoolSize> DescriptorPoolBinding =
     {
         VkDescriptorPoolSize
@@ -155,14 +147,8 @@ void FrameBufferRenderPass::BuildRenderPipeline()
 
     std::vector<VkDescriptorSetLayoutBinding> LayoutBindingList =
     {
-        VkDescriptorSetLayoutBinding
-        {
-            .binding = 0,
-            .descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-            .descriptorCount = static_cast<uint32_t>(ColorDescriptorImage.size()),
-            .stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT | VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR,
-            .pImmutableSamplers = nullptr,
-        }
+        { 0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr },
+        { 1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr }, // Add this line for binding 1
     };
 
     VkDescriptorSetLayoutCreateInfo layoutInfo = {};
@@ -179,20 +165,36 @@ void FrameBufferRenderPass::BuildRenderPipeline()
     allocInfo.descriptorPool = DescriptorPool;
     allocInfo.descriptorSetCount = 1;
     allocInfo.pSetLayouts = &DescriptorSetLayout;
-    allocInfo.pNext = &VariableDescriptorCountAllocateInfo;
 
-    VkDescriptorSet DescriptorSets;
-    if (vkAllocateDescriptorSets(global.Renderer.Device, &allocInfo, &DescriptorSets) != VK_SUCCESS) {
+    if (vkAllocateDescriptorSets(global.Renderer.Device, &allocInfo, &DescriptorSet) != VK_SUCCESS) {
         throw std::runtime_error("Failed to allocate descriptor sets.");
     }
 
-    std::vector<VkVertexInputBindingDescription> bindingDescriptions
+    for (size_t x = 0; x < global.Renderer.SwapChain.SwapChainImageCount; x++)
     {
-        Vertex2D::GetBindingDescriptions()
+        std::vector<VkWriteDescriptorSet> descriptorSets
+        {
+            VkWriteDescriptorSet
+            {
+                .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+                .dstSet = DescriptorSet,
+                .dstBinding = 0,
+                .dstArrayElement = 0,
+                .descriptorCount = 1,
+                .descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+                .pImageInfo = ColorDescriptorImage.data(),
+            }
+        };
+        vkUpdateDescriptorSets(global.Renderer.Device, static_cast<uint32_t>(descriptorSets.size()), descriptorSets.data(), 0, nullptr);
+    }
+
+  /*  std::vector<VkVertexInputBindingDescription> bindingDescriptions
+    {
+        Vertex2D::getBindingDescriptions()
     };
     std::vector<VkVertexInputAttributeDescription> attributeDescriptions
     {
-        Vertex2D::GetAttributeDescriptions()
+        Vertex2D::getAttributeDescriptions()
     };
 
     VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
@@ -200,15 +202,34 @@ void FrameBufferRenderPass::BuildRenderPipeline()
     vertexInputInfo.vertexBindingDescriptionCount = static_cast<uint32_t>(bindingDescriptions.size());
     vertexInputInfo.pVertexBindingDescriptions = bindingDescriptions.data();
     vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
-    vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
+    vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();*/
+
+    VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
+    vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 
     VkPipelineInputAssemblyStateCreateInfo inputAssembly = {};
     inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
     inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
     inputAssembly.primitiveRestartEnable = VK_FALSE;
 
+    VkViewport viewport{};
+    viewport.x = 0.0f;
+    viewport.y = 0.0f;
+    viewport.width = (float)RenderPassResolution.x;
+    viewport.height = (float)RenderPassResolution.y;
+    viewport.minDepth = 0.0f;
+    viewport.maxDepth = 1.0f;
+
+    VkRect2D rect2D{};
+    rect2D.offset = { 0, 0 };
+    rect2D.extent = { (uint32_t)RenderPassResolution.x, (uint32_t)RenderPassResolution.y };
+
     VkPipelineViewportStateCreateInfo viewportState{};
     viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+    viewportState.scissorCount = 1;
+    viewportState.pScissors = &rect2D;
+    viewportState.viewportCount = 1;
+    viewportState.pViewports = &viewport;
 
     std::vector<VkPipelineColorBlendAttachmentState> blendAttachmentList
     {
@@ -349,11 +370,13 @@ VkCommandBuffer FrameBufferRenderPass::Draw()
 
     Renderer_BeginCommandBufferStruct beginCommandBuffer
     {
-        .pCommandBuffer = &CommandBufferList[global.Renderer.CommandIndex],
+        .pCommandBuffer = &CommandBufferList[global.Renderer.ImageIndex],
         .pCommandBufferBegin = &CommandBufferBeginInfo,
     };
 
-    Renderer_BeginCommandBuffer(&beginCommandBuffer);
+
+    VkResult result = vkBeginCommandBuffer(CommandBufferList[global.Renderer.CommandIndex], &CommandBufferBeginInfo);
+    // Renderer_BeginCommandBuffer(&beginCommandBuffer);
     vkCmdBeginRenderPass(CommandBufferList[global.Renderer.CommandIndex], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
     vkCmdSetViewport(CommandBufferList[global.Renderer.CommandIndex], 0, 1, &viewport);
     vkCmdSetScissor(CommandBufferList[global.Renderer.CommandIndex], 0, 1, &rect2D);
@@ -362,7 +385,7 @@ VkCommandBuffer FrameBufferRenderPass::Draw()
     vkCmdDraw(CommandBufferList[global.Renderer.CommandIndex], 6, 1, 0, 0);
     vkCmdEndRenderPass(CommandBufferList[global.Renderer.CommandIndex]);
     Renderer_EndCommandBuffer(&CommandBufferList[global.Renderer.CommandIndex]);
-    Renderer_SubmitDraw(CommandBufferList.data());
+    //Renderer_SubmitDraw(CommandBufferList.data());
 
     return CommandBufferList[global.Renderer.CommandIndex];
 }

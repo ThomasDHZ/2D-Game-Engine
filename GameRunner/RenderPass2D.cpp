@@ -178,7 +178,6 @@ VkCommandBuffer RenderPass2D::Draw()
     vkCmdSetScissor(CommandBufferList[global.Renderer.CommandIndex], 0, 1, &rect2D);
     vkCmdEndRenderPass(CommandBufferList[global.Renderer.CommandIndex]);
     Renderer_EndCommandBuffer(&CommandBufferList[global.Renderer.CommandIndex]);
-
     Renderer_SubmitDraw(CommandBufferList.data());
 
     return CommandBufferList[global.Renderer.CommandIndex];

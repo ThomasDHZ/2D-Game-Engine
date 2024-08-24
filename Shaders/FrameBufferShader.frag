@@ -4,7 +4,6 @@
 #extension GL_EXT_debug_printf : enable
 
 layout(binding = 0) uniform sampler2D FrameBufferTexture;
-layout(binding = 1) uniform sampler2D BloomTexture;
 
 layout(location = 0) in vec2 TexCoords;
 layout(location = 0) out vec4 outColor;
@@ -15,7 +14,6 @@ const float Exposure = 1.0f;
 void main() 
 {
     vec3 Color = texture(FrameBufferTexture, TexCoords).rgb;
-    vec3 Bloom = texture(BloomTexture, TexCoords).rgb;
-    vec3 result = Color + Bloom;
+    vec3 result = Color;
     outColor = vec4(result, 1.0f);
 }
