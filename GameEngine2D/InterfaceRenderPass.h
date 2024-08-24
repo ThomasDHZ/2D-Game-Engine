@@ -195,7 +195,7 @@ public:
         ImGui_ImplVulkan_CreateFontsTexture();
     }
 
-    static void Draw()
+    static VkCommandBuffer Draw()
     {
         VkCommandBufferBeginInfo beginInfo{};
         beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -240,6 +240,8 @@ public:
             Renderer_DestroyRenderer();
             GameEngine_DestroyWindow();
         }
+
+        return ImGuiCommandBuffers[global.Renderer.CommandIndex];
     }
 
     static void RebuildSwapChain()

@@ -580,15 +580,16 @@ void Renderer_StartFrame()
     vkWaitForFences(global.Renderer.Device, 1, &global.Renderer.InFlightFences[global.Renderer.CommandIndex], VK_TRUE, UINT64_MAX);
     vkResetFences(global.Renderer.Device, 1, &global.Renderer.InFlightFences[global.Renderer.CommandIndex]);
 
-    VkResult result = vkAcquireNextImageKHR(global.Renderer.Device, global.Renderer.SwapChain.Swapchain, UINT64_MAX, global.Renderer.AcquireImageSemaphores[global.Renderer.CommandIndex], VK_NULL_HANDLE, &global.Renderer.ImageIndex);
-    if (result == VK_ERROR_OUT_OF_DATE_KHR)
-    {
+    VkSemaphore imageAvailableSemaphore = global.Renderer.AcquireImageSemaphores[global.Renderer.CommandIndex];
+    VkSemaphore renderFinishedSemaphore = global.Renderer.PresentImageSemaphores[global.Renderer.CommandIndex];
+
+    VkResult result = vkAcquireNextImageKHR(global.Renderer.Device, global.Renderer.SwapChain.Swapchain, UINT64_MAX, imageAvailableSemaphore, VK_NULL_HANDLE, &global.Renderer.ImageIndex);
+    if (result == VK_ERROR_OUT_OF_DATE_KHR) {
         Renderer_RebuildSwapChain();
-        return result;
+        return;
     }
-    else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
-    {
-        fprintf(stderr, "Failed to create synchronization objects for a frame. %s\n", Renderer_GetError(result));
+    else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
+        fprintf(stderr, "Failed to acquire swap chain image: %s\n", Renderer_GetError(result));
         Renderer_DestroyRenderer();
         GameEngine_DestroyWindow();
     }
@@ -598,37 +599,39 @@ void Renderer_EndFrame(VkCommandBuffer* pCommandBufferSubmitList, uint32_t comma
 {
     VkPipelineStageFlags waitStages[] =
     {
-        VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT // Stage before signaling the semaphore
+        VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
     };
 
-    VkSubmitInfo SubmitInfo;
-    SubmitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-    SubmitInfo.waitSemaphoreCount = 1;
-    SubmitInfo.pWaitSemaphores = &global.Renderer.AcquireImageSemaphores[global.Renderer.CommandIndex];
-    SubmitInfo.pWaitDstStageMask = waitStages;
-    SubmitInfo.commandBufferCount = commandBufferCount;
-    SubmitInfo.pCommandBuffers = pCommandBufferSubmitList;
-    SubmitInfo.signalSemaphoreCount = 1;
-    SubmitInfo.pSignalSemaphores = &global.Renderer.AcquireImageSemaphores[global.Renderer.ImageIndex];
-    VkResult QueueSubmit = vkQueueSubmit(global.Renderer.SwapChain.GraphicsQueue, 1, &SubmitInfo, global.Renderer.InFlightFences[global.Renderer.CommandIndex]);
-    if (QueueSubmit != VK_SUCCESS)
+    VkSubmitInfo submitInfo = 
     {
-        fprintf(stderr, "Failed to submit draw command buffer: %s\n", Renderer_GetError(QueueSubmit));
+        .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+        .waitSemaphoreCount = 1,
+        .pWaitSemaphores = &global.Renderer.AcquireImageSemaphores[global.Renderer.CommandIndex], 
+        .pWaitDstStageMask = waitStages, 
+        .commandBufferCount = commandBufferCount,
+        .pCommandBuffers = pCommandBufferSubmitList,
+        .signalSemaphoreCount = 1,
+        .pSignalSemaphores = &global.Renderer.PresentImageSemaphores[global.Renderer.ImageIndex] 
+    };
+
+    VkResult queueSubmitResult = vkQueueSubmit(global.Renderer.SwapChain.GraphicsQueue, 1, &submitInfo, global.Renderer.InFlightFences[global.Renderer.CommandIndex]);
+    if (queueSubmitResult != VK_SUCCESS)
+    {
         Renderer_DestroyRenderer();
         GameEngine_DestroyWindow();
         return;
     }
 
-    // Present info
-    VkPresentInfoKHR presentInfo;
-    presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
-    presentInfo.waitSemaphoreCount = 1;
-    presentInfo.pWaitSemaphores = &global.Renderer.PresentImageSemaphores[global.Renderer.ImageIndex];
-    presentInfo.swapchainCount = 1;
-    presentInfo.pSwapchains = &global.Renderer.SwapChain.Swapchain;
-    presentInfo.pImageIndices = &global.Renderer.ImageIndex;
+    VkPresentInfoKHR presentInfo = 
+    {
+        .sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
+        .waitSemaphoreCount = 1,
+        .pWaitSemaphores = &global.Renderer.PresentImageSemaphores[global.Renderer.ImageIndex],
+        .swapchainCount = 1,
+        .pSwapchains = &global.Renderer.SwapChain.Swapchain,
+        .pImageIndices = &global.Renderer.ImageIndex,
+    };
 
-    // Present the frame
     VkResult presentResult = vkQueuePresentKHR(global.Renderer.SwapChain.PresentQueue, &presentInfo);
     if (presentResult == VK_ERROR_OUT_OF_DATE_KHR || presentResult == VK_SUBOPTIMAL_KHR)
     {
@@ -636,7 +639,6 @@ void Renderer_EndFrame(VkCommandBuffer* pCommandBufferSubmitList, uint32_t comma
     }
     else if (presentResult != VK_SUCCESS)
     {
-        fprintf(stderr, "Failed to present swap chain image: %s\n", Renderer_GetError(presentResult));
         Renderer_DestroyRenderer();
         GameEngine_DestroyWindow();
     }

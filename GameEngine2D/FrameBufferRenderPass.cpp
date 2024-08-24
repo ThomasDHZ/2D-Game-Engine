@@ -320,8 +320,6 @@ void FrameBufferRenderPass::BuildRenderPipeline()
 
 VkCommandBuffer FrameBufferRenderPass::Draw()
 {
-    Renderer_StartFrame();
-
     std::vector<VkClearValue> clearValues
     {
         VkClearValue{.color = { {0.0f, 0.0f, 0.0f, 1.0f} } }
