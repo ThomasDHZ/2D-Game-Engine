@@ -24,5 +24,5 @@ public:
 	void BuildRenderPass(std::shared_ptr<Texture> renderedTexture);
 	void BuildRenderPipeline();
 	VkCommandBuffer Draw();
-	void Destroy();
+	void Destroy() override;
 };

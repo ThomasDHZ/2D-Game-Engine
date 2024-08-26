@@ -57,6 +57,15 @@ Texture::Texture(const std::string& filePath, VkFormat textureByteFormat, Textur
 
 Texture::~Texture()
 {
+
+}
+
+void Texture::Destroy()
+{
+	Renderer_DestroyImageView(&View);
+	Renderer_DestroyImage(&Image);
+	Renderer_FreeMemory(&Memory);
+	Renderer_DestroySampler(&Sampler);
 }
 
 void Texture::CreateImageTexture(const std::string& FilePath)

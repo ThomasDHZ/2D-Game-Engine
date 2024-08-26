@@ -516,13 +516,7 @@ void Renderer_CreateCommandBuffers(VkCommandBuffer* commandBufferList)
             .commandBufferCount = 1
         };
 
-        VkResult result = vkAllocateCommandBuffers(global.Renderer.Device, &commandBufferAllocateInfo, &commandBufferList[x]);
-        if (result != VK_SUCCESS)
-        {
-            fprintf(stderr, "Failed to create command buffers: %s\n", Renderer_GetError(result));
-            Renderer_DestroyRenderer();
-            GameEngine_DestroyWindow();
-        }
+        VULKAN_RESULT(vkAllocateCommandBuffers(global.Renderer.Device, &commandBufferAllocateInfo, &commandBufferList[x]));
     }
 }
 
@@ -530,13 +524,7 @@ void Renderer_CreateFrameBuffer(Renderer_CommandFrameBufferInfoStruct* createCom
 {
     for (size_t x = 0; x < global.Renderer.SwapChain.SwapChainImageCount; x++)
     {
-        VkResult result = vkCreateFramebuffer(global.Renderer.Device, &createCommandBufferInfo->FrameBufferCreateInfo, NULL, &createCommandBufferInfo->pFrameBuffer[x]);
-        if (result != VK_SUCCESS)
-        {
-            fprintf(stderr, "Failed to create frame buffers: %s\n", Renderer_GetError(result));
-            Renderer_DestroyRenderer();
-            GameEngine_DestroyWindow();
-        }
+        VULKAN_RESULT(vkCreateFramebuffer(global.Renderer.Device, &createCommandBufferInfo->FrameBufferCreateInfo, NULL, &createCommandBufferInfo->pFrameBuffer[x]));
     }
 }
 
@@ -552,19 +540,12 @@ void Renderer_CreateRenderPass(Renderer_RenderPassCreateInfoStruct* renderPassCr
         .dependencyCount = renderPassCreateInfo->DependencyCount,
         .pDependencies = renderPassCreateInfo->pSubpassDependencyList
     };
-
-    VkResult result = vkCreateRenderPass(global.Renderer.Device, &renderPassInfo, NULL, renderPassCreateInfo->pRenderPass);
-    if (result)
-    {
-        fprintf(stderr, "Failed to create render pass:%s\n", Renderer_GetError(result));
-        Renderer_DestroyRenderer();
-        GameEngine_DestroyWindow();
-    }
+    VULKAN_RESULT(vkCreateRenderPass(global.Renderer.Device, &renderPassInfo, NULL, renderPassCreateInfo->pRenderPass));
 }
 
 void Renderer_RebuildSwapChain()
 {
-    vkDeviceWaitIdle(global.Renderer.Device);
+    VULKAN_RESULT(vkDeviceWaitIdle(global.Renderer.Device));
 
     global.Renderer.RebuildSwapChainFlag = true;
     Vulkan_DestroyImageView();
@@ -613,14 +594,7 @@ void Renderer_EndFrame(VkCommandBuffer* pCommandBufferSubmitList, uint32_t comma
         .signalSemaphoreCount = 1,
         .pSignalSemaphores = &global.Renderer.PresentImageSemaphores[global.Renderer.ImageIndex] 
     };
-
-    VkResult queueSubmitResult = vkQueueSubmit(global.Renderer.SwapChain.GraphicsQueue, 1, &submitInfo, global.Renderer.InFlightFences[global.Renderer.CommandIndex]);
-    if (queueSubmitResult != VK_SUCCESS)
-    {
-        Renderer_DestroyRenderer();
-        GameEngine_DestroyWindow();
-        return;
-    }
+    VULKAN_RESULT(vkQueueSubmit(global.Renderer.SwapChain.GraphicsQueue, 1, &submitInfo, global.Renderer.InFlightFences[global.Renderer.CommandIndex]));
 
     VkPresentInfoKHR presentInfo = 
     {
@@ -646,24 +620,12 @@ void Renderer_EndFrame(VkCommandBuffer* pCommandBufferSubmitList, uint32_t comma
 
 void Renderer_BeginCommandBuffer(Renderer_BeginCommandBufferStruct* pBeginCommandBufferInfo)
 {
-    VkResult result = vkBeginCommandBuffer(*pBeginCommandBufferInfo->pCommandBuffer, pBeginCommandBufferInfo->pCommandBufferBegin);
-    if (result != VK_SUCCESS)
-    {
-        fprintf(stderr, "Failed to begin recording command buffer.%s\n", Renderer_GetError(result));
-        Renderer_DestroyRenderer();
-        GameEngine_DestroyWindow();
-    }
+    VULKAN_RESULT(vkBeginCommandBuffer(*pBeginCommandBufferInfo->pCommandBuffer, pBeginCommandBufferInfo->pCommandBufferBegin));
 }
 
 void Renderer_EndCommandBuffer(VkCommandBuffer* pCommandBuffer)
 {
-    VkResult result = vkEndCommandBuffer(*pCommandBuffer);
-    if (result != VK_SUCCESS)
-    {
-        fprintf(stderr, "Failed to record command buffer.%s\n", Renderer_GetError(result));
-        Renderer_DestroyRenderer();
-        GameEngine_DestroyWindow();
-    }
+    VULKAN_RESULT(vkEndCommandBuffer(*pCommandBuffer));
 }
 
 void Renderer_SubmitDraw(VkCommandBuffer* pCommandBufferSubmitList)
@@ -681,14 +643,7 @@ void Renderer_SubmitDraw(VkCommandBuffer* pCommandBufferSubmitList)
         .signalSemaphoreCount = 1,
         .pSignalSemaphores = &global.Renderer.PresentImageSemaphores[global.Renderer.ImageIndex],
     };
-
-    VkResult QueueSubmit = vkQueueSubmit(global.Renderer.SwapChain.GraphicsQueue, 1, &SubmitInfo, global.Renderer.InFlightFences[global.Renderer.CommandIndex]);
-    if (QueueSubmit != VK_SUCCESS)
-    {
-        fprintf(stderr, "Failed to submit draw command buffer: %s\n", Renderer_GetError(QueueSubmit));
-        Renderer_DestroyRenderer();
-        GameEngine_DestroyWindow();
-    }
+    VULKAN_RESULT(vkQueueSubmit(global.Renderer.SwapChain.GraphicsQueue, 1, &SubmitInfo, global.Renderer.InFlightFences[global.Renderer.CommandIndex]));
 
     VkPresentInfoKHR PresentInfoKHR =
     {
@@ -708,7 +663,7 @@ void Renderer_SubmitDraw(VkCommandBuffer* pCommandBufferSubmitList)
     else if (result != VK_SUCCESS &&
         result != VK_SUBOPTIMAL_KHR)
     {
-        fprintf(stderr, "Failed to present swap chain image: %s\n", Renderer_GetError(QueueSubmit));
+        fprintf(stderr, "Failed to present swap chain image: %s\n", Renderer_GetError(result));
         Renderer_DestroyRenderer();
         GameEngine_DestroyWindow();
     }
@@ -735,7 +690,6 @@ uint32_t Renderer_GetMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags prope
 
 VkCommandBuffer Renderer_BeginSingleUseCommandBuffer()
 {
-    VkResult result = VK_RESULT_MAX_ENUM;
     VkCommandBuffer commandBuffer = VK_NULL_HANDLE;
     VkCommandBufferAllocateInfo allocInfo =
     {
@@ -744,38 +698,20 @@ VkCommandBuffer Renderer_BeginSingleUseCommandBuffer()
         .commandPool = global.Renderer.CommandPool,
         .commandBufferCount = 1
     };
-    result = vkAllocateCommandBuffers(global.Renderer.Device, &allocInfo, &commandBuffer);
-    if (result)
-    {
-        fprintf(stderr, "Failed to allocate command buffer: %s\n", Renderer_GetError(result));
-        Renderer_DestroyRenderer();
-        GameEngine_DestroyWindow();
-    }
+    VULKAN_RESULT(vkAllocateCommandBuffers(global.Renderer.Device, &allocInfo, &commandBuffer));
 
     VkCommandBufferBeginInfo beginInfo =
     {
         .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
         .flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT
     };
-    result = vkBeginCommandBuffer(commandBuffer, &beginInfo);
-    if (result)
-    {
-        fprintf(stderr, "Failed to submit command buffer: %s\n", Renderer_GetError(result));
-        Renderer_DestroyRenderer();
-        GameEngine_DestroyWindow();
-    }
+    VULKAN_RESULT(vkBeginCommandBuffer(commandBuffer, &beginInfo));
     return commandBuffer;
 }
 
 VkResult Renderer_EndSingleUseCommandBuffer(VkCommandBuffer* commandBuffer)
 {
-    VkResult result = vkEndCommandBuffer(commandBuffer);
-    if (result)
-    {
-        fprintf(stderr, "Failed to end command buffer: %s\n", Renderer_GetError(result));
-        Renderer_DestroyRenderer();
-        GameEngine_DestroyWindow();
-    }
+    VULKAN_RESULT(vkEndCommandBuffer(commandBuffer));
 
     VkSubmitInfo submitInfo =
     {
@@ -783,24 +719,10 @@ VkResult Renderer_EndSingleUseCommandBuffer(VkCommandBuffer* commandBuffer)
         .commandBufferCount = 1,
         .pCommandBuffers = &commandBuffer
     };
-    result = vkQueueSubmit(global.Renderer.SwapChain.GraphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
-    if (result)
-    {
-        fprintf(stderr, "Failed to submit queue: %s\n", Renderer_GetError(result));
-        Renderer_DestroyRenderer();
-        GameEngine_DestroyWindow();
-    }
-
-    result = vkQueueWaitIdle(global.Renderer.SwapChain.GraphicsQueue);
-    if (result)
-    {
-        fprintf(stderr, "Failed to get response: %s\n", Renderer_GetError(result));
-        Renderer_DestroyRenderer();
-        GameEngine_DestroyWindow();
-    }
-
+    VULKAN_RESULT(vkQueueSubmit(global.Renderer.SwapChain.GraphicsQueue, 1, &submitInfo, VK_NULL_HANDLE));
+    VULKAN_RESULT(vkQueueWaitIdle(global.Renderer.SwapChain.GraphicsQueue));
     vkFreeCommandBuffers(global.Renderer.Device, global.Renderer.CommandPool, 1, &commandBuffer);
-    return result;
+    return VK_SUCCESS;
 }
 
 void Renderer_DestroyRenderer()
@@ -908,12 +830,12 @@ void Renderer_DestroyDescriptorPool(VkDescriptorPool* descriptorPool)
     }
 }
 
-void Renderer_DestroyDescriptorSetLayout(VkDescriptorSet* descriptorSet)
+void Renderer_DestroyDescriptorSetLayout(VkDescriptorSetLayout* descriptorSetLayout)
 {
-    if (*descriptorSet != VK_NULL_HANDLE)
+    if (*descriptorSetLayout != VK_NULL_HANDLE)
     {
-        vkDestroyDescriptorSetLayout(global.Renderer.Device, *descriptorSet, NULL);
-        *descriptorSet = VK_NULL_HANDLE;
+        vkDestroyDescriptorSetLayout(global.Renderer.Device, *descriptorSetLayout, NULL);
+        *descriptorSetLayout = VK_NULL_HANDLE;
     }
 }
 
@@ -924,7 +846,7 @@ void Renderer_DestroyCommandBuffers(VkCommandPool* commandPool, VkCommandBuffer*
         vkFreeCommandBuffers(global.Renderer.Device, *commandPool, global.Renderer.SwapChain.SwapChainImageCount, &*commandBufferList);
         for (size_t x = 0; x < global.Renderer.SwapChain.SwapChainImageCount; x++)
         {
-            *commandBufferList = VK_NULL_HANDLE;
+            commandBufferList[x] = VK_NULL_HANDLE;
         }
     }
 }
@@ -962,5 +884,59 @@ void Renderer_FreeMemory(VkDeviceMemory* memory)
     {
         vkFreeMemory(global.Renderer.Device, *memory, NULL);
         *memory = VK_NULL_HANDLE;
+    }
+}
+
+void Renderer_DestroyImageView(VkImageView* imageView)
+{
+    if (*imageView != VK_NULL_HANDLE)
+    {
+        vkDestroyImageView(global.Renderer.Device, *imageView, NULL);
+        *imageView = VK_NULL_HANDLE;
+    }
+}
+
+void Renderer_DestroyImage(VkImage* image)
+{
+    if (*image != VK_NULL_HANDLE)
+    {
+        vkDestroyImage(global.Renderer.Device, *image, NULL);
+        *image = VK_NULL_HANDLE;
+    }
+}
+
+void Renderer_DestroySampler(VkSampler* sampler)
+{
+    if (*sampler != VK_NULL_HANDLE)
+    {
+        vkDestroySampler(global.Renderer.Device, *sampler, NULL);
+        *sampler = VK_NULL_HANDLE;
+    }
+}
+
+void Renderer_DestroyPipeline(VkPipeline* pipeline)
+{
+    if (*pipeline != VK_NULL_HANDLE)
+    {
+        vkDestroySampler(global.Renderer.Device, *pipeline, NULL);
+        *pipeline = VK_NULL_HANDLE;
+    }
+}
+
+void Renderer_DestroyPipelineLayout(VkPipelineLayout* pipelineLayout)
+{
+    if (*pipelineLayout != VK_NULL_HANDLE)
+    {
+        vkDestroySampler(global.Renderer.Device, *pipelineLayout, NULL);
+        *pipelineLayout = VK_NULL_HANDLE;
+    }
+}
+
+void Renderer_DestroyPipelineCache(VkPipelineCache* pipelineCache)
+{
+    if (*pipelineCache != VK_NULL_HANDLE)
+    {
+        vkDestroySampler(global.Renderer.Device, *pipelineCache, NULL);
+        *pipelineCache = VK_NULL_HANDLE;
     }
 }

@@ -47,6 +47,7 @@ class Texture
 		Texture();
 		Texture(const std::string& filePath, VkFormat textureByteFormat, TextureTypeEnum TextureType);
 		virtual ~Texture();
+		virtual void Destroy();
 		void ImGuiShowTexture(const ImVec2& TextureDisplaySize);
 		const VkFormat GetTextureByteFormat() { return TextureByteFormat; }
 		const VkSampleCountFlagBits GetSampleCount() { return SampleCount; }

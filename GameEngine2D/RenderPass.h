@@ -16,7 +16,6 @@ class RenderPass
 		VkSampleCountFlagBits SampleCount;
 
 		VkRenderPass RenderPassPtr;
-		VkRenderPassBeginInfo RenderPassInfo;
 		std::vector<VkCommandBuffer> CommandBufferList;
 		std::vector<VkFramebuffer> FrameBufferList;
 	public:

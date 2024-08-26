@@ -254,13 +254,14 @@ public:
 
     static void Destroy()
     {
-        Renderer_DestroyRenderPass(&RenderPass);
-        Renderer_DestroyFrameBuffers(SwapChainFramebuffers.data());
         Renderer_DestroyCommandBuffers(&ImGuiCommandPool, ImGuiCommandBuffers.data());
+        ImGui_ImplVulkan_Shutdown(); 
         Renderer_DestroyDescriptorPool(&ImGuiDescriptorPool);
         Renderer_DestroyCommnadPool(&ImGuiCommandPool);
-        ImGui_ImplVulkan_Shutdown();
-        ImGui_ImplSDL2_Shutdown();
-        ImGui::DestroyContext();
+        Renderer_DestroyRenderPass(&RenderPass);
+        Renderer_DestroyFrameBuffers(SwapChainFramebuffers.data());
+        SwapChainFramebuffers.clear(); 
+        ImGui_ImplSDL2_Shutdown(); 
+        ImGui::DestroyContext(); 
     }
 };

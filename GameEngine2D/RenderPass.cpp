@@ -27,5 +27,7 @@ VkCommandBuffer RenderPass::Draw()
 
 void RenderPass::Destroy()
 {
-
+	Renderer_DestroyRenderPass(&RenderPassPtr);
+	Renderer_DestroyCommandBuffers(&global.Renderer.CommandPool, CommandBufferList.data());
+	Renderer_DestroyFrameBuffers(FrameBufferList.data());
 }

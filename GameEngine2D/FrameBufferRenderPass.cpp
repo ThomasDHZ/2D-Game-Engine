@@ -323,7 +323,6 @@ VkCommandBuffer FrameBufferRenderPass::Draw()
     std::vector<VkClearValue> clearValues
     {
         VkClearValue{.color = { {0.0f, 0.0f, 0.0f, 1.0f} } }
-        //VkClearValue{.color = { {0.0f, 0.0f, 0.0f, 1.0f} } },
     };
 
     VkViewport viewport
@@ -374,7 +373,6 @@ VkCommandBuffer FrameBufferRenderPass::Draw()
 
 
     VkResult result = vkBeginCommandBuffer(CommandBufferList[global.Renderer.CommandIndex], &CommandBufferBeginInfo);
-    // Renderer_BeginCommandBuffer(&beginCommandBuffer);
     vkCmdBeginRenderPass(CommandBufferList[global.Renderer.CommandIndex], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
     vkCmdSetViewport(CommandBufferList[global.Renderer.CommandIndex], 0, 1, &viewport);
     vkCmdSetScissor(CommandBufferList[global.Renderer.CommandIndex], 0, 1, &rect2D);
@@ -383,11 +381,14 @@ VkCommandBuffer FrameBufferRenderPass::Draw()
     vkCmdDraw(CommandBufferList[global.Renderer.CommandIndex], 6, 1, 0, 0);
     vkCmdEndRenderPass(CommandBufferList[global.Renderer.CommandIndex]);
     Renderer_EndCommandBuffer(&CommandBufferList[global.Renderer.CommandIndex]);
-    //Renderer_SubmitDraw(CommandBufferList.data());
-
     return CommandBufferList[global.Renderer.CommandIndex];
 }
 
 void FrameBufferRenderPass::Destroy()
 {
+    Renderer_DestroyPipeline(&ShaderPipeline);
+    Renderer_DestroyPipelineLayout(&ShaderPipelineLayout);
+    Renderer_DestroyPipelineCache(&PipelineCache);
+    Renderer_DestroyDescriptorPool(&DescriptorPool);
+    Renderer_DestroyDescriptorSetLayout(&DescriptorSetLayout);
 }

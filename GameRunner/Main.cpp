@@ -38,6 +38,7 @@ int main()
 
     vkDeviceWaitIdle(global.Renderer.Device);
     InterfaceRenderPass::Destroy();
+    scene.Destroy();
     Renderer_DestroyRenderer();
     GameEngine_DestroyWindow();
 

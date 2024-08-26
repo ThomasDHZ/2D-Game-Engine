@@ -43,4 +43,6 @@ void Scene::Draw()
 
 void Scene::Destroy()
 {
+	texture->Destroy();
+	frameRenderPass.Destroy();
 }
