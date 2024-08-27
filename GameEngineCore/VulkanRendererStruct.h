@@ -13,15 +13,3 @@ typedef struct
 	uint32_t						Width;
 	uint32_t						Height;
 }Renderer_RenderPassCreateInfoStruct;
-
-typedef struct
-{
-	const VkFramebuffer*			pFrameBuffer;
-	VkFramebufferCreateInfo	FrameBufferCreateInfo;
-}Renderer_CommandFrameBufferInfoStruct;
-
-typedef struct
-{
-	const VkCommandBuffer*           pCommandBuffer;
-	const VkCommandBufferBeginInfo*  pCommandBufferBegin;
-}Renderer_BeginCommandBufferStruct;

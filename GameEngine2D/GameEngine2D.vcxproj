@@ -31,7 +31,6 @@
     <ClCompile Include="..\External\ImGui\imgui_widgets.cpp" />
     <ClCompile Include="FrameBufferRenderPass.cpp" />
     <ClCompile Include="LogDriver.cpp" />
-    <ClCompile Include="FrameBuffer.cpp" />
     <ClCompile Include="InterfaceRenderPass.cpp" />
     <ClCompile Include="LogBuilder.cpp" />
     <ClCompile Include="LogChannel.cpp" />
@@ -58,7 +57,6 @@
     <ClInclude Include="..\External\ImGui\imstb_truetype.h" />
     <ClInclude Include="FrameBufferRenderPass.h" />
     <ClInclude Include="LogDriver.h" />
-    <ClInclude Include="FrameBuffer.h" />
     <ClInclude Include="InterfaceRenderPass.h" />
     <ClInclude Include="LogBuilder.h" />
     <ClInclude Include="LogChannel.h" />

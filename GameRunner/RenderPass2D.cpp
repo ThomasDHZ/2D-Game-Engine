@@ -11,7 +11,6 @@ RenderPass2D::~RenderPass2D()
 
 void RenderPass2D::BuildRenderPass()
 {
-    std::vector<VkImageView> textureAttachmentList;
     std::vector<VkAttachmentDescription> attachmentDescriptionList
     {
         VkAttachmentDescription
@@ -76,22 +75,7 @@ void RenderPass2D::BuildRenderPass()
       .Width = global.Renderer.SwapChain.SwapChainResolution.width,
       .Height = global.Renderer.SwapChain.SwapChainResolution.height,
     };
-    Renderer_CreateRenderPass(&renderPassCreateInfo);
-
-    Renderer_CommandFrameBufferInfoStruct commandFrameBufferInfo
-    {
-        .pFrameBuffer = FrameBufferList.data(),
-        .FrameBufferCreateInfo =
-        {
-            .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
-            .renderPass = RenderPassPtr,
-            .attachmentCount = static_cast<uint32_t>(textureAttachmentList.size()),
-            .pAttachments = textureAttachmentList.data(),
-            .width = global.Renderer.SwapChain.SwapChainResolution.width,
-            .height = global.Renderer.SwapChain.SwapChainResolution.height,
-            .layers = 1
-        }
-    };
+    VULKAN_RESULT(Renderer_CreateRenderPass(&renderPassCreateInfo));
 
     for (size_t x = 0; x < global.Renderer.SwapChain.SwapChainImageCount; x++)
     {
@@ -109,17 +93,12 @@ void RenderPass2D::BuildRenderPass()
             .layers = 1
         };
 
-        if (vkCreateFramebuffer(global.Renderer.Device, &framebufferInfo, nullptr, &FrameBufferList[x]) != VK_SUCCESS) {
-            //throw std::runtime_error("failed to create framebuffer!");
-        }
+        VULKAN_RESULT(vkCreateFramebuffer(global.Renderer.Device, &framebufferInfo, nullptr, &FrameBufferList[x]));
     }
-    //Renderer_CreateFrameBuffer(&commandFrameBufferInfo);
 }
 
 VkCommandBuffer RenderPass2D::Draw()
 {
-    Renderer_StartFrame();
-
     std::vector<VkClearValue> clearValues
     {
         VkClearValue{.color = { {0.0f, 0.0f, 1.0f, 1.0f} } },
@@ -165,20 +144,13 @@ VkCommandBuffer RenderPass2D::Draw()
         .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
         .flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT
     };
-
-    Renderer_BeginCommandBufferStruct beginCommandBuffer
-    {
-        .pCommandBuffer = &CommandBufferList[global.Renderer.CommandIndex],
-        .pCommandBufferBegin = &CommandBufferBeginInfo,
-    };
-
-    Renderer_BeginCommandBuffer(&beginCommandBuffer);
+    VULKAN_RESULT(Renderer_BeginCommandBuffer(&CommandBufferList[global.Renderer.CommandIndex], &CommandBufferBeginInfo));
     vkCmdBeginRenderPass(CommandBufferList[global.Renderer.CommandIndex], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
     vkCmdSetViewport(CommandBufferList[global.Renderer.CommandIndex], 0, 1, &viewport);
     vkCmdSetScissor(CommandBufferList[global.Renderer.CommandIndex], 0, 1, &rect2D);
     vkCmdEndRenderPass(CommandBufferList[global.Renderer.CommandIndex]);
-    Renderer_EndCommandBuffer(&CommandBufferList[global.Renderer.CommandIndex]);
-    Renderer_SubmitDraw(CommandBufferList.data());
+    VULKAN_RESULT(Renderer_EndCommandBuffer(&CommandBufferList[global.Renderer.CommandIndex]));
+    VULKAN_RESULT(Renderer_SubmitDraw(CommandBufferList.data()));
 
     return CommandBufferList[global.Renderer.CommandIndex];
 }

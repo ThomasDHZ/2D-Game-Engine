@@ -9,7 +9,7 @@ RenderPass::RenderPass()
 	CommandBufferList.resize(global.Renderer.SwapChain.SwapChainImageCount);
 	FrameBufferList.resize(global.Renderer.SwapChain.SwapChainImageCount);
 
-	Renderer_CreateCommandBuffers(CommandBufferList.data());
+	VULKAN_RESULT(Renderer_CreateCommandBuffers(CommandBufferList.data()));
 }
 
 RenderPass::~RenderPass()

@@ -31,14 +31,10 @@ void Scene::Draw()
 {
 	std::vector<VkCommandBuffer> CommandBufferSubmitList;
 
-	Renderer_StartFrame();
+	VULKAN_RESULT(Renderer_StartFrame());
 	CommandBufferSubmitList.emplace_back(frameRenderPass.Draw());
 	CommandBufferSubmitList.emplace_back(InterfaceRenderPass::Draw());
-	Renderer_EndFrame(CommandBufferSubmitList.data(), CommandBufferSubmitList.size());
-    VkPipelineStageFlags waitStages[] =
-    {
-        VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT // Stage before signaling the semaphore
-    };
+	VULKAN_RESULT(Renderer_EndFrame(CommandBufferSubmitList.data(), CommandBufferSubmitList.size()));
 }
 
 void Scene::Destroy()

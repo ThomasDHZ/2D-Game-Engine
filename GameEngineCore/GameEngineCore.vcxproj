@@ -150,6 +150,7 @@
     <ClCompile Include="CTexture.c" />
     <ClCompile Include="FrameTime.c" />
     <ClCompile Include="Vertex.cpp" />
+    <ClCompile Include="VulkanError.c" />
     <ClCompile Include="VulkanRenderer.c" />
     <ClCompile Include="VulkanSwapChain.c" />
     <ClCompile Include="Window.c" />

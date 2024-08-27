@@ -11,7 +11,7 @@
 #include "VulkanSwapChain.h"
 #include "Window.h"
 #include "CArray.h"
-
+#include "VulkanError.h"
 
 static const int MAX_FRAMES_IN_FLIGHT = 3;
 
@@ -34,15 +34,16 @@ typedef struct rendererState
 	 bool RebuildSwapChainFlag;
 }RendererState;
 
-void Renderer_RendererSetUp();
-void Renderer_CreateCommandBuffers(VkCommandBuffer* pCommandBufferList);
-void Renderer_CreateFrameBuffer(Renderer_CommandFrameBufferInfoStruct* pCreateCommandBufferInfo);
-void Renderer_CreateRenderPass(Renderer_RenderPassCreateInfoStruct* pRenderPassCreateInfo);
-void Renderer_StartFrame();
-void Renderer_EndFrame(VkCommandBuffer* pCommandBufferSubmitList, uint32_t commandBufferCount);
-void Renderer_BeginCommandBuffer(Renderer_BeginCommandBufferStruct* pBeginCommandBufferInfo);
-void Renderer_EndCommandBuffer(VkCommandBuffer* pCommandBuffer);
-void Renderer_SubmitDraw(VkCommandBuffer* pCommandBufferSubmitList);
+VkResult Renderer_RendererSetUp();
+VkResult Renderer_CreateCommandBuffers(VkCommandBuffer* pCommandBufferList);
+VkResult Renderer_CreateFrameBuffer(VkFramebuffer* pFrameBuffer, VkFramebufferCreateInfo* frameBufferCreateInfo);
+VkResult Renderer_CreateRenderPass(Renderer_RenderPassCreateInfoStruct* pRenderPassCreateInfo);
+VkResult Renderer_CreateDescriptorPool(VkDescriptorPool* descriptorPool, VkDescriptorPoolCreateInfo* descriptorPoolCreateInfo);
+VkResult Renderer_StartFrame();
+VkResult Renderer_EndFrame(VkCommandBuffer* pCommandBufferSubmitList, uint32_t commandBufferCount);
+VkResult Renderer_BeginCommandBuffer( VkCommandBuffer* pCommandBuffer, VkCommandBufferBeginInfo* commandBufferBeginInfo);
+VkResult Renderer_EndCommandBuffer(VkCommandBuffer* pCommandBuffer);
+VkResult Renderer_SubmitDraw(VkCommandBuffer* pCommandBufferSubmitList);
 
 uint32_t Renderer_GetMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 VkCommandBuffer Renderer_BeginSingleUseCommandBuffer();

@@ -19,13 +19,7 @@ void Texture_CreateTextureImage(struct TextureInfo* textureInfo)
 		.sharingMode = VK_SHARING_MODE_EXCLUSIVE,
 		.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
 	};
-	VkResult result = vkCreateImage(global.Renderer.Device, &ImageCreateInfo, NULL, textureInfo->Image);
-	if (result)
-	{
-		fprintf(stderr, "Failed to create image: %s\n", Renderer_GetError(result));
-		Renderer_DestroyRenderer();
-		GameEngine_DestroyWindow();
-	}
+	VULKAN_RESULT(vkCreateImage(global.Renderer.Device, &ImageCreateInfo, NULL, textureInfo->Image));
 
 	VkMemoryRequirements memRequirements;
 	vkGetImageMemoryRequirements(global.Renderer.Device, *textureInfo->Image, &memRequirements);
@@ -36,21 +30,8 @@ void Texture_CreateTextureImage(struct TextureInfo* textureInfo)
 		.allocationSize = memRequirements.size,
 		.memoryTypeIndex = Renderer_GetMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)
 	};
-	result = vkAllocateMemory(global.Renderer.Device, &allocInfo, NULL, textureInfo->Memory);
-	if (result)
-	{
-		fprintf(stderr, "Failed to allocate image memory: %s\n", Renderer_GetError(result));
-		Renderer_DestroyRenderer();
-		GameEngine_DestroyWindow();
-	}
-
-	result = vkBindImageMemory(global.Renderer.Device, *textureInfo->Image, *textureInfo->Memory, 0);
-	if (result)
-	{
-		fprintf(stderr, "Failed to bind image memory: %s\n", Renderer_GetError(result));
-		Renderer_DestroyRenderer();
-		GameEngine_DestroyWindow();
-	}
+	VULKAN_RESULT(vkAllocateMemory(global.Renderer.Device, &allocInfo, NULL, textureInfo->Memory));
+	VULKAN_RESULT(vkBindImageMemory(global.Renderer.Device, *textureInfo->Image, *textureInfo->Memory, 0));
 }
 
 void Texture_TransitionImageLayout(struct TextureInfo* textureInfo, VkImageLayout newImageLayout)
@@ -97,7 +78,7 @@ void Texture_TransitionImageLayout(struct TextureInfo* textureInfo, VkImageLayou
 	}
 
 	vkCmdPipelineBarrier(commandBuffer, sourceStage, destinationStage, 0, 0, NULL, 0, NULL, 1, &barrier);
-	Renderer_EndSingleUseCommandBuffer(commandBuffer);
+	VULKAN_RESULT(Renderer_EndSingleUseCommandBuffer(commandBuffer));
 }
 
 void Texture_CopyBufferToTexture(struct TextureInfo* textureInfo, VkBuffer* buffer)
@@ -124,7 +105,7 @@ void Texture_CopyBufferToTexture(struct TextureInfo* textureInfo, VkBuffer* buff
 		BufferImage.imageSubresource.layerCount = 6;
 	}
 	vkCmdCopyBufferToImage(commandBuffer, *buffer, *textureInfo->Image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &BufferImage);
-	Renderer_EndSingleUseCommandBuffer(commandBuffer);
+	VULKAN_RESULT(Renderer_EndSingleUseCommandBuffer(commandBuffer));
 }
 
 void Texture_GenerateMipmaps(struct TextureInfo* textureInfo)
@@ -203,7 +184,7 @@ void Texture_GenerateMipmaps(struct TextureInfo* textureInfo)
 		ImageMemoryBarrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
 
 		vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0, 0, NULL, 0, NULL, 1, &ImageMemoryBarrier);
-		Renderer_EndSingleUseCommandBuffer(commandBuffer);
+		VULKAN_RESULT(Renderer_EndSingleUseCommandBuffer(commandBuffer));
 		*textureInfo->TextureImageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 	}
 }

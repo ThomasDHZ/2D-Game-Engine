@@ -18,11 +18,8 @@ static VkResult Buffer_AllocateMemory(struct BufferInfo* bufferInfo, VkMemoryPro
         .memoryTypeIndex = Renderer_GetMemoryType(memRequirements.memoryTypeBits, properties),
         .pNext = &ExtendedAllocFlagsInfo,
     };
-    if (vkAllocateMemory(global.Renderer.Device, &allocInfo, NULL, bufferInfo->BufferMemory) != VK_SUCCESS)
-    {
-        return VK_ERROR_OUT_OF_DEVICE_MEMORY;
-    }
-    return VK_SUCCESS;
+
+    return vkAllocateMemory(global.Renderer.Device, &allocInfo, NULL, bufferInfo->BufferMemory);
 }
 
 VkResult Buffer_CreateBuffer(struct BufferInfo* bufferInfo, void* BufferData, VkDeviceSize bufferSize, VkBufferUsageFlags bufferUsage, VkMemoryPropertyFlags properties) 
@@ -40,26 +37,17 @@ VkResult Buffer_CreateBuffer(struct BufferInfo* bufferInfo, void* BufferData, Vk
         .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
     };
 
-    VkResult result = vkCreateBuffer(global.Renderer.Device, &buffer, NULL, bufferInfo->Buffer);
-    if (result != VK_SUCCESS) 
-    {
-        return result;
-    }
-
-    result = Buffer_AllocateMemory(bufferInfo, properties);
-    if (result != VK_SUCCESS)
-    {
-        return VK_ERROR_OUT_OF_DEVICE_MEMORY;
-    }
+    VULKAN_RESULT(vkCreateBuffer(global.Renderer.Device, &buffer, NULL, bufferInfo->Buffer));
+    VULKAN_RESULT(Buffer_AllocateMemory(bufferInfo, properties));
 
     if (BufferData != NULL) 
     {
-        vkMapMemory(global.Renderer.Device, *bufferInfo->BufferMemory, 0, *bufferInfo->BufferSize, 0, bufferInfo->BufferData);
+        VULKAN_RESULT(vkMapMemory(global.Renderer.Device, *bufferInfo->BufferMemory, 0, *bufferInfo->BufferSize, 0, bufferInfo->BufferData));
         memcpy(*bufferInfo->BufferData, BufferData, (size_t)*bufferInfo->BufferSize);
         vkUnmapMemory(global.Renderer.Device, *bufferInfo->BufferMemory);
     }
 
-    vkBindBufferMemory(global.Renderer.Device, *bufferInfo->Buffer, *bufferInfo->BufferMemory, 0);
+    VULKAN_RESULT(vkBindBufferMemory(global.Renderer.Device, *bufferInfo->Buffer, *bufferInfo->BufferMemory, 0));
     return vkMapMemory(global.Renderer.Device, *bufferInfo->BufferMemory, 0, *bufferInfo->BufferSize, 0, bufferInfo->BufferData);
 }
 
@@ -86,19 +74,9 @@ VkResult Buffer_UpdateBufferSize(struct BufferInfo* bufferInfo, VkDeviceSize buf
         .usage = *bufferInfo->BufferUsage,
         .sharingMode = VK_SHARING_MODE_EXCLUSIVE
     };
-    VkResult result = vkCreateBuffer(global.Renderer.Device, &buffer, NULL, bufferInfo->Buffer);
-    if (result != VK_SUCCESS)
-    {
-        return result;
-    }
-
-    result = Buffer_AllocateMemory(bufferInfo, *bufferInfo->BufferProperties);
-    if (result != VK_SUCCESS)
-    {
-        return VK_ERROR_OUT_OF_DEVICE_MEMORY;
-    }
-
-    vkBindBufferMemory(global.Renderer.Device, bufferInfo->Buffer, bufferInfo->BufferMemory, 0);
+    VULKAN_RESULT(vkCreateBuffer(global.Renderer.Device, &buffer, NULL, bufferInfo->Buffer));
+    VULKAN_RESULT(Buffer_AllocateMemory(bufferInfo, *bufferInfo->BufferProperties));
+    VULKAN_RESULT(vkBindBufferMemory(global.Renderer.Device, bufferInfo->Buffer, bufferInfo->BufferMemory, 0));
     return vkMapMemory(global.Renderer.Device, bufferInfo->BufferMemory, 0, bufferInfo->BufferSize, 0, &bufferInfo->BufferData);
 }
 

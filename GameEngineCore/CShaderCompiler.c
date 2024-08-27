@@ -26,11 +26,7 @@ VkShaderModule Shader_BuildGLSLShaderFile(const char* path)
     };
 
     VkShaderModule shaderModule = VK_NULL_HANDLE;
-    VkResult result = vkCreateShaderModule(global.Renderer.Device, &shaderModuleCreateInfo, NULL, &shaderModule);
-    if (result != VK_SUCCESS)
-    {
-        fprintf(stderr, "Failed to create shader module: \nFilePath: %s\n Error%s\n", path, result);
-    }
+    VULKAN_RESULT(vkCreateShaderModule(global.Renderer.Device, &shaderModuleCreateInfo, NULL, &shaderModule));
 
     return shaderModule;
 }

@@ -51,27 +51,27 @@ void SwapChain_GetQueueFamilies(VkPhysicalDevice* physicalDevice, uint32_t* grap
 	free(queueFamilies);
 }
 
-void Vulkan_SetUpSwapChain()
+VkResult Vulkan_SetUpSwapChain()
 {
 	VkSurfaceFormatKHR* compatibleSwapChainFormatList = NULL;
 	VkSurfaceFormatKHR* compatiblePresentModesList = NULL;
 
 	uint32_t surfaceFormatCount = UINT32_MAX;
 	VkSurfaceCapabilitiesKHR surfaceCapabilities;
-	vkGetPhysicalDeviceSurfaceCapabilitiesKHR(global.Renderer.PhysicalDevice, global.Renderer.Surface, &surfaceCapabilities);
-	vkGetPhysicalDeviceSurfaceFormatsKHR(global.Renderer.PhysicalDevice, global.Renderer.Surface, &surfaceFormatCount, NULL);
+	VULKAN_RESULT(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(global.Renderer.PhysicalDevice, global.Renderer.Surface, &surfaceCapabilities));
+	VULKAN_RESULT(vkGetPhysicalDeviceSurfaceFormatsKHR(global.Renderer.PhysicalDevice, global.Renderer.Surface, &surfaceFormatCount, NULL));
 	if (surfaceFormatCount != 0)
 	{
 		compatibleSwapChainFormatList = malloc(sizeof(VkSurfaceFormatKHR) * surfaceFormatCount);
-		vkGetPhysicalDeviceSurfaceFormatsKHR(global.Renderer.PhysicalDevice, global.Renderer.Surface, &surfaceFormatCount, compatibleSwapChainFormatList);
+		VULKAN_RESULT(vkGetPhysicalDeviceSurfaceFormatsKHR(global.Renderer.PhysicalDevice, global.Renderer.Surface, &surfaceFormatCount, compatibleSwapChainFormatList));
 	}
 
 	uint32_t presentModeCount = UINT32_MAX;
-	vkGetPhysicalDeviceSurfacePresentModesKHR(global.Renderer.PhysicalDevice, global.Renderer.Surface, &presentModeCount, NULL);
+	VULKAN_RESULT(vkGetPhysicalDeviceSurfacePresentModesKHR(global.Renderer.PhysicalDevice, global.Renderer.Surface, &presentModeCount, NULL));
 	if (presentModeCount != 0)
 	{
 		compatiblePresentModesList = malloc(sizeof(VkSurfaceFormatKHR) * presentModeCount);
-		vkGetPhysicalDeviceSurfacePresentModesKHR(global.Renderer.PhysicalDevice, global.Renderer.Surface, &presentModeCount, compatiblePresentModesList);
+		VULKAN_RESULT(vkGetPhysicalDeviceSurfacePresentModesKHR(global.Renderer.PhysicalDevice, global.Renderer.Surface, &presentModeCount, compatiblePresentModesList));
 	}
 
 	SwapChain_GetQueueFamilies(global.Renderer.PhysicalDevice, &global.Renderer.SwapChain.GraphicsFamily, &global.Renderer.SwapChain.PresentFamily);
@@ -121,44 +121,16 @@ void Vulkan_SetUpSwapChain()
 		SwapChainCreateInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
 	}
 
-	VkResult result = vkCreateSwapchainKHR(global.Renderer.Device, &SwapChainCreateInfo, NULL, &global.Renderer.SwapChain.Swapchain);
-	if (result != VK_SUCCESS)
-	{
-		fprintf(stderr, "Failed to create swap chain: %s\n", result);
-		free(compatibleSwapChainFormatList);
-		free(compatiblePresentModesList);
-		return;
-	}
+	VULKAN_RESULT(vkCreateSwapchainKHR(global.Renderer.Device, &SwapChainCreateInfo, NULL, &global.Renderer.SwapChain.Swapchain));
+
 
 	global.Renderer.SwapChain.SwapChainImageCount = INT32_MAX;
-	VkResult swapChainImagesResult = vkGetSwapchainImagesKHR(global.Renderer.Device, global.Renderer.SwapChain.Swapchain, &global.Renderer.SwapChain.SwapChainImageCount, NULL);
-	if (swapChainImagesResult != VK_SUCCESS)
-	{
-		fprintf(stderr, "Failed to create swap chain: %s\n", result);
-		free(compatibleSwapChainFormatList);
-		free(compatiblePresentModesList);
-		return;
-	}
+	VULKAN_RESULT(vkGetSwapchainImagesKHR(global.Renderer.Device, global.Renderer.SwapChain.Swapchain, &global.Renderer.SwapChain.SwapChainImageCount, NULL));
 
 	global.Renderer.SwapChain.SwapChainImages = malloc(sizeof(VkImage) * global.Renderer.SwapChain.SwapChainImageCount);
-	VkResult swapChainImagesResult2 = vkGetSwapchainImagesKHR(global.Renderer.Device, global.Renderer.SwapChain.Swapchain, &global.Renderer.SwapChain.SwapChainImageCount, global.Renderer.SwapChain.SwapChainImages);
-	if (swapChainImagesResult2 != VK_SUCCESS)
-	{
-		fprintf(stderr, "Failed to create swap chain: %s\n", result);
-		free(compatibleSwapChainFormatList);
-		free(compatiblePresentModesList);
-		return;
-	}
+	VULKAN_RESULT(vkGetSwapchainImagesKHR(global.Renderer.Device, global.Renderer.SwapChain.Swapchain, &global.Renderer.SwapChain.SwapChainImageCount, global.Renderer.SwapChain.SwapChainImages));
 
 	global.Renderer.SwapChain.SwapChainImageViews = malloc(sizeof(VkImageView) * global.Renderer.SwapChain.SwapChainImageCount);
-	if (global.Renderer.SwapChain.SwapChainImageViews == NULL)
-	{
-		fprintf(stderr, "Failed to allocate memory for swap chain image views.\n");
-		free(compatibleSwapChainFormatList);
-		free(compatiblePresentModesList);
-		return;
-	}
-
 	for (uint32_t x = 0; x < global.Renderer.SwapChain.SwapChainImageCount; x++)
 	{
 		VkImageViewCreateInfo SwapChainViewInfo =
@@ -177,23 +149,17 @@ void Vulkan_SetUpSwapChain()
 			}
 		};
 
-		VkResult result = vkCreateImageView(global.Renderer.Device, &SwapChainViewInfo, NULL, &global.Renderer.SwapChain.SwapChainImageViews[x]);
-		if (result != VK_SUCCESS)
-		{
-			fprintf(stderr, "Failed to create image view: %d\n", result);
-			free(compatibleSwapChainFormatList);
-			free(compatiblePresentModesList);
-			return;
-		}
+		VULKAN_RESULT(vkCreateImageView(global.Renderer.Device, &SwapChainViewInfo, NULL, &global.Renderer.SwapChain.SwapChainImageViews[x]));
 	}
 
 	free(compatibleSwapChainFormatList);
 	free(compatiblePresentModesList);
+	return VK_SUCCESS;
 }
 
-void Vulkan_RebuildSwapChain()
+VkResult Vulkan_RebuildSwapChain()
 {
-	Vulkan_SetUpSwapChain(global.Window.SDLWindow, global.Renderer.Device, global.Renderer.PhysicalDevice, global.Renderer.Surface);
+	return Vulkan_SetUpSwapChain(global.Window.SDLWindow, global.Renderer.Device, global.Renderer.PhysicalDevice, global.Renderer.Surface);
 }
 
 void Vulkan_DestroyImageView()

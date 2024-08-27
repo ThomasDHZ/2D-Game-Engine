@@ -26,7 +26,6 @@ void FrameBufferRenderPass::BuildRenderPass(std::shared_ptr<Texture> texture)
             .stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
             .stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
             .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-            // Keep this layout as the expected final layout after rendering
             .finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR
         }
     };
@@ -80,7 +79,7 @@ void FrameBufferRenderPass::BuildRenderPass(std::shared_ptr<Texture> texture)
       .Width = static_cast<uint32_t>(RenderPassResolution.x),
       .Height = static_cast<uint32_t>(RenderPassResolution.y)
     };
-    Renderer_CreateRenderPass(&renderPassCreateInfo);
+    VULKAN_RESULT(Renderer_CreateRenderPass(&renderPassCreateInfo));
 
     for (size_t x = 0; x < global.Renderer.SwapChain.SwapChainImageCount; x++)
     {
@@ -97,11 +96,7 @@ void FrameBufferRenderPass::BuildRenderPass(std::shared_ptr<Texture> texture)
             .height = static_cast<uint32_t>(RenderPassResolution.y),
             .layers = 1
         };
-
-        if (vkCreateFramebuffer(global.Renderer.Device, &framebufferInfo, nullptr, &FrameBufferList[x]) != VK_SUCCESS)
-        {
-            //throw std::runtime_error("failed to create framebuffer!");
-        }
+        VULKAN_RESULT(vkCreateFramebuffer(global.Renderer.Device, &framebufferInfo, nullptr, &FrameBufferList[x]));
     }
     BuildRenderPipeline();
 }
@@ -140,22 +135,20 @@ void FrameBufferRenderPass::BuildRenderPipeline()
         .poolSizeCount = static_cast<uint32_t>(DescriptorPoolBinding.size()),
         .pPoolSizes = DescriptorPoolBinding.data(),
     };
+    VULKAN_RESULT(Renderer_CreateDescriptorPool(&DescriptorPool, &poolInfo));
 
-    if (vkCreateDescriptorPool(global.Renderer.Device, &poolInfo, nullptr, &DescriptorPool) != VK_SUCCESS) {
-        throw std::runtime_error("Failed to create descriptor pool.");
-    }
 
     std::vector<VkDescriptorSetLayoutBinding> LayoutBindingList =
     {
         { 0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr },
-        { 1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr }, // Add this line for binding 1
+        { 1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr },
     };
 
     VkDescriptorSetLayoutCreateInfo layoutInfo = {};
     layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
     layoutInfo.bindingCount = 1;
     layoutInfo.pBindings = LayoutBindingList.data();
-
+    
     if (vkCreateDescriptorSetLayout(global.Renderer.Device, &layoutInfo, nullptr, &DescriptorSetLayout) != VK_SUCCESS) {
         throw std::runtime_error("Failed to create descriptor set layout.");
     }
@@ -365,14 +358,7 @@ VkCommandBuffer FrameBufferRenderPass::Draw()
         .flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT
     };
 
-    Renderer_BeginCommandBufferStruct beginCommandBuffer
-    {
-        .pCommandBuffer = &CommandBufferList[global.Renderer.ImageIndex],
-        .pCommandBufferBegin = &CommandBufferBeginInfo,
-    };
-
-
-    VkResult result = vkBeginCommandBuffer(CommandBufferList[global.Renderer.CommandIndex], &CommandBufferBeginInfo);
+    VULKAN_RESULT(vkBeginCommandBuffer(CommandBufferList[global.Renderer.CommandIndex], &CommandBufferBeginInfo));
     vkCmdBeginRenderPass(CommandBufferList[global.Renderer.CommandIndex], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
     vkCmdSetViewport(CommandBufferList[global.Renderer.CommandIndex], 0, 1, &viewport);
     vkCmdSetScissor(CommandBufferList[global.Renderer.CommandIndex], 0, 1, &rect2D);
@@ -380,7 +366,7 @@ VkCommandBuffer FrameBufferRenderPass::Draw()
     vkCmdBindDescriptorSets(CommandBufferList[global.Renderer.CommandIndex], VK_PIPELINE_BIND_POINT_GRAPHICS, ShaderPipelineLayout, 0, 1, &DescriptorSet, 0, nullptr);
     vkCmdDraw(CommandBufferList[global.Renderer.CommandIndex], 6, 1, 0, 0);
     vkCmdEndRenderPass(CommandBufferList[global.Renderer.CommandIndex]);
-    Renderer_EndCommandBuffer(&CommandBufferList[global.Renderer.CommandIndex]);
+    VULKAN_RESULT(Renderer_EndCommandBuffer(&CommandBufferList[global.Renderer.CommandIndex]));
     return CommandBufferList[global.Renderer.CommandIndex];
 }
 

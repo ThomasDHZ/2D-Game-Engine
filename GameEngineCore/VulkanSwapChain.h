@@ -15,7 +15,7 @@ typedef struct swapChainState
 	VkSwapchainKHR Swapchain;
 }SwapChainState;
 
-void Vulkan_SetUpSwapChain();
-void Vulkan_RebuildSwapChain();
+VkResult Vulkan_SetUpSwapChain();
+VkResult Vulkan_RebuildSwapChain();
 void Vulkan_DestroyImageView();
 void Vulkan_DestroySwapChain();
