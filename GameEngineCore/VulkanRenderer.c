@@ -496,6 +496,31 @@ VkResult Renderer_CreateDescriptorPool(VkDescriptorPool* descriptorPool, VkDescr
     return vkCreateDescriptorPool(global.Renderer.Device, descriptorPoolCreateInfo, NULL, descriptorPool);
 }
 
+VkResult Renderer_CreateDescriptorSetLayout(VkDescriptorSetLayout* descriptorSetLayout, VkDescriptorSetLayoutCreateInfo* descriptorSetLayoutCreateInfo)
+{
+    return vkCreateDescriptorSetLayout(global.Renderer.Device, descriptorSetLayoutCreateInfo, NULL, descriptorSetLayout);
+}
+
+VkResult Renderer_CreatePipelineLayout(VkPipelineLayout* pipelineLayout, VkPipelineLayoutCreateInfo* pipelineLayoutCreateInfo)
+{
+    return vkCreatePipelineLayout(global.Renderer.Device, pipelineLayoutCreateInfo, NULL, pipelineLayout);
+}
+
+VkResult Renderer_AllocateDescriptorSets(VkDescriptorSet* descriptorSet, VkDescriptorSetAllocateInfo* descriptorSetAllocateInfo)
+{
+    return vkAllocateDescriptorSets(global.Renderer.Device, descriptorSetAllocateInfo, descriptorSet);
+}
+
+VkResult Renderer_CreateGraphicsPipelines(VkPipeline* graphicPipeline, VkGraphicsPipelineCreateInfo* createGraphicPipelines, uint32_t createGraphicPipelinesCount)
+{
+    return vkCreateGraphicsPipelines(global.Renderer.Device, VK_NULL_HANDLE, createGraphicPipelinesCount, createGraphicPipelines, NULL, graphicPipeline);
+}
+
+void Renderer_UpdateDescriptorSet(VkWriteDescriptorSet* writeDescriptorSet, uint32_t count)
+{
+    vkUpdateDescriptorSets(global.Renderer.Device, count, writeDescriptorSet, 0, NULL);
+}
+
 VkResult Renderer_RebuildSwapChain()
 {
     global.Renderer.RebuildSwapChainFlag = true;
@@ -520,11 +545,6 @@ VkResult Renderer_StartFrame()
     if (result == VK_ERROR_OUT_OF_DATE_KHR) {
         Renderer_RebuildSwapChain();
         return;
-    }
-    else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
-        fprintf(stderr, "Failed to acquire swap chain image: %s\n", Renderer_GetError(result));
-        Renderer_DestroyRenderer();
-        GameEngine_DestroyWindow();
     }
     return result;
 }
@@ -563,11 +583,6 @@ VkResult Renderer_EndFrame(VkCommandBuffer* pCommandBufferSubmitList, uint32_t c
     if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
     {
         Renderer_RebuildSwapChain();
-    }
-    else if (result != VK_SUCCESS)
-    {
-        Renderer_DestroyRenderer();
-        GameEngine_DestroyWindow();
     }
     return result;
 }
@@ -613,13 +628,6 @@ VkResult Renderer_SubmitDraw(VkCommandBuffer* pCommandBufferSubmitList)
     {
         // RebuildSwapChain();
         return result;
-    }
-    else if (result != VK_SUCCESS &&
-        result != VK_SUBOPTIMAL_KHR)
-    {
-        fprintf(stderr, "Failed to present swap chain image: %s\n", Renderer_GetError(result));
-        Renderer_DestroyRenderer();
-        GameEngine_DestroyWindow();
     }
     return result;
 }

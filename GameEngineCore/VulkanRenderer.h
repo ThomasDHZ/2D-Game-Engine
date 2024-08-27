@@ -39,6 +39,10 @@ VkResult Renderer_CreateCommandBuffers(VkCommandBuffer* pCommandBufferList);
 VkResult Renderer_CreateFrameBuffer(VkFramebuffer* pFrameBuffer, VkFramebufferCreateInfo* frameBufferCreateInfo);
 VkResult Renderer_CreateRenderPass(Renderer_RenderPassCreateInfoStruct* pRenderPassCreateInfo);
 VkResult Renderer_CreateDescriptorPool(VkDescriptorPool* descriptorPool, VkDescriptorPoolCreateInfo* descriptorPoolCreateInfo);
+VkResult Renderer_CreateDescriptorSetLayout(VkDescriptorSetLayout* descriptorSetLayout, VkDescriptorSetLayoutCreateInfo* descriptorSetLayoutCreateInfo);
+VkResult Renderer_CreatePipelineLayout(VkPipelineLayout* pipelineLayout, VkPipelineLayoutCreateInfo* pipelineLayoutCreateInfo);
+VkResult Renderer_AllocateDescriptorSets(VkDescriptorSet* descriptorSet, VkDescriptorSetAllocateInfo* descriptorSetAllocateInfo);
+VkResult Renderer_CreateGraphicsPipelines(VkPipeline* graphicPipeline, VkGraphicsPipelineCreateInfo* createGraphicPipelines, uint32_t createGraphicPipelinesCount);
 VkResult Renderer_StartFrame();
 VkResult Renderer_EndFrame(VkCommandBuffer* pCommandBufferSubmitList, uint32_t commandBufferCount);
 VkResult Renderer_BeginCommandBuffer( VkCommandBuffer* pCommandBuffer, VkCommandBufferBeginInfo* commandBufferBeginInfo);
@@ -49,6 +53,7 @@ uint32_t Renderer_GetMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags prope
 VkCommandBuffer Renderer_BeginSingleUseCommandBuffer();
 VkResult Renderer_EndSingleUseCommandBuffer(VkCommandBuffer* commandBuffer);
 
+void Renderer_UpdateDescriptorSet(VkWriteDescriptorSet* writeDescriptorSet, uint32_t count);
 void Renderer_DestroyRenderer();
 void Renderer_DestroyFences();
 void Renderer_DestroyCommandPool();
