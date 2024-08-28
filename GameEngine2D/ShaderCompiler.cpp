@@ -15,7 +15,7 @@
 //    return str;
 //}
 //
-//void ShaderCompiler::uint32ToUnsignedCharString(uint32_t value, std::string& string)
+//void ShaderCompiler::uint32ToUnsignedCharString(uint32 value, std::string& string)
 //{
 //    string += static_cast<unsigned char>((value >> 24) & 0xFF);
 //    string += static_cast<unsigned char>((value >> 16) & 0xFF);
@@ -50,7 +50,7 @@ VkShaderModule ShaderCompiler::BuildGLSLShader(const char* path)
 //
 //    DxcBuffer src_buffer = {
 //        .Ptr = shaderCode.c_str(),
-//        .Size = static_cast<uint32_t>(shaderCode.size()),
+//        .Size = static_cast<uint32>(shaderCode.size()),
 //        .Encoding = 0
 //    };
 //
@@ -71,7 +71,7 @@ VkShaderModule ShaderCompiler::BuildGLSLShader(const char* path)
 //    }
 //
 //    Microsoft::WRL::ComPtr<IDxcResult> result;
-//    dxc_compiler->Compile(&src_buffer, args.data(), static_cast<uint32_t>(args.size()), DefaultIncludeHandler.Get(), IID_PPV_ARGS(&result));
+//    dxc_compiler->Compile(&src_buffer, args.data(), static_cast<uint32>(args.size()), DefaultIncludeHandler.Get(), IID_PPV_ARGS(&result));
 //
 //    Microsoft::WRL::ComPtr<IDxcBlob> shader_obj;
 //    result->GetOutput(DXC_OUT_OBJECT, IID_PPV_ARGS(&shader_obj), nullptr);
@@ -127,7 +127,7 @@ VkPipelineShaderStageCreateInfo ShaderCompiler::CreateShader(const std::string& 
 //            VkShaderModule shaderModule{};
 //            VkShaderModuleCreateInfo ShaderModuleCreateInfo{};
 //            ShaderModuleCreateInfo.codeSize = spriv_buffer->GetBufferSize();
-//            ShaderModuleCreateInfo.pCode = (uint32_t*)spriv_buffer->GetBufferPointer();
+//            ShaderModuleCreateInfo.pCode = (uint32*)spriv_buffer->GetBufferPointer();
 //            vkCreateShaderModule(VulkanRenderer::GetDevice(), &ShaderModuleCreateInfo, nullptr, &shaderModule);
 //
 //            return shaderModule;
@@ -144,7 +144,7 @@ VkPipelineShaderStageCreateInfo ShaderCompiler::CreateShader(const std::string& 
 //        VkShaderModule shaderModule{};
 //        VkShaderModuleCreateInfo ShaderModuleCreateInfo{};
 //        ShaderModuleCreateInfo.codeSize = spriv_buffer->GetBufferSize();
-//        ShaderModuleCreateInfo.pCode = (uint32_t*)spriv_buffer->GetBufferPointer();
+//        ShaderModuleCreateInfo.pCode = (uint32*)spriv_buffer->GetBufferPointer();
 //        vkCreateShaderModule(VulkanRenderer::GetDevice(), &ShaderModuleCreateInfo, nullptr, &shaderModule);
 //
 //        return shaderModule;

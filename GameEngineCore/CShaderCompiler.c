@@ -22,7 +22,7 @@ VkShaderModule Shader_BuildGLSLShaderFile(const char* path)
     {
         .sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
         .codeSize = file.Size,
-        .pCode = (const uint32_t*)file.Data
+        .pCode = (const uint32*)file.Data
     };
 
     VkShaderModule shaderModule = VK_NULL_HANDLE;

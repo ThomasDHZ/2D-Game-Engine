@@ -1,12 +1,13 @@
 #pragma once
 #include <vulkan/vulkan.h>
 #include <SDL.h>
+#include "CTypedef.h"
 
 typedef struct swapChainState
 {
-	uint32_t SwapChainImageCount;
-	uint32_t GraphicsFamily;
-	uint32_t PresentFamily;
+	uint32 SwapChainImageCount;
+	uint32 GraphicsFamily;
+	uint32 PresentFamily;
 	VkQueue GraphicsQueue;
 	VkQueue PresentQueue;
 	VkImage* SwapChainImages;

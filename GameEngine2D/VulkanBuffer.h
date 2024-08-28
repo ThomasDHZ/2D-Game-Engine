@@ -14,7 +14,7 @@ class VulkanBuffer
 		VkDeviceSize BufferSize = 0;
 		VkBufferUsageFlags BufferUsage;
 		VkMemoryPropertyFlags BufferProperties;
-		uint64_t BufferDeviceAddress = 0;
+		uint64 BufferDeviceAddress = 0;
 		VkAccelerationStructureKHR BufferHandle = VK_NULL_HANDLE;
 		void* BufferData;
 
@@ -37,7 +37,7 @@ class VulkanBuffer
 		VkDeviceMemory GetBufferMemory() { return BufferMemory; }
 		VkDeviceMemory* GetBufferMemoryPtr() { return &BufferMemory; }
 		VkDeviceSize GetBufferSize() { return BufferSize; }
-		uint64_t GetBufferDeviceAddress() { return BufferDeviceAddress; }
+		uint64 GetBufferDeviceAddress() { return BufferDeviceAddress; }
 		VkAccelerationStructureKHR GetBufferHandle() { return BufferHandle; }
 		VkAccelerationStructureKHR* GetBufferHandlePtr() { return &BufferHandle; }
 		void* GetData() { return BufferData; }

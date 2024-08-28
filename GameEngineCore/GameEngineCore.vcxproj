@@ -160,6 +160,7 @@
     <ClInclude Include="CArray.h" />
     <ClInclude Include="CList.h" />
     <ClInclude Include="CShaderCompiler.h" />
+    <ClInclude Include="CTypedef.h" />
     <ClInclude Include="enum.h">
       <FileType>CppHeader</FileType>
     </ClInclude>

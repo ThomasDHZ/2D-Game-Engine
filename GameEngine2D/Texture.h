@@ -8,9 +8,7 @@ extern "C"
 #include <cmath>
 #include <algorithm>
 #include <string>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
+#include "typedef.h"
 #include "VulkanBuffer.h"
 #include <ImGui/imgui.h>
 #include <ImGui/imgui_impl_vulkan.h>
@@ -18,13 +16,13 @@ extern "C"
 class Texture
 {
 	private:
-		uint64_t TextureBufferIndex;
+		uint64 TextureBufferIndex;
 
 	protected:
 		int Width;
 		int Height;
 		int Depth;
-		uint32_t MipMapLevels;
+		uint32 MipMapLevels;
 
 		TextureUsageEnum TextureUsage;
 		TextureTypeEnum TextureType;
@@ -47,8 +45,10 @@ class Texture
 		Texture();
 		Texture(const std::string& filePath, VkFormat textureByteFormat, TextureTypeEnum TextureType);
 		virtual ~Texture();
+		virtual void UpdateTextureSize(vec2 TextureResolution);
 		virtual void Destroy();
 		void ImGuiShowTexture(const ImVec2& TextureDisplaySize);
+
 		const VkFormat GetTextureByteFormat() { return TextureByteFormat; }
 		const VkSampleCountFlagBits GetSampleCount() { return SampleCount; }
 

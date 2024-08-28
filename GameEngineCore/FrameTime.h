@@ -1,5 +1,5 @@
 #pragma once
-#include <inttypes.h>
+#include "CTypedef.h"
 
 typedef struct time_state {
 	float delta;
@@ -11,7 +11,7 @@ typedef struct time_state {
 	float frame_time;
 
 	float frame_rate;
-	uint32_t frame_count;
+	uint32 frame_count;
 } Time_State;
 
 void time_init(float frame_rate);

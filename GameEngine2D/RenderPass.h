@@ -6,7 +6,7 @@ extern "C"
 }
 #include <array>
 #include <vector>
-#include "RendereredColorTexture2D.h"
+#include "RenderedColorTexture.h"
 
 class RenderPass
 {

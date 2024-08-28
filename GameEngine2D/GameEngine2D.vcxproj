@@ -39,7 +39,7 @@
     <ClCompile Include="LoggerLog.cpp" />
     <ClCompile Include="MSVCDebugDriver.cpp" />
     <ClCompile Include="MSVCDriver.cpp" />
-    <ClCompile Include="RendereredColorTexture2D.cpp" />
+    <ClCompile Include="RenderedColorTexture.cpp" />
     <ClCompile Include="RenderPass.cpp" />
     <ClCompile Include="ShaderCompiler.cpp" />
     <ClCompile Include="TextFormatter.cpp" />
@@ -67,11 +67,12 @@
     <ClInclude Include="LogLevel.h" />
     <ClInclude Include="LoggerLog.h" />
     <ClInclude Include="MSVCDriver.h" />
-    <ClInclude Include="RendereredColorTexture2D.h" />
+    <ClInclude Include="RenderedColorTexture.h" />
     <ClInclude Include="RenderPass.h" />
     <ClInclude Include="ShaderCompiler.h" />
     <ClInclude Include="TextFormatter.h" />
     <ClInclude Include="Texture.h" />
+    <ClInclude Include="Typedef.h" />
     <ClInclude Include="VulkanBuffer.h" />
   </ItemGroup>
   <ItemGroup>

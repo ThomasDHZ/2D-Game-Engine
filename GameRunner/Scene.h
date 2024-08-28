@@ -1,20 +1,22 @@
 #pragma once
 extern "C"
 {
-#include <Global.h>
-#include <VulkanRenderer.h>
+	#include <Global.h>
+	#include <VulkanRenderer.h>
 }
 #include <InterfaceRenderPass.h>
 #include "RenderPass2D.h"
 #include <Texture.h>
 #include <FrameBufferRenderPass.h>
-#include <RendereredColorTexture2D.h>
+#include <RenderedColorTexture.h>
+#include "RenderPass2D.h"
 
 class Scene
 {
 	private:
 		std::shared_ptr<Texture> texture;
 		FrameBufferRenderPass frameRenderPass;
+		RenderPass2D		  renderPass2D;
 	public:
 		void StartUp();
 		void Update();

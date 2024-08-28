@@ -1,10 +1,10 @@
-#include "RendereredColorTexture2D.h"
+#include "RenderedColorTexture.h"
 
-RendereredColorTexture2D::RendereredColorTexture2D() : Texture()
+RenderedColorTexture::RenderedColorTexture() : Texture()
 {
 }
 
-RendereredColorTexture2D::RendereredColorTexture2D(glm::ivec2& textureResolution, VkFormat format) : Texture()
+RenderedColorTexture::RenderedColorTexture(glm::ivec2& textureResolution, VkFormat format) : Texture()
 {
     Width = textureResolution.x;
     Height = textureResolution.y;
@@ -19,11 +19,11 @@ RendereredColorTexture2D::RendereredColorTexture2D(glm::ivec2& textureResolution
     ImGuiDescriptorSet = ImGui_ImplVulkan_AddTexture(Sampler, View, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 }
 
-RendereredColorTexture2D::~RendereredColorTexture2D()
+RenderedColorTexture::~RenderedColorTexture()
 {
 }
 
-void RendereredColorTexture2D::CreateTextureSampler()
+void RenderedColorTexture::CreateTextureSampler()
 {
     VkSamplerCreateInfo TextureImageSamplerInfo =
     {
@@ -44,10 +44,6 @@ void RendereredColorTexture2D::CreateTextureSampler()
         .borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK,         
         .unnormalizedCoordinates = VK_FALSE,                       
     };
-	VkResult result = Texture_CreateTextureSampler(SendCTextureInfo().get(), &TextureImageSamplerInfo);
-	if (result != VkResult::VK_SUCCESS)
-	{
-
-	}
+	VULKAN_RESULT(Texture_CreateTextureSampler(SendCTextureInfo().get(), &TextureImageSamplerInfo));
 }
 

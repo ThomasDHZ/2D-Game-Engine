@@ -133,7 +133,7 @@ void Texture_GenerateMipmaps(struct TextureInfo* textureInfo)
 			.subresourceRange.layerCount = 1,
 			.subresourceRange.levelCount = 1,
 		};
-		for (uint32_t x = 1; x < *textureInfo->MipMapLevels; x++)
+		for (uint32 x = 1; x < *textureInfo->MipMapLevels; x++)
 		{
 			ImageMemoryBarrier.subresourceRange.baseMipLevel = x - 1;
 			ImageMemoryBarrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;

@@ -79,7 +79,7 @@ private:
             {
                 .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
                 .renderPass = RenderPass,
-                .attachmentCount = static_cast<uint32_t>(attachments.size()),
+                .attachmentCount = static_cast<uint32>(attachments.size()),
                 .pAttachments = attachments.data(),
                 .width = global.Renderer.SwapChain.SwapChainResolution.width,
                 .height = global.Renderer.SwapChain.SwapChainResolution.height,
@@ -151,7 +151,7 @@ public:
             .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,
             .flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT,
             .maxSets = 1000 * IM_ARRAYSIZE(poolSizes),
-            .poolSizeCount = (uint32_t)IM_ARRAYSIZE(poolSizes),
+            .poolSizeCount = (uint32)IM_ARRAYSIZE(poolSizes),
             .pPoolSizes = poolSizes
         };
         VULKAN_RESULT(Renderer_CreateDescriptorPool(&ImGuiDescriptorPool, &pool_info));
@@ -206,7 +206,7 @@ public:
                  .offset = { 0, 0 },
                  .extent = global.Renderer.SwapChain.SwapChainResolution,
              },
-             .clearValueCount = static_cast<uint32_t>(clearValues.size()),
+             .clearValueCount = static_cast<uint32>(clearValues.size()),
              .pClearValues = clearValues.data()
          };
 

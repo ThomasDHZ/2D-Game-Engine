@@ -46,7 +46,7 @@ typedef struct TextureInfo
     int* Width;
     int* Height;
     int* Depth;
-    uint32_t* MipMapLevels;
+    uint32* MipMapLevels;
 
     VkDescriptorSet* ImGuiDescriptorSet;
     VkImage* Image;

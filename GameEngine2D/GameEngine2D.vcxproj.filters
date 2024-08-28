@@ -87,7 +87,7 @@
     <ClCompile Include="FrameBufferRenderPass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RendereredColorTexture2D.cpp">
+    <ClCompile Include="RenderedColorTexture.cpp">
       <Filter>Source Files\Texture</Filter>
     </ClCompile>
     <ClCompile Include="Texture.cpp">
@@ -170,7 +170,7 @@
     <ClInclude Include="Texture.h">
       <Filter>Header Files\Texture</Filter>
     </ClInclude>
-    <ClInclude Include="RendereredColorTexture2D.h">
+    <ClInclude Include="RenderedColorTexture.h">
       <Filter>Header Files\Texture</Filter>
     </ClInclude>
     <ClInclude Include="LogLevel.h">
@@ -199,6 +199,9 @@
     </ClInclude>
     <ClInclude Include="TextFormatter.h">
       <Filter>Header Files\Logger</Filter>
+    </ClInclude>
+    <ClInclude Include="Typedef.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

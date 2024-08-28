@@ -11,8 +11,10 @@ RenderPass2D::~RenderPass2D()
 {
 }
 
-void RenderPass2D::BuildRenderPass(std::shared_ptr<Texture> texture)
+void RenderPass2D::BuildRenderPass()
 {
+    RenderedTexture = std::make_shared<RenderedColorTexture>(RenderedColorTexture(RenderPassResolution, VK_FORMAT_R32G32B32A32_SFLOAT));
+
     std::vector<VkAttachmentDescription> attachmentDescriptionList
     {
         VkAttachmentDescription
@@ -45,7 +47,7 @@ void RenderPass2D::BuildRenderPass(std::shared_ptr<Texture> texture)
         VkSubpassDescription
         {
             .pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS,
-            .colorAttachmentCount = static_cast<uint32_t>(colorRefsList.size()),
+            .colorAttachmentCount = static_cast<uint32>(colorRefsList.size()),
             .pColorAttachments = colorRefsList.data(),
             .pResolveAttachments = multiSampleReferenceList.data(),
             .pDepthStencilAttachment = depthReference.data()
@@ -71,11 +73,11 @@ void RenderPass2D::BuildRenderPass(std::shared_ptr<Texture> texture)
       .pAttachmentList = attachmentDescriptionList.data(),
       .pSubpassDescriptionList = subpassDescriptionList.data(),
       .pSubpassDependencyList = subpassDependencyList.data(),
-      .AttachmentCount = static_cast<uint32_t>(attachmentDescriptionList.size()),
-      .SubpassCount = static_cast<uint32_t>(subpassDescriptionList.size()),
-      .DependencyCount = static_cast<uint32_t>(subpassDependencyList.size()),
-      .Width = static_cast<uint32_t>(RenderPassResolution.x),
-      .Height = static_cast<uint32_t>(RenderPassResolution.y)
+      .AttachmentCount = static_cast<uint32>(attachmentDescriptionList.size()),
+      .SubpassCount = static_cast<uint32>(subpassDescriptionList.size()),
+      .DependencyCount = static_cast<uint32>(subpassDependencyList.size()),
+      .Width = static_cast<uint32>(RenderPassResolution.x),
+      .Height = static_cast<uint32>(RenderPassResolution.y)
     };
     VULKAN_RESULT(Renderer_CreateRenderPass(&renderPassCreateInfo));
 
@@ -88,18 +90,18 @@ void RenderPass2D::BuildRenderPass(std::shared_ptr<Texture> texture)
         {
             .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
             .renderPass = RenderPassPtr,
-            .attachmentCount = static_cast<uint32_t>(TextureAttachmentList.size()),
+            .attachmentCount = static_cast<uint32>(TextureAttachmentList.size()),
             .pAttachments = TextureAttachmentList.data(),
-            .width = static_cast<uint32_t>(RenderPassResolution.x),
-            .height = static_cast<uint32_t>(RenderPassResolution.y),
+            .width = static_cast<uint32>(RenderPassResolution.x),
+            .height = static_cast<uint32>(RenderPassResolution.y),
             .layers = 1
         };
         VULKAN_RESULT(vkCreateFramebuffer(global.Renderer.Device, &framebufferInfo, nullptr, &FrameBufferList[x]));
     }
-    BuildRenderPipeline(texture);
+    BuildRenderPipeline();
 }
 
-void RenderPass2D::BuildRenderPipeline(std::shared_ptr<Texture> texture)
+void RenderPass2D::BuildRenderPipeline()
 {
     std::vector<VkDescriptorPoolSize> DescriptorPoolBinding =
     {
@@ -113,7 +115,7 @@ void RenderPass2D::BuildRenderPipeline(std::shared_ptr<Texture> texture)
     {
         .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,
         .maxSets = global.Renderer.SwapChain.SwapChainImageCount,
-        .poolSizeCount = static_cast<uint32_t>(DescriptorPoolBinding.size()),
+        .poolSizeCount = static_cast<uint32>(DescriptorPoolBinding.size()),
         .pPoolSizes = DescriptorPoolBinding.data(),
     };
     VULKAN_RESULT(Renderer_CreateDescriptorPool(&DescriptorPool, &poolInfo));
@@ -127,7 +129,7 @@ void RenderPass2D::BuildRenderPipeline(std::shared_ptr<Texture> texture)
     VkDescriptorSetLayoutCreateInfo layoutInfo
     {
         .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
-        .bindingCount = static_cast<uint32_t>(LayoutBindingList.size()),
+        .bindingCount = static_cast<uint32>(LayoutBindingList.size()),
         .pBindings = LayoutBindingList.data(),
     };
     VULKAN_RESULT(Renderer_CreateDescriptorSetLayout(&DescriptorSetLayout, &layoutInfo));
@@ -145,8 +147,8 @@ void RenderPass2D::BuildRenderPipeline(std::shared_ptr<Texture> texture)
     {
         VkDescriptorImageInfo
         {
-            .sampler = texture->Sampler,
-            .imageView = texture->View,
+            //.sampler = texture->Sampler,
+            //.imageView = texture->View,
             .imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
         }
     };
@@ -179,9 +181,9 @@ void RenderPass2D::BuildRenderPipeline(std::shared_ptr<Texture> texture)
 
       VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
       vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-      vertexInputInfo.vertexBindingDescriptionCount = static_cast<uint32_t>(bindingDescriptions.size());
+      vertexInputInfo.vertexBindingDescriptionCount = static_cast<uint32>(bindingDescriptions.size());
       vertexInputInfo.pVertexBindingDescriptions = bindingDescriptions.data();
-      vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
+      vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32>(attributeDescriptions.size());
       vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();*/
 
     VkPipelineVertexInputStateCreateInfo vertexInputInfo
@@ -216,8 +218,8 @@ void RenderPass2D::BuildRenderPipeline(std::shared_ptr<Texture> texture)
             .offset = { 0, 0 },
             .extent =
             {
-                static_cast<uint32_t>(RenderPassResolution.x),
-                static_cast<uint32_t>(RenderPassResolution.y)
+                static_cast<uint32>(RenderPassResolution.x),
+                static_cast<uint32>(RenderPassResolution.y)
             }
         }
     };
@@ -280,7 +282,7 @@ void RenderPass2D::BuildRenderPipeline(std::shared_ptr<Texture> texture)
     VkPipelineColorBlendStateCreateInfo colorBlending
     {
         .sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO,
-        .attachmentCount = static_cast<uint32_t>(blendAttachmentList.size()),
+        .attachmentCount = static_cast<uint32>(blendAttachmentList.size()),
         .pAttachments = blendAttachmentList.data()
     };
 
@@ -310,7 +312,7 @@ void RenderPass2D::BuildRenderPipeline(std::shared_ptr<Texture> texture)
         VkGraphicsPipelineCreateInfo
         {
             .sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
-            .stageCount = static_cast<uint32_t>(PipelineShaderStageList.size()),
+            .stageCount = static_cast<uint32>(PipelineShaderStageList.size()),
             .pStages = PipelineShaderStageList.data(),
             .pVertexInputState = &vertexInputInfo,
             .pInputAssemblyState = &inputAssembly,
@@ -325,7 +327,7 @@ void RenderPass2D::BuildRenderPipeline(std::shared_ptr<Texture> texture)
             .basePipelineHandle = VK_NULL_HANDLE
         }
     };
-    VULKAN_RESULT(Renderer_CreateGraphicsPipelines(&ShaderPipeline, pipelineInfo.data(), static_cast<uint32_t>(pipelineInfo.size())));
+    VULKAN_RESULT(Renderer_CreateGraphicsPipelines(&ShaderPipeline, pipelineInfo.data(), static_cast<uint32>(pipelineInfo.size())));
 
     for (auto& shader : PipelineShaderStageList)
     {
@@ -333,7 +335,7 @@ void RenderPass2D::BuildRenderPipeline(std::shared_ptr<Texture> texture)
     }
 }
 
-void RenderPass2D::UpdateRenderPass(std::shared_ptr<Texture> texture)
+void RenderPass2D::UpdateRenderPass()
 {
     Renderer_DestroyFrameBuffers(FrameBufferList.data());
     Renderer_DestroyRenderPass(&RenderPassPtr);
@@ -344,7 +346,7 @@ void RenderPass2D::UpdateRenderPass(std::shared_ptr<Texture> texture)
     Renderer_DestroyDescriptorPool(&DescriptorPool);
     RenderPassResolution = glm::ivec2((int)global.Renderer.SwapChain.SwapChainResolution.width, (int)global.Renderer.SwapChain.SwapChainResolution.height);
     SampleCount = VK_SAMPLE_COUNT_1_BIT;
-    BuildRenderPass(texture);
+    BuildRenderPass();
 }
 
 VkCommandBuffer RenderPass2D::Draw()
@@ -374,8 +376,8 @@ VkCommandBuffer RenderPass2D::Draw()
             .offset = { 0, 0 },
             .extent =
             {
-                static_cast<uint32_t>(global.Renderer.SwapChain.SwapChainResolution.width),
-                static_cast<uint32_t>(global.Renderer.SwapChain.SwapChainResolution.height)
+                static_cast<uint32>(global.Renderer.SwapChain.SwapChainResolution.width),
+                static_cast<uint32>(global.Renderer.SwapChain.SwapChainResolution.height)
             }
         }
     };
@@ -390,11 +392,11 @@ VkCommandBuffer RenderPass2D::Draw()
             .offset = {0, 0},
             .extent =
             {
-                static_cast<uint32_t>(global.Renderer.SwapChain.SwapChainResolution.width),
-                static_cast<uint32_t>(global.Renderer.SwapChain.SwapChainResolution.height)
+                static_cast<uint32>(global.Renderer.SwapChain.SwapChainResolution.width),
+                static_cast<uint32>(global.Renderer.SwapChain.SwapChainResolution.height)
             }
         },
-        .clearValueCount = static_cast<uint32_t>(clearValues.size()),
+        .clearValueCount = static_cast<uint32>(clearValues.size()),
         .pClearValues = clearValues.data()
     };
 
@@ -406,8 +408,8 @@ VkCommandBuffer RenderPass2D::Draw()
 
     VULKAN_RESULT(vkBeginCommandBuffer(CommandBufferList[global.Renderer.CommandIndex], &CommandBufferBeginInfo));
     vkCmdBeginRenderPass(CommandBufferList[global.Renderer.CommandIndex], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-    vkCmdSetViewport(CommandBufferList[global.Renderer.CommandIndex], 0, static_cast<uint32_t>(viewport.size()), viewport.data());
-    vkCmdSetScissor(CommandBufferList[global.Renderer.CommandIndex], 0, static_cast<uint32_t>(rect2D.size()), rect2D.data());
+    vkCmdSetViewport(CommandBufferList[global.Renderer.CommandIndex], 0, static_cast<uint32>(viewport.size()), viewport.data());
+    vkCmdSetScissor(CommandBufferList[global.Renderer.CommandIndex], 0, static_cast<uint32>(rect2D.size()), rect2D.data());
     vkCmdBindPipeline(CommandBufferList[global.Renderer.CommandIndex], VK_PIPELINE_BIND_POINT_GRAPHICS, ShaderPipeline);
     vkCmdBindDescriptorSets(CommandBufferList[global.Renderer.CommandIndex], VK_PIPELINE_BIND_POINT_GRAPHICS, ShaderPipelineLayout, 0, 1, &DescriptorSet, 0, nullptr);
     vkCmdDraw(CommandBufferList[global.Renderer.CommandIndex], 6, 1, 0, 0);

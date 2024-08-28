@@ -8,7 +8,7 @@ struct BufferInfo
     VkDeviceSize* BufferSize;
     VkBufferUsageFlags* BufferUsage;
     VkMemoryPropertyFlags* BufferProperties;
-    uint64_t* BufferDeviceAddress;
+    uint64* BufferDeviceAddress;
     VkAccelerationStructureKHR* BufferHandle;
     void** BufferData;
 };

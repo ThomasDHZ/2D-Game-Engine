@@ -21,7 +21,7 @@ private:
 	//static Microsoft::WRL::ComPtr<IDxcIncludeHandler> DefaultIncludeHandler;
 
 	//static std::string ConvertLPCWSTRToString(LPCWSTR lpcwszStr);
-	//static void uint32ToUnsignedCharString(uint32_t value, std::string& string);
+	//static void uint32ToUnsignedCharString(uint32 value, std::string& string);
 	//static VkShaderModule CompileHLSLShader(const std::string& path, VkShaderStageFlagBits stage);
 	static VkShaderModule BuildGLSLShader(const char* path);
 	//static Microsoft::WRL::ComPtr<IDxcBlob> BuildHLSLShader(const std::string& path, VkShaderStageFlagBits stage);

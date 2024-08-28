@@ -36,9 +36,9 @@ static VkValidationFeatureDisableEXT disabledList[] = { VK_VALIDATION_FEATURE_DI
 //PFN_vkGetRayTracingShaderGroupHandlesKHR vkGetRayTracingShaderGroupHandlesKHR;
 //PFN_vkCreateRayTracingPipelinesKHR vkCreateRayTracingPipelinesKHR;
 
-static bool Array_RendererExtensionPropertiesSearch(VkExtensionProperties* array, uint32_t arrayCount, const char* target)
+static bool Array_RendererExtensionPropertiesSearch(VkExtensionProperties* array, uint32 arrayCount, const char* target)
 {
-    for (uint32_t x = 0; x < arrayCount; x++)
+    for (uint32 x = 0; x < arrayCount; x++)
     {
         if (strcmp(array[x].extensionName, target) == 0)
         {
@@ -80,9 +80,9 @@ VKAPI_ATTR VkBool32 VKAPI_CALL Vulkan_DebugCallBack(VkDebugUtilsMessageSeverityF
     return VK_FALSE;
 }
 
-static VkExtensionProperties* GetDeviceExtensions(VkPhysicalDevice* physicalDevice, uint32_t* deviceExtensionCountPtr)
+static VkExtensionProperties* GetDeviceExtensions(VkPhysicalDevice* physicalDevice, uint32* deviceExtensionCountPtr)
 {
-    uint32_t deviceExtensionCount = 0;
+    uint32 deviceExtensionCount = 0;
     VULKAN_RESULT(vkEnumerateDeviceExtensionProperties(physicalDevice, NULL, &deviceExtensionCount, NULL));
 
     VkExtensionProperties* deviceExtensions = malloc(sizeof(VkExtensionProperties) * deviceExtensionCount);
@@ -100,7 +100,7 @@ static VkExtensionProperties* GetDeviceExtensions(VkPhysicalDevice* physicalDevi
 
 static VkSurfaceFormatKHR* GetSurfaceFormats(VkPhysicalDevice* physicalDevice)
 {
-    uint32_t surfaceFormatCount;
+    uint32 surfaceFormatCount;
     VULKAN_RESULT(vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, global.Renderer.Surface, &surfaceFormatCount, NULL));
     if (surfaceFormatCount > 0)
     {
@@ -119,7 +119,7 @@ static VkSurfaceFormatKHR* GetSurfaceFormats(VkPhysicalDevice* physicalDevice)
 
 static VkPresentModeKHR* GetPresentModes(VkPhysicalDevice* physicalDevice)
 {
-    uint32_t presentModeCount;
+    uint32 presentModeCount;
     VULKAN_RESULT(vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, global.Renderer.Surface, &presentModeCount, NULL));
     if (presentModeCount > 0)
     {
@@ -138,7 +138,7 @@ static VkPresentModeKHR* GetPresentModes(VkPhysicalDevice* physicalDevice)
 
 static bool GetRayTracingSupport()
 {
-    uint32_t deviceExtensionCount = INT32_MAX;
+    uint32 deviceExtensionCount = INT32_MAX;
     VkExtensionProperties* deviceExtensions = GetDeviceExtensions(global.Renderer.PhysicalDevice, &deviceExtensionCount);
     VkPhysicalDeviceAccelerationStructureFeaturesKHR physicalDeviceAccelerationStructureFeatures =
     {
@@ -164,7 +164,7 @@ static bool GetRayTracingSupport()
         if (Array_RendererExtensionPropertiesSearch(deviceExtensions, deviceExtensionCount, VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME) &&
             Array_RendererExtensionPropertiesSearch(deviceExtensions, deviceExtensionCount, VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME))
         {
-            uint32_t extensionCount;
+            uint32 extensionCount;
             SDL_Vulkan_GetInstanceExtensions(global.Window.SDLWindow, &extensionCount, NULL);
 
             const char** extensions = malloc(sizeof(const char*) * (extensionCount + 3));
@@ -263,7 +263,7 @@ VkResult Renderer_RendererSetUp()
 {
     global.Renderer.RebuildRendererFlag = false;
 
-    uint32_t extensionCount;
+    uint32 extensionCount;
     SDL_Vulkan_GetInstanceExtensions(global.Window.SDLWindow, &extensionCount, NULL);
     const char** extensions = malloc(sizeof(const char*) * (extensionCount + 1));
     if (!extensions)
@@ -323,7 +323,7 @@ VkResult Renderer_RendererSetUp()
         return;
     }
 
-    uint32_t deviceCount = UINT32_MAX;
+    uint32 deviceCount = UINT32_MAX;
     VULKAN_RESULT(vkEnumeratePhysicalDevices(global.Renderer.Instance, &deviceCount, NULL));
 
     VkPhysicalDevice* physicalDeviceList = malloc(sizeof(VkPhysicalDevice) * deviceCount);
@@ -359,7 +359,7 @@ VkResult Renderer_RendererSetUp()
 
     float queuePriority = 1.0f;
     VkDeviceQueueCreateInfo queueCreateInfo[2];
-    uint32_t queueCreateInfoCount = 0;
+    uint32 queueCreateInfoCount = 0;
     if (global.Renderer.SwapChain.GraphicsFamily != UINT32_MAX)
     {
         queueCreateInfo[queueCreateInfoCount++] = (VkDeviceQueueCreateInfo){
@@ -580,7 +580,7 @@ VkResult Renderer_AllocateCommandBuffers(VkCommandBuffer* commandBuffer, VkComma
     return vkAllocateCommandBuffers(global.Renderer.Device, &ImGuiCommandBuffers, &commandBuffer);
 }
 
-VkResult Renderer_CreateGraphicsPipelines(VkPipeline* graphicPipeline, VkGraphicsPipelineCreateInfo* createGraphicPipelines, uint32_t createGraphicPipelinesCount)
+VkResult Renderer_CreateGraphicsPipelines(VkPipeline* graphicPipeline, VkGraphicsPipelineCreateInfo* createGraphicPipelines, uint32 createGraphicPipelinesCount)
 {
     return vkCreateGraphicsPipelines(global.Renderer.Device, VK_NULL_HANDLE, createGraphicPipelinesCount, createGraphicPipelines, NULL, graphicPipeline);
 }
@@ -590,7 +590,7 @@ VkResult Renderer_CreateCommandPool(VkCommandPool* commandPool, VkCommandPoolCre
     return vkCreateCommandPool(global.Renderer.Device, commandPoolInfo, NULL, commandPool);
 }
 
-void Renderer_UpdateDescriptorSet(VkWriteDescriptorSet* writeDescriptorSet, uint32_t count)
+void Renderer_UpdateDescriptorSet(VkWriteDescriptorSet* writeDescriptorSet, uint32 count)
 {
     vkUpdateDescriptorSets(global.Renderer.Device, count, writeDescriptorSet, 0, NULL);
 }
@@ -625,7 +625,7 @@ VkResult Renderer_StartFrame()
     return result;
 }
 
-VkResult Renderer_EndFrame(VkCommandBuffer* pCommandBufferSubmitList, uint32_t commandBufferCount)
+VkResult Renderer_EndFrame(VkCommandBuffer* pCommandBufferSubmitList, uint32 commandBufferCount)
 {
     VkPipelineStageFlags waitStages[] =
     {
@@ -708,12 +708,12 @@ VkResult Renderer_SubmitDraw(VkCommandBuffer* pCommandBufferSubmitList)
     return result;
 }
 
-uint32_t Renderer_GetMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties)
+uint32 Renderer_GetMemoryType(uint32 typeFilter, VkMemoryPropertyFlags properties)
 {
     VkPhysicalDeviceMemoryProperties memProperties;
     vkGetPhysicalDeviceMemoryProperties(global.Renderer.PhysicalDevice, &memProperties);
 
-    for (uint32_t x = 0; x < memProperties.memoryTypeCount; x++)
+    for (uint32 x = 0; x < memProperties.memoryTypeCount; x++)
     {
         if ((typeFilter & (1 << x)) &&
             (memProperties.memoryTypes[x].propertyFlags & properties) == properties)

@@ -3,7 +3,7 @@
 
 static WindowState state = { 0 };
 
-void GameEngine_CreateGraphicsWindow(const char* WindowName, uint32_t width, uint32_t height)
+void GameEngine_CreateGraphicsWindow(const char* WindowName, uint32 width, uint32 height)
 {
     if (SDL_Init(SDL_INIT_VIDEO) < 0)
     {
