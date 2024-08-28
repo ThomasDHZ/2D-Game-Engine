@@ -63,9 +63,9 @@ Texture::~Texture()
 void Texture::Destroy()
 {
 	Renderer_DestroyImageView(&View);
+	Renderer_DestroySampler(&Sampler);
 	Renderer_DestroyImage(&Image);
 	Renderer_FreeMemory(&Memory);
-	Renderer_DestroySampler(&Sampler);
 }
 
 void Texture::CreateImageTexture(const std::string& FilePath)
@@ -82,7 +82,6 @@ void Texture::CreateImageTexture(const std::string& FilePath)
 	Texture_TransitionImageLayout(SendCTextureInfo().get(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 	Texture_CopyBufferToTexture(SendCTextureInfo().get(), &buffer.Buffer);
 	Texture_GenerateMipmaps(SendCTextureInfo().get());
-	Texture_TransitionImageLayout(SendCTextureInfo().get(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 	Buffer_DestroyBuffer(buffer.SendCBufferInfo().get());
 	stbi_image_free(data);
 }

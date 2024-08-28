@@ -7,9 +7,6 @@
 class FrameBufferRenderPass : public RenderPass
 {
 private:
-	std::shared_ptr<Texture> RenderedTexture;
-	std::shared_ptr<Texture> BloomTexture;
-
 	VkDescriptorPool DescriptorPool = VK_NULL_HANDLE;
 	VkDescriptorSetLayout DescriptorSetLayout = VK_NULL_HANDLE;
 	VkDescriptorSet DescriptorSet = VK_NULL_HANDLE;
@@ -22,7 +19,7 @@ public:
 	virtual ~FrameBufferRenderPass();
 
 	void BuildRenderPass(std::shared_ptr<Texture> renderedTexture);
-	void BuildRenderPipeline();
+	void BuildRenderPipeline(std::shared_ptr<Texture> renderedTexture);
 	VkCommandBuffer Draw();
 	void Destroy() override;
 };

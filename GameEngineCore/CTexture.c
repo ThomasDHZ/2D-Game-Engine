@@ -8,9 +8,12 @@ void Texture_CreateTextureImage(struct TextureInfo* textureInfo)
 		.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
 		.imageType = VK_IMAGE_TYPE_2D,
 		.format = *textureInfo->TextureByteFormat,
-		.extent = {.width = *textureInfo->Width,
-					.height = *textureInfo->Height,
-					.depth = 1},
+		.extent = 
+		{
+			.width = *textureInfo->Width,
+			.height = *textureInfo->Height,
+			.depth = 1
+		},
 		.mipLevels = *textureInfo->MipMapLevels,
 		.arrayLayers = 1,
 		.samples = VK_SAMPLE_COUNT_1_BIT,
@@ -32,8 +35,6 @@ void Texture_CreateTextureImage(struct TextureInfo* textureInfo)
 	};
 	VULKAN_RESULT(vkAllocateMemory(global.Renderer.Device, &allocInfo, NULL, textureInfo->Memory));
 	VULKAN_RESULT(vkBindImageMemory(global.Renderer.Device, *textureInfo->Image, *textureInfo->Memory, 0));
-	
-	*textureInfo->TextureImageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 }
 
 void Texture_TransitionImageLayout(struct TextureInfo* textureInfo, VkImageLayout newImageLayout)
@@ -77,8 +78,6 @@ void Texture_TransitionImageLayout(struct TextureInfo* textureInfo, VkImageLayou
 
 	vkCmdPipelineBarrier(commandBuffer, sourceStage, destinationStage, 0, 0, NULL, 0, NULL, 1, &barrier);
 	VULKAN_RESULT(Renderer_EndSingleUseCommandBuffer(commandBuffer));
-
-	*textureInfo->TextureImageLayout = newImageLayout;
 }
 
 void Texture_CopyBufferToTexture(struct TextureInfo* textureInfo, VkBuffer* buffer)

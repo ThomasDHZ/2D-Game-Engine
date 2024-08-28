@@ -11,7 +11,8 @@ static const char* DeviceExtensionList[] = {
     VK_KHR_SHADER_NON_SEMANTIC_INFO_EXTENSION_NAME,
     VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME,
     VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME,
-    VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME  // Add this line for the required extension
+    VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME,
+    VK_EXT_ROBUSTNESS_2_EXTENSION_NAME
 };
 
 static const char* ValidationLayers[] = { "VK_LAYER_KHRONOS_validation" };
@@ -503,16 +504,16 @@ VkResult Renderer_RendererSetUp()
     vkGetDeviceQueue(global.Renderer.Device, global.Renderer.SwapChain.PresentFamily, 0, &global.Renderer.SwapChain.PresentQueue);
     free(extensions);
 
-    PFN_vkGetBufferDeviceAddressKHR vkGetBufferDeviceAddressKHR = (PFN_vkGetBufferDeviceAddressKHR)(vkGetDeviceProcAddr(global.Renderer.Device, "vkGetBufferDeviceAddressKHR"));
-    PFN_vkCreateAccelerationStructureKHR vkCreateAccelerationStructureKHR = (PFN_vkCreateAccelerationStructureKHR)(vkGetDeviceProcAddr(global.Renderer.Device, "vkCreateAccelerationStructureKHR"));
-    PFN_vkDestroyAccelerationStructureKHR vkDestroyAccelerationStructureKHR = (PFN_vkDestroyAccelerationStructureKHR)(vkGetDeviceProcAddr(global.Renderer.Device, "vkDestroyAccelerationStructureKHR"));
-    PFN_vkGetAccelerationStructureBuildSizesKHR vkGetAccelerationStructureBuildSizesKHR = (PFN_vkGetAccelerationStructureBuildSizesKHR)(vkGetDeviceProcAddr(global.Renderer.Device, "vkGetAccelerationStructureBuildSizesKHR"));
-    PFN_vkGetAccelerationStructureDeviceAddressKHR vkGetAccelerationStructureDeviceAddressKHR = (PFN_vkGetAccelerationStructureDeviceAddressKHR)(vkGetDeviceProcAddr(global.Renderer.Device, "vkGetAccelerationStructureDeviceAddressKHR"));
-    PFN_vkCmdBuildAccelerationStructuresKHR vkCmdBuildAccelerationStructuresKHR = (PFN_vkCmdBuildAccelerationStructuresKHR)(vkGetDeviceProcAddr(global.Renderer.Device, "vkCmdBuildAccelerationStructuresKHR"));
-    PFN_vkBuildAccelerationStructuresKHR vkBuildAccelerationStructuresKHR = (PFN_vkBuildAccelerationStructuresKHR)(vkGetDeviceProcAddr(global.Renderer.Device, "vkBuildAccelerationStructuresKHR"));
-    PFN_vkCmdTraceRaysKHR vkCmdTraceRaysKHR = (PFN_vkCmdTraceRaysKHR)(vkGetDeviceProcAddr(global.Renderer.Device, "vkCmdTraceRaysKHR"));
-    PFN_vkGetRayTracingShaderGroupHandlesKHR vkGetRayTracingShaderGroupHandlesKHR = (PFN_vkGetRayTracingShaderGroupHandlesKHR)(vkGetDeviceProcAddr(global.Renderer.Device, "vkGetRayTracingShaderGroupHandlesKHR"));
-    PFN_vkCreateRayTracingPipelinesKHR vkCreateRayTracingPipelinesKHR = (PFN_vkCreateRayTracingPipelinesKHR)(vkGetDeviceProcAddr(global.Renderer.Device, "vkCreateRayTracingPipelinesKHR"));
+    //PFN_vkGetBufferDeviceAddressKHR vkGetBufferDeviceAddressKHR = (PFN_vkGetBufferDeviceAddressKHR)(vkGetDeviceProcAddr(global.Renderer.Device, "vkGetBufferDeviceAddressKHR"));
+    //PFN_vkCreateAccelerationStructureKHR vkCreateAccelerationStructureKHR = (PFN_vkCreateAccelerationStructureKHR)(vkGetDeviceProcAddr(global.Renderer.Device, "vkCreateAccelerationStructureKHR"));
+    //PFN_vkDestroyAccelerationStructureKHR vkDestroyAccelerationStructureKHR = (PFN_vkDestroyAccelerationStructureKHR)(vkGetDeviceProcAddr(global.Renderer.Device, "vkDestroyAccelerationStructureKHR"));
+    //PFN_vkGetAccelerationStructureBuildSizesKHR vkGetAccelerationStructureBuildSizesKHR = (PFN_vkGetAccelerationStructureBuildSizesKHR)(vkGetDeviceProcAddr(global.Renderer.Device, "vkGetAccelerationStructureBuildSizesKHR"));
+    //PFN_vkGetAccelerationStructureDeviceAddressKHR vkGetAccelerationStructureDeviceAddressKHR = (PFN_vkGetAccelerationStructureDeviceAddressKHR)(vkGetDeviceProcAddr(global.Renderer.Device, "vkGetAccelerationStructureDeviceAddressKHR"));
+    //PFN_vkCmdBuildAccelerationStructuresKHR vkCmdBuildAccelerationStructuresKHR = (PFN_vkCmdBuildAccelerationStructuresKHR)(vkGetDeviceProcAddr(global.Renderer.Device, "vkCmdBuildAccelerationStructuresKHR"));
+    //PFN_vkBuildAccelerationStructuresKHR vkBuildAccelerationStructuresKHR = (PFN_vkBuildAccelerationStructuresKHR)(vkGetDeviceProcAddr(global.Renderer.Device, "vkBuildAccelerationStructuresKHR"));
+    //PFN_vkCmdTraceRaysKHR vkCmdTraceRaysKHR = (PFN_vkCmdTraceRaysKHR)(vkGetDeviceProcAddr(global.Renderer.Device, "vkCmdTraceRaysKHR"));
+    //PFN_vkGetRayTracingShaderGroupHandlesKHR vkGetRayTracingShaderGroupHandlesKHR = (PFN_vkGetRayTracingShaderGroupHandlesKHR)(vkGetDeviceProcAddr(global.Renderer.Device, "vkGetRayTracingShaderGroupHandlesKHR"));
+    //PFN_vkCreateRayTracingPipelinesKHR vkCreateRayTracingPipelinesKHR = (PFN_vkCreateRayTracingPipelinesKHR)(vkGetDeviceProcAddr(global.Renderer.Device, "vkCreateRayTracingPipelinesKHR"));
 
     return VK_SUCCESS;
 }
@@ -763,8 +764,8 @@ VkResult Renderer_EndSingleUseCommandBuffer(VkCommandBuffer* commandBuffer)
 
 void Renderer_DestroyRenderer()
 {
-    Vulkan_DestroySwapChain();
     Vulkan_DestroyImageView();
+    Vulkan_DestroySwapChain();
     Renderer_DestroyCommandPool();
     Renderer_DestroyFences();
     Renderer_DestroyDevice();
@@ -849,10 +850,10 @@ void Renderer_DestroyFrameBuffers(VkFramebuffer* frameBufferList)
 {
     for (size_t x = 0; x < global.Renderer.SwapChain.SwapChainImageCount; x++)
     {
-        if (*frameBufferList != VK_NULL_HANDLE)
+        if (frameBufferList[x] != VK_NULL_HANDLE)
         {
-            vkDestroyFramebuffer(global.Renderer.Device, *frameBufferList, NULL);
-            *frameBufferList = VK_NULL_HANDLE;
+            vkDestroyFramebuffer(global.Renderer.Device, frameBufferList[x], NULL);
+            frameBufferList[x] = VK_NULL_HANDLE;
         }
     }
 }
@@ -954,7 +955,7 @@ void Renderer_DestroyPipeline(VkPipeline* pipeline)
 {
     if (*pipeline != VK_NULL_HANDLE)
     {
-        vkDestroySampler(global.Renderer.Device, *pipeline, NULL);
+        vkDestroyPipeline(global.Renderer.Device, *pipeline, NULL);
         *pipeline = VK_NULL_HANDLE;
     }
 }
@@ -963,7 +964,7 @@ void Renderer_DestroyPipelineLayout(VkPipelineLayout* pipelineLayout)
 {
     if (*pipelineLayout != VK_NULL_HANDLE)
     {
-        vkDestroySampler(global.Renderer.Device, *pipelineLayout, NULL);
+        vkDestroyPipelineLayout(global.Renderer.Device, *pipelineLayout, NULL);
         *pipelineLayout = VK_NULL_HANDLE;
     }
 }
@@ -972,7 +973,7 @@ void Renderer_DestroyPipelineCache(VkPipelineCache* pipelineCache)
 {
     if (*pipelineCache != VK_NULL_HANDLE)
     {
-        vkDestroySampler(global.Renderer.Device, *pipelineCache, NULL);
+        vkDestroyPipelineCache(global.Renderer.Device, *pipelineCache, NULL);
         *pipelineCache = VK_NULL_HANDLE;
     }
 }

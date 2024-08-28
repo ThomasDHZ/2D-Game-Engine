@@ -22,7 +22,7 @@ class RenderPass
 		RenderPass();
 		~RenderPass();
 		virtual void BuildRenderPass();
-		virtual VkCommandBuffer Draw();
+		virtual VkCommandBuffer Draw() = 0;
 		virtual void Destroy();
 };
 

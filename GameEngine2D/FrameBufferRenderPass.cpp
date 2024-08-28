@@ -13,13 +13,11 @@ FrameBufferRenderPass::~FrameBufferRenderPass()
 
 void FrameBufferRenderPass::BuildRenderPass(std::shared_ptr<Texture> texture)
 {
-    RenderedTexture = texture;
-
     std::vector<VkAttachmentDescription> attachmentDescriptionList
     {
         VkAttachmentDescription
         {
-            .format = VK_FORMAT_R8G8B8A8_UNORM,
+            .format = VK_FORMAT_B8G8R8A8_UNORM,
             .samples = VK_SAMPLE_COUNT_1_BIT,
             .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
             .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
@@ -98,10 +96,10 @@ void FrameBufferRenderPass::BuildRenderPass(std::shared_ptr<Texture> texture)
         };
         VULKAN_RESULT(vkCreateFramebuffer(global.Renderer.Device, &framebufferInfo, nullptr, &FrameBufferList[x]));
     }
-    BuildRenderPipeline();
+    BuildRenderPipeline(texture);
 }
 
-void FrameBufferRenderPass::BuildRenderPipeline()
+void FrameBufferRenderPass::BuildRenderPipeline(std::shared_ptr<Texture> texture)
 {
     std::vector<VkDescriptorPoolSize> DescriptorPoolBinding =
     {
@@ -147,8 +145,8 @@ void FrameBufferRenderPass::BuildRenderPipeline()
     {
         VkDescriptorImageInfo
         {
-            .sampler = RenderedTexture->Sampler,
-            .imageView = RenderedTexture->View,
+            .sampler = texture->Sampler,
+            .imageView = texture->View,
             .imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
         }
     };
@@ -276,8 +274,7 @@ void FrameBufferRenderPass::BuildRenderPipeline()
     VkPipelineMultisampleStateCreateInfo multisampling
     {
         .sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO,
-        .rasterizationSamples = VK_SAMPLE_COUNT_1_BIT,
-        .sampleShadingEnable = VK_TRUE
+        .rasterizationSamples = VK_SAMPLE_COUNT_1_BIT
     };
 
     VkPipelineColorBlendStateCreateInfo colorBlending
@@ -329,6 +326,11 @@ void FrameBufferRenderPass::BuildRenderPipeline()
         }
     };
    VULKAN_RESULT(Renderer_CreateGraphicsPipelines(&ShaderPipeline, pipelineInfo.data(), static_cast<uint32_t>(pipelineInfo.size())));
+
+   for (auto& shader : PipelineShaderStageList)
+   {
+       vkDestroyShaderModule(global.Renderer.Device, shader.module, nullptr);
+   }
 }
 
 VkCommandBuffer FrameBufferRenderPass::Draw()
@@ -407,4 +409,5 @@ void FrameBufferRenderPass::Destroy()
     Renderer_DestroyPipelineCache(&PipelineCache);
     Renderer_DestroyDescriptorPool(&DescriptorPool);
     Renderer_DestroyDescriptorSetLayout(&DescriptorSetLayout);
+    RenderPass::Destroy();
 }

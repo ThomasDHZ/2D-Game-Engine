@@ -3,7 +3,6 @@
 void Scene::StartUp()
 {
 	texture = std::make_shared<Texture>(Texture("../Textures/awesomeface.png", VK_FORMAT_R8G8B8A8_SRGB, TextureTypeEnum::kType_DiffuseTextureMap));
-	frameRenderPass.BuildRenderPass(texture);
 	BuildRenderers();
 }
 
@@ -25,6 +24,7 @@ void Scene::ImGuiUpdate()
 
 void Scene::BuildRenderers()
 {
+	frameRenderPass.BuildRenderPass(texture);
 }
 
 void Scene::Draw()

@@ -1,15 +1,11 @@
 #pragma once
 #include <windows.h>
 #include <SDL2/SDL.h>
+#include <stdbool.h>
 
 #include "Macro.h"
-//#include "io.h"
 #include "VulkanRendererStruct.h"
-//#include "GraphicsDevice.h"
 #include "VulkanSwapChain.h"
-#include <stdbool.h>
-//#include "Window.h"
-//#include "CArray.h"
 #include "VulkanError.h"
 
 static const int MAX_FRAMES_IN_FLIGHT = 3;

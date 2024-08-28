@@ -89,6 +89,18 @@ private:
         }
     }
 
+    static void DestroyCommandBuffers()
+    {
+        Renderer_DestroyCommandBuffers(&ImGuiCommandPool, ImGuiCommandBuffers.data());
+        ImGuiCommandBuffers.clear();
+    }
+
+    static void DestroyFrameBuffers()
+    {
+        Renderer_DestroyFrameBuffers(SwapChainFramebuffers.data());
+        SwapChainFramebuffers.clear();
+    }
+
     static void check_vk_result(VkResult err)
     {
         if (err == 0) return;
@@ -223,13 +235,12 @@ public:
 
     static void Destroy()
     {
-        Renderer_DestroyCommandBuffers(&ImGuiCommandPool, ImGuiCommandBuffers.data());
+        DestroyCommandBuffers();
         ImGui_ImplVulkan_Shutdown(); 
         Renderer_DestroyDescriptorPool(&ImGuiDescriptorPool);
         Renderer_DestroyCommnadPool(&ImGuiCommandPool);
         Renderer_DestroyRenderPass(&RenderPass);
-        Renderer_DestroyFrameBuffers(SwapChainFramebuffers.data());
-        SwapChainFramebuffers.clear(); 
+        DestroyFrameBuffers();
         ImGui_ImplSDL2_Shutdown(); 
         ImGui::DestroyContext(); 
     }
