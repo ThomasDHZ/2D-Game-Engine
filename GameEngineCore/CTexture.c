@@ -32,6 +32,8 @@ void Texture_CreateTextureImage(struct TextureInfo* textureInfo)
 	};
 	VULKAN_RESULT(vkAllocateMemory(global.Renderer.Device, &allocInfo, NULL, textureInfo->Memory));
 	VULKAN_RESULT(vkBindImageMemory(global.Renderer.Device, *textureInfo->Image, *textureInfo->Memory, 0));
+	
+	*textureInfo->TextureImageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 }
 
 void Texture_TransitionImageLayout(struct TextureInfo* textureInfo, VkImageLayout newImageLayout)
@@ -72,13 +74,11 @@ void Texture_TransitionImageLayout(struct TextureInfo* textureInfo, VkImageLayou
 		sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
 		destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
 	}
-	else
-	{
-		//throw std::invalid_argument("Unsupported layout transition.");
-	}
 
 	vkCmdPipelineBarrier(commandBuffer, sourceStage, destinationStage, 0, 0, NULL, 0, NULL, 1, &barrier);
 	VULKAN_RESULT(Renderer_EndSingleUseCommandBuffer(commandBuffer));
+
+	*textureInfo->TextureImageLayout = newImageLayout;
 }
 
 void Texture_CopyBufferToTexture(struct TextureInfo* textureInfo, VkBuffer* buffer)
@@ -185,6 +185,7 @@ void Texture_GenerateMipmaps(struct TextureInfo* textureInfo)
 
 		vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0, 0, NULL, 0, NULL, 1, &ImageMemoryBarrier);
 		VULKAN_RESULT(Renderer_EndSingleUseCommandBuffer(commandBuffer));
+		
 		*textureInfo->TextureImageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 	}
 }

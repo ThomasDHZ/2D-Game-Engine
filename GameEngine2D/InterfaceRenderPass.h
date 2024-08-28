@@ -41,23 +41,27 @@ private:
             .pColorAttachments = &colorAttachmentRef
         };
 
-        VkSubpassDependency dependency{};
-        dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
-        dependency.dstSubpass = 0;
-        dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-        dependency.srcAccessMask = 0;
-        dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-        dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+        VkSubpassDependency dependency
+        {
+            .srcSubpass = VK_SUBPASS_EXTERNAL,
+            .dstSubpass = 0,
+            .srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+            .dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+            .srcAccessMask = 0,
+            .dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT
+        };
 
-        VkRenderPassCreateInfo renderPassInfo{};
-        renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-        renderPassInfo.attachmentCount = 1;
-        renderPassInfo.pAttachments = &colorAttachment;
-        renderPassInfo.subpassCount = 1;
-        renderPassInfo.pSubpasses = &subpass;
-        renderPassInfo.dependencyCount = 1;
-        renderPassInfo.pDependencies = &dependency;
 
+        VkRenderPassCreateInfo renderPassInfo
+        {
+            .sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
+            .attachmentCount = 1,
+            .pAttachments = &colorAttachment,
+            .subpassCount = 1,
+            .pSubpasses = &subpass,
+            .dependencyCount = 1,
+            .pDependencies = &dependency
+        };
         VULKAN_RESULT(vkCreateRenderPass(global.Renderer.Device, &renderPassInfo, nullptr, &RenderPass));
     }
 
@@ -81,12 +85,7 @@ private:
                 .height = global.Renderer.SwapChain.SwapChainResolution.height,
                 .layers = 1
             };
-
-            VkResult result = vkCreateFramebuffer(global.Renderer.Device, &frameBufferInfo, nullptr, &SwapChainFramebuffers[x]);
-            if (result != VK_SUCCESS) 
-            {
-                //throw std::runtime_error("failed to create framebuffer!");
-            }
+            VULKAN_RESULT(vkCreateFramebuffer(global.Renderer.Device, &frameBufferInfo, nullptr, &SwapChainFramebuffers[x]));
         }
     }
 
@@ -103,6 +102,13 @@ public:
 
     static void StartUp()
     {
+        IMGUI_CHECKVERSION();
+        ImGui::CreateContext();
+        ImGuiIO& io = ImGui::GetIO(); (void)io;
+
+        ImGui::StyleColorsDark();
+        ImGui_ImplSDL2_InitForVulkan(global.Window.SDLWindow);
+
         CreateRenderPass();
         CreateRendererFramebuffers();
 
@@ -112,14 +118,7 @@ public:
             .flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
             .queueFamilyIndex = global.Renderer.SwapChain.GraphicsFamily
         };
-
-        VkResult commandPoolResult = vkCreateCommandPool(global.Renderer.Device, &poolInfo, nullptr, &ImGuiCommandPool);
-        if (commandPoolResult != VK_SUCCESS)
-        {
-            fprintf(stderr, "Failed to create graphics command pool: %s\n", commandPoolResult);
-            Renderer_DestroyRenderer();
-            GameEngine_DestroyWindow();
-        }
+        VULKAN_RESULT(Renderer_CreateCommandPool(&ImGuiCommandPool, &poolInfo));
 
         VkDescriptorPoolSize poolSizes[] =
         {
@@ -135,7 +134,6 @@ public:
             { VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 1000 },
             { VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 1000 }
         };
-
         VkDescriptorPoolCreateInfo pool_info = 
         {
             .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,
@@ -144,13 +142,7 @@ public:
             .poolSizeCount = (uint32_t)IM_ARRAYSIZE(poolSizes),
             .pPoolSizes = poolSizes
         };
-        VkResult createDescriptorPoolResult = vkCreateDescriptorPool(global.Renderer.Device, &pool_info, nullptr, &ImGuiDescriptorPool);
-        if (createDescriptorPoolResult != VK_SUCCESS)
-        {
-            fprintf(stderr, "Failed to create descriptor pool: %s\n", createDescriptorPoolResult);
-            Renderer_DestroyRenderer();
-            GameEngine_DestroyWindow();
-        }
+        VULKAN_RESULT(Renderer_CreateDescriptorPool(&ImGuiDescriptorPool, &pool_info));
 
         ImGuiCommandBuffers.resize(global.Renderer.SwapChain.SwapChainImageCount);
         for (size_t x = 0; x < global.Renderer.SwapChain.SwapChainImageCount; x++)
@@ -162,22 +154,8 @@ public:
                 .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
                 .commandBufferCount = 1
             };
-
-            VkResult allocateCommandBuffersResult = vkAllocateCommandBuffers(global.Renderer.Device, &commandBufferAllocateInfo, &ImGuiCommandBuffers[x]);
-            if (allocateCommandBuffersResult != VK_SUCCESS)
-            {
-                fprintf(stderr, "Failed to allocate command buffers: %s\n", allocateCommandBuffersResult);
-                Renderer_DestroyRenderer();
-                GameEngine_DestroyWindow();
-            }
+            VULKAN_RESULT(vkAllocateCommandBuffers(global.Renderer.Device, &commandBufferAllocateInfo, &ImGuiCommandBuffers[x]));
         }
-
-        IMGUI_CHECKVERSION();
-        ImGui::CreateContext();
-        ImGuiIO& io = ImGui::GetIO(); (void)io;
-
-        ImGui::StyleColorsDark();
-        ImGui_ImplSDL2_InitForVulkan(global.Window.SDLWindow);
 
         ImGui_ImplVulkan_InitInfo init_info =
         {
@@ -198,51 +176,39 @@ public:
         ImGui_ImplVulkan_CreateFontsTexture();
     }
 
-    static VkCommandBuffer Draw()
+     static VkCommandBuffer Draw()
     {
-        VkCommandBufferBeginInfo beginInfo{};
-        beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-        beginInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
+         std::vector<VkClearValue> clearValues
+         {
+             VkClearValue {.color = { {0.0f, 0.0f, 0.0f, 1.0f} } },
+             VkClearValue {.depthStencil = { 1.0f, 0 } }
+         };
 
-        VkResult beginCommandBufferResult = vkBeginCommandBuffer(ImGuiCommandBuffers[global.Renderer.CommandIndex], &beginInfo);
-        if (beginCommandBufferResult != VK_SUCCESS)
-        {
-            fprintf(stderr, "Failed to start command buffers: %s\n", beginCommandBufferResult);
-            Renderer_DestroyRenderer();
-            GameEngine_DestroyWindow();
-        }
+         VkRenderPassBeginInfo renderPassInfo
+         {
+             .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
+             .renderPass = RenderPass,
+             .framebuffer = SwapChainFramebuffers[global.Renderer.ImageIndex],
+             .renderArea
+             {
+                 .offset = { 0, 0 },
+                 .extent = global.Renderer.SwapChain.SwapChainResolution,
+             },
+             .clearValueCount = static_cast<uint32_t>(clearValues.size()),
+             .pClearValues = clearValues.data()
+         };
 
-        std::vector<VkClearValue> clearValues
+        VkCommandBufferBeginInfo beginInfo
         {
-            VkClearValue {.color = { {0.0f, 0.0f, 0.0f, 1.0f} } },
-            VkClearValue {.depthStencil = { 1.0f, 0 } }
+            .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
+            .flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT
         };
-
-        VkRenderPassBeginInfo renderPassInfo
-        {
-            .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
-            .renderPass = RenderPass,
-            .framebuffer = SwapChainFramebuffers[global.Renderer.ImageIndex],
-            .renderArea
-            {
-                .offset = { 0, 0 },
-                .extent = global.Renderer.SwapChain.SwapChainResolution,
-            },
-            .clearValueCount = static_cast<uint32_t>(clearValues.size()),
-            .pClearValues = clearValues.data()
-        };
-
+        
+        VULKAN_RESULT(vkBeginCommandBuffer(ImGuiCommandBuffers[global.Renderer.CommandIndex], &beginInfo));
         vkCmdBeginRenderPass(ImGuiCommandBuffers[global.Renderer.CommandIndex], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
         ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), ImGuiCommandBuffers[global.Renderer.CommandIndex]);
         vkCmdEndRenderPass(ImGuiCommandBuffers[global.Renderer.CommandIndex]);
-
-        VkResult endCommandBufferResult = vkEndCommandBuffer(ImGuiCommandBuffers[global.Renderer.CommandIndex]);
-        if (endCommandBufferResult != VK_SUCCESS)
-        {
-            fprintf(stderr, "Failed to end command buffers: %s\n", endCommandBufferResult);
-            Renderer_DestroyRenderer();
-            GameEngine_DestroyWindow();
-        }
+        VULKAN_RESULT(vkEndCommandBuffer(ImGuiCommandBuffers[global.Renderer.CommandIndex]));
 
         return ImGuiCommandBuffers[global.Renderer.CommandIndex];
     }

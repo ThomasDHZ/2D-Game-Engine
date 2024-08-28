@@ -75,13 +75,16 @@ void Texture::CreateImageTexture(const std::string& FilePath)
 	int colorChannels = 0;
 	unsigned char* data = stbi_load(FilePath.c_str(), width, height, &colorChannels, 0);
 	VulkanBuffer buffer(data, Width * Height * colorChannels, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+
 	MipMapLevels = static_cast<uint32_t>(std::floor(std::log2(std::max(Width, Height)))) + 1;
 
 	Texture_CreateTextureImage(SendCTextureInfo().get());
 	Texture_TransitionImageLayout(SendCTextureInfo().get(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 	Texture_CopyBufferToTexture(SendCTextureInfo().get(), &buffer.Buffer);
 	Texture_GenerateMipmaps(SendCTextureInfo().get());
+	Texture_TransitionImageLayout(SendCTextureInfo().get(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 	Buffer_DestroyBuffer(buffer.SendCBufferInfo().get());
+	stbi_image_free(data);
 }
 
 void Texture::CreateTextureView()

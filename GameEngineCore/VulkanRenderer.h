@@ -1,16 +1,15 @@
 #pragma once
 #include <windows.h>
 #include <SDL2/SDL.h>
-#include <SDL_vulkan.h>
-#include <vulkan/vulkan.h>
 
 #include "Macro.h"
-#include "io.h"
+//#include "io.h"
 #include "VulkanRendererStruct.h"
-#include "GraphicsDevice.h"
+//#include "GraphicsDevice.h"
 #include "VulkanSwapChain.h"
-#include "Window.h"
-#include "CArray.h"
+#include <stdbool.h>
+//#include "Window.h"
+//#include "CArray.h"
 #include "VulkanError.h"
 
 static const int MAX_FRAMES_IN_FLIGHT = 3;
@@ -42,7 +41,9 @@ VkResult Renderer_CreateDescriptorPool(VkDescriptorPool* descriptorPool, VkDescr
 VkResult Renderer_CreateDescriptorSetLayout(VkDescriptorSetLayout* descriptorSetLayout, VkDescriptorSetLayoutCreateInfo* descriptorSetLayoutCreateInfo);
 VkResult Renderer_CreatePipelineLayout(VkPipelineLayout* pipelineLayout, VkPipelineLayoutCreateInfo* pipelineLayoutCreateInfo);
 VkResult Renderer_AllocateDescriptorSets(VkDescriptorSet* descriptorSet, VkDescriptorSetAllocateInfo* descriptorSetAllocateInfo);
+VkResult Renderer_AllocateCommandBuffers(VkCommandBuffer* commandBuffer, VkCommandBufferAllocateInfo* ImGuiCommandBuffers);
 VkResult Renderer_CreateGraphicsPipelines(VkPipeline* graphicPipeline, VkGraphicsPipelineCreateInfo* createGraphicPipelines, uint32_t createGraphicPipelinesCount);
+VkResult Renderer_CreateCommandPool(VkCommandPool* commandPool, VkCommandPoolCreateInfo* commandPoolInfo);
 VkResult Renderer_StartFrame();
 VkResult Renderer_EndFrame(VkCommandBuffer* pCommandBufferSubmitList, uint32_t commandBufferCount);
 VkResult Renderer_BeginCommandBuffer( VkCommandBuffer* pCommandBuffer, VkCommandBufferBeginInfo* commandBufferBeginInfo);

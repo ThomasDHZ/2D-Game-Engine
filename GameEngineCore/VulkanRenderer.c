@@ -1,13 +1,18 @@
 #include "VulkanRenderer.h"
 #include "Global.h"
 
-static const char* DeviceExtensionList[] = { VK_KHR_SWAPCHAIN_EXTENSION_NAME,
-                                             VK_KHR_MAINTENANCE3_EXTENSION_NAME,
-                                             VK_KHR_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME,
-                                             VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME,
-                                             VK_KHR_SPIRV_1_4_EXTENSION_NAME,
-                                             VK_KHR_SHADER_FLOAT_CONTROLS_EXTENSION_NAME,
-                                             VK_KHR_SHADER_NON_SEMANTIC_INFO_EXTENSION_NAME };
+static const char* DeviceExtensionList[] = {
+    VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+    VK_KHR_MAINTENANCE3_EXTENSION_NAME,
+    VK_KHR_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME,
+    VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME,
+    VK_KHR_SPIRV_1_4_EXTENSION_NAME,
+    VK_KHR_SHADER_FLOAT_CONTROLS_EXTENSION_NAME,
+    VK_KHR_SHADER_NON_SEMANTIC_INFO_EXTENSION_NAME,
+    VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME,
+    VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME,
+    VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME  // Add this line for the required extension
+};
 
 static const char* ValidationLayers[] = { "VK_LAYER_KHRONOS_validation" };
 
@@ -18,6 +23,17 @@ static VkValidationFeatureDisableEXT disabledList[] = { VK_VALIDATION_FEATURE_DI
                                                         VK_VALIDATION_FEATURE_DISABLE_API_PARAMETERS_EXT,
                                                         VK_VALIDATION_FEATURE_DISABLE_OBJECT_LIFETIMES_EXT,
                                                         VK_VALIDATION_FEATURE_DISABLE_CORE_CHECKS_EXT };
+
+//PFN_vkGetBufferDeviceAddressKHR vkGetBufferDeviceAddressKHR;
+//PFN_vkCreateAccelerationStructureKHR vkCreateAccelerationStructureKHR;
+//PFN_vkDestroyAccelerationStructureKHR vkDestroyAccelerationStructureKHR;
+//PFN_vkGetAccelerationStructureBuildSizesKHR vkGetAccelerationStructureBuildSizesKHR;
+//PFN_vkGetAccelerationStructureDeviceAddressKHR vkGetAccelerationStructureDeviceAddressKHR;
+//PFN_vkCmdBuildAccelerationStructuresKHR vkCmdBuildAccelerationStructuresKHR;
+//PFN_vkBuildAccelerationStructuresKHR vkBuildAccelerationStructuresKHR;
+//PFN_vkCmdTraceRaysKHR vkCmdTraceRaysKHR;
+//PFN_vkGetRayTracingShaderGroupHandlesKHR vkGetRayTracingShaderGroupHandlesKHR;
+//PFN_vkCreateRayTracingPipelinesKHR vkCreateRayTracingPipelinesKHR;
 
 static bool Array_RendererExtensionPropertiesSearch(VkExtensionProperties* array, uint32_t arrayCount, const char* target)
 {
@@ -183,84 +199,63 @@ static bool GetRayTracingSupport()
 
 static void GetRendererFeatures(VkPhysicalDeviceVulkan11Features* physicalDeviceVulkan11Features)
 {
-    VkPhysicalDeviceBufferDeviceAddressFeatures physicalDeviceBufferDeviceAddressFeatures =
+    VkPhysicalDeviceBufferDeviceAddressFeatures bufferDeviceAddressFeatures =
     {
         .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BUFFER_DEVICE_ADDRESS_FEATURES,
-        .bufferDeviceAddress = VK_TRUE
+        .bufferDeviceAddress = VK_TRUE,
     };
 
-    if (GetRayTracingSupport())
-    {
-        VkPhysicalDeviceRayTracingPipelineFeaturesKHR physicalDeviceRayTracingPipelineFeatures =
-        {
-            .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR,
-            .rayTracingPipeline = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR
-        };
-
-        VkPhysicalDeviceRayTracingPipelinePropertiesKHR physicalDeviceRayTracingPipelineProperties =
-        {
-            .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_PROPERTIES_KHR,
-            .pNext = &physicalDeviceRayTracingPipelineFeatures
-        };
-
-        VkPhysicalDeviceAccelerationStructureFeaturesKHR rayTracingDeviceProperties =
-        {
-            .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2,
-            .pNext = &physicalDeviceRayTracingPipelineProperties
-        };
-
-        VkPhysicalDeviceAccelerationStructureFeaturesKHR accelerationStructureFeatures =
-        {
-            .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR,
-            .accelerationStructure = VK_TRUE,
-            .pNext = &rayTracingDeviceProperties
-        };
-        physicalDeviceBufferDeviceAddressFeatures.pNext = &accelerationStructureFeatures;
-    }
-
-    VkPhysicalDeviceDescriptorIndexingFeatures PhysicalDeviceDescriptorIndexingFeatures =
+    VkPhysicalDeviceDescriptorIndexingFeatures physicalDeviceDescriptorIndexingFeatures =
     {
         .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES,
         .runtimeDescriptorArray = VK_TRUE,
         .shaderSampledImageArrayNonUniformIndexing = VK_TRUE,
-        .runtimeDescriptorArray = VK_TRUE,
         .descriptorBindingVariableDescriptorCount = VK_TRUE,
-        .pNext = &physicalDeviceBufferDeviceAddressFeatures,
     };
 
-    VkPhysicalDeviceRobustness2FeaturesEXT  physicalDeviceRobustness2Features =
+    VkPhysicalDeviceRobustness2FeaturesEXT PhysicalDeviceRobustness2Features =
     {
         .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ROBUSTNESS_2_FEATURES_EXT,
         .nullDescriptor = VK_TRUE,
-        .pNext = &PhysicalDeviceDescriptorIndexingFeatures
+        .pNext = &physicalDeviceDescriptorIndexingFeatures,
     };
 
-    VkPhysicalDeviceVulkan13Features physicalDeviceVulkan13Features =
+    if (GetRayTracingSupport())
     {
-        .shaderDemoteToHelperInvocation = VK_TRUE,
-        .pNext = &physicalDeviceRobustness2Features
-    };
+        VkPhysicalDeviceAccelerationStructureFeaturesKHR accelerationStructureFeatures =
+        {
+            .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR,
+            .accelerationStructure = VK_TRUE,
+        };
 
-    VkPhysicalDeviceFeatures physicalDeviceFeatures =
+        VkPhysicalDeviceRayTracingPipelineFeaturesKHR rayTracingPipelineFeatures =
+        {
+            .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR,
+            .rayTracingPipeline = VK_TRUE,
+            .pNext = &accelerationStructureFeatures,
+        };
+
+        bufferDeviceAddressFeatures.pNext = &rayTracingPipelineFeatures;
+    }
+    PhysicalDeviceRobustness2Features.pNext = &bufferDeviceAddressFeatures;
+
+    VkPhysicalDeviceFeatures deviceFeatures =
     {
         .samplerAnisotropy = VK_TRUE,
         .fillModeNonSolid = VK_TRUE,
-        .wideLines = VK_TRUE,
-        .fragmentStoresAndAtomics = VK_TRUE,
-        .vertexPipelineStoresAndAtomics = VK_TRUE,
-        .sampleRateShading = VK_TRUE
     };
 
-    VkPhysicalDeviceFeatures2 physicalDeviceFeatures2 =
+    VkPhysicalDeviceFeatures2 deviceFeatures2 =
     {
         .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2,
-        .features = physicalDeviceFeatures,
-        .pNext = &physicalDeviceVulkan13Features
+        .features = deviceFeatures,
+        .pNext = &PhysicalDeviceRobustness2Features,
     };
 
-    physicalDeviceVulkan11Features->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_FEATURES;
-    physicalDeviceVulkan11Features->multiview = VK_TRUE;
-    physicalDeviceVulkan11Features->pNext = &physicalDeviceFeatures2;
+        physicalDeviceVulkan11Features->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_FEATURES;
+        physicalDeviceVulkan11Features->multiview = VK_TRUE;
+        physicalDeviceVulkan11Features->pNext = &deviceFeatures2;
+
 }
 
 VkResult Renderer_RendererSetUp()
@@ -358,8 +353,8 @@ VkResult Renderer_RendererSetUp()
         }
     }
 
-    VkPhysicalDeviceVulkan11Features physicalDeviceVulkan11Features;
-    GetRendererFeatures(&physicalDeviceVulkan11Features);
+    //VkPhysicalDeviceVulkan11Features physicalDeviceVulkan11Features;
+    //GetRendererFeatures(&physicalDeviceVulkan11Features);
 
     float queuePriority = 1.0f;
     VkDeviceQueueCreateInfo queueCreateInfo[2];
@@ -386,14 +381,75 @@ VkResult Renderer_RendererSetUp()
         };
     }
 
-    VkDeviceCreateInfo deviceCreateInfo = {
+    VkPhysicalDeviceBufferDeviceAddressFeatures bufferDeviceAddressFeatures =
+    {
+        .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BUFFER_DEVICE_ADDRESS_FEATURES,
+        .bufferDeviceAddress = VK_TRUE,
+    };
+
+    VkPhysicalDeviceDescriptorIndexingFeatures physicalDeviceDescriptorIndexingFeatures =
+    {
+        .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES,
+        .runtimeDescriptorArray = VK_TRUE,
+        .shaderSampledImageArrayNonUniformIndexing = VK_TRUE,
+        .descriptorBindingVariableDescriptorCount = VK_TRUE,
+    };
+
+    VkPhysicalDeviceRobustness2FeaturesEXT PhysicalDeviceRobustness2Features =
+    {
+        .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ROBUSTNESS_2_FEATURES_EXT,
+        .nullDescriptor = VK_TRUE,
+        .pNext = &physicalDeviceDescriptorIndexingFeatures,
+    };
+
+    if (GetRayTracingSupport())
+    {
+        VkPhysicalDeviceAccelerationStructureFeaturesKHR accelerationStructureFeatures =
+        {
+            .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR,
+            .accelerationStructure = VK_TRUE,
+        };
+
+        VkPhysicalDeviceRayTracingPipelineFeaturesKHR rayTracingPipelineFeatures =
+        {
+            .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR,
+            .rayTracingPipeline = VK_TRUE,
+            .pNext = &accelerationStructureFeatures,
+        };
+
+        bufferDeviceAddressFeatures.pNext = &rayTracingPipelineFeatures;
+    }
+    PhysicalDeviceRobustness2Features.pNext = &bufferDeviceAddressFeatures;
+
+    VkPhysicalDeviceFeatures deviceFeatures =
+    {
+        .samplerAnisotropy = VK_TRUE,
+        .fillModeNonSolid = VK_TRUE,
+    };
+
+    VkPhysicalDeviceFeatures2 deviceFeatures2 =
+    {
+        .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2,
+        .features = deviceFeatures,
+        .pNext = &PhysicalDeviceRobustness2Features,
+    };
+
+    VkPhysicalDeviceVulkan11Features physicalDeviceVulkan11Features = { 0 };
+    physicalDeviceVulkan11Features.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_FEATURES;
+    physicalDeviceVulkan11Features.multiview = VK_TRUE;
+    physicalDeviceVulkan11Features.pNext = &deviceFeatures2;
+
+    VkDeviceCreateInfo deviceCreateInfo = 
+    {
         .sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
         .queueCreateInfoCount = queueCreateInfoCount,
         .pQueueCreateInfos = queueCreateInfo,
         .pEnabledFeatures = NULL,
         .enabledExtensionCount = ARRAY_SIZE(DeviceExtensionList),
-        .ppEnabledExtensionNames = DeviceExtensionList
+        .ppEnabledExtensionNames = DeviceExtensionList,
+        .pNext = &physicalDeviceVulkan11Features
     };
+
 #ifdef NDEBUG
     deviceCreateInfo.enabledLayerCount = 0;
 #else
@@ -447,6 +503,17 @@ VkResult Renderer_RendererSetUp()
     vkGetDeviceQueue(global.Renderer.Device, global.Renderer.SwapChain.PresentFamily, 0, &global.Renderer.SwapChain.PresentQueue);
     free(extensions);
 
+    PFN_vkGetBufferDeviceAddressKHR vkGetBufferDeviceAddressKHR = (PFN_vkGetBufferDeviceAddressKHR)(vkGetDeviceProcAddr(global.Renderer.Device, "vkGetBufferDeviceAddressKHR"));
+    PFN_vkCreateAccelerationStructureKHR vkCreateAccelerationStructureKHR = (PFN_vkCreateAccelerationStructureKHR)(vkGetDeviceProcAddr(global.Renderer.Device, "vkCreateAccelerationStructureKHR"));
+    PFN_vkDestroyAccelerationStructureKHR vkDestroyAccelerationStructureKHR = (PFN_vkDestroyAccelerationStructureKHR)(vkGetDeviceProcAddr(global.Renderer.Device, "vkDestroyAccelerationStructureKHR"));
+    PFN_vkGetAccelerationStructureBuildSizesKHR vkGetAccelerationStructureBuildSizesKHR = (PFN_vkGetAccelerationStructureBuildSizesKHR)(vkGetDeviceProcAddr(global.Renderer.Device, "vkGetAccelerationStructureBuildSizesKHR"));
+    PFN_vkGetAccelerationStructureDeviceAddressKHR vkGetAccelerationStructureDeviceAddressKHR = (PFN_vkGetAccelerationStructureDeviceAddressKHR)(vkGetDeviceProcAddr(global.Renderer.Device, "vkGetAccelerationStructureDeviceAddressKHR"));
+    PFN_vkCmdBuildAccelerationStructuresKHR vkCmdBuildAccelerationStructuresKHR = (PFN_vkCmdBuildAccelerationStructuresKHR)(vkGetDeviceProcAddr(global.Renderer.Device, "vkCmdBuildAccelerationStructuresKHR"));
+    PFN_vkBuildAccelerationStructuresKHR vkBuildAccelerationStructuresKHR = (PFN_vkBuildAccelerationStructuresKHR)(vkGetDeviceProcAddr(global.Renderer.Device, "vkBuildAccelerationStructuresKHR"));
+    PFN_vkCmdTraceRaysKHR vkCmdTraceRaysKHR = (PFN_vkCmdTraceRaysKHR)(vkGetDeviceProcAddr(global.Renderer.Device, "vkCmdTraceRaysKHR"));
+    PFN_vkGetRayTracingShaderGroupHandlesKHR vkGetRayTracingShaderGroupHandlesKHR = (PFN_vkGetRayTracingShaderGroupHandlesKHR)(vkGetDeviceProcAddr(global.Renderer.Device, "vkGetRayTracingShaderGroupHandlesKHR"));
+    PFN_vkCreateRayTracingPipelinesKHR vkCreateRayTracingPipelinesKHR = (PFN_vkCreateRayTracingPipelinesKHR)(vkGetDeviceProcAddr(global.Renderer.Device, "vkCreateRayTracingPipelinesKHR"));
+
     return VK_SUCCESS;
 }
 
@@ -469,11 +536,7 @@ VkResult Renderer_CreateCommandBuffers(VkCommandBuffer* commandBufferList)
 
 VkResult Renderer_CreateFrameBuffer(VkFramebuffer* pFrameBuffer, VkFramebufferCreateInfo* frameBufferCreateInfo)
 {
-    for (size_t x = 0; x < global.Renderer.SwapChain.SwapChainImageCount; x++)
-    {
-        VULKAN_RESULT(vkCreateFramebuffer(global.Renderer.Device, *&frameBufferCreateInfo, NULL, &pFrameBuffer[x]));
-    }
-    return VK_SUCCESS;
+    return vkCreateFramebuffer(global.Renderer.Device, *&frameBufferCreateInfo, NULL, &pFrameBuffer);
 }
 
 VkResult Renderer_CreateRenderPass(Renderer_RenderPassCreateInfoStruct* renderPassCreateInfo)
@@ -511,9 +574,19 @@ VkResult Renderer_AllocateDescriptorSets(VkDescriptorSet* descriptorSet, VkDescr
     return vkAllocateDescriptorSets(global.Renderer.Device, descriptorSetAllocateInfo, descriptorSet);
 }
 
+VkResult Renderer_AllocateCommandBuffers(VkCommandBuffer* commandBuffer, VkCommandBufferAllocateInfo* ImGuiCommandBuffers)
+{
+    return vkAllocateCommandBuffers(global.Renderer.Device, &ImGuiCommandBuffers, &commandBuffer);
+}
+
 VkResult Renderer_CreateGraphicsPipelines(VkPipeline* graphicPipeline, VkGraphicsPipelineCreateInfo* createGraphicPipelines, uint32_t createGraphicPipelinesCount)
 {
     return vkCreateGraphicsPipelines(global.Renderer.Device, VK_NULL_HANDLE, createGraphicPipelinesCount, createGraphicPipelines, NULL, graphicPipeline);
+}
+
+VkResult Renderer_CreateCommandPool(VkCommandPool* commandPool, VkCommandPoolCreateInfo* commandPoolInfo)
+{
+    return vkCreateCommandPool(global.Renderer.Device, commandPoolInfo, NULL, commandPool);
 }
 
 void Renderer_UpdateDescriptorSet(VkWriteDescriptorSet* writeDescriptorSet, uint32_t count)

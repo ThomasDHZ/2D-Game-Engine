@@ -8,8 +8,7 @@ static VkResult Buffer_AllocateMemory(struct BufferInfo* bufferInfo, VkMemoryPro
 
     VkMemoryAllocateFlagsInfoKHR ExtendedAllocFlagsInfo =
     {
-        .sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_FLAGS_INFO_KHR,
-        .flags = VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT_KHR
+        .sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_FLAGS_INFO_KHR
     };
     VkMemoryAllocateInfo allocInfo =
     {

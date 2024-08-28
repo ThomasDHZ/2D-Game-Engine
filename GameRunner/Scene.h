@@ -14,7 +14,6 @@ class Scene
 {
 	private:
 		std::shared_ptr<Texture> texture;
-		RendereredColorTexture2D rendereredColorTexture2D;
 		FrameBufferRenderPass frameRenderPass;
 	public:
 		void StartUp();
