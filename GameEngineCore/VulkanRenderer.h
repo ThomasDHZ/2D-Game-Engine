@@ -26,10 +26,11 @@ typedef struct rendererState
 	 VkFence* InFlightFences;
 	 VkSemaphore* AcquireImageSemaphores;
 	 VkSemaphore* PresentImageSemaphores;
-	 bool RebuildSwapChainFlag;
+	 bool RebuildRendererFlag;
 }RendererState;
 
 VkResult Renderer_RendererSetUp();
+VkResult Renderer_RebuildSwapChain();
 VkResult Renderer_CreateCommandBuffers(VkCommandBuffer* pCommandBufferList);
 VkResult Renderer_CreateFrameBuffer(VkFramebuffer* pFrameBuffer, VkFramebufferCreateInfo* frameBufferCreateInfo);
 VkResult Renderer_CreateRenderPass(Renderer_RenderPassCreateInfoStruct* pRenderPassCreateInfo);

@@ -22,19 +22,22 @@ int main()
     scene.StartUp();
     while (!global.Window.ExitWindow)
     {
-        time_update();
         while (SDL_PollEvent(&global.Window.Event))
         {
             GameEngine_PollEventHandler(&global.Window.Event);
             ImGui_ImplSDL2_ProcessEvent(&global.Window.Event);
         }
 
-        scene.Update();
-        scene.ImGuiUpdate();
-        scene.Draw();
-        time_update_late();
+        Uint32 windowFlags = SDL_GetWindowFlags(global.Window.SDLWindow);
+        if (!(windowFlags & SDL_WINDOW_MINIMIZED))
+        {
+            time_update();
+            scene.Update();
+            scene.ImGuiUpdate();
+            scene.Draw();
+            time_update_late();
+        }
     }
-
     vkDeviceWaitIdle(global.Renderer.Device);
     InterfaceRenderPass::Destroy();
     scene.Destroy();

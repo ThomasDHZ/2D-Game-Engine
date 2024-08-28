@@ -8,8 +8,5 @@ const char* Renderer_GetError(VkResult result);
     if (result != VK_SUCCESS) { \
         fprintf(stderr, "Error in %s at %s:%d (%s): %s\n", \
                 #call, __FILE__, __LINE__, __func__, Renderer_GetError(result)); \
-        Renderer_DestroyRenderer(); \
-        GameEngine_DestroyWindow(); \
-        exit(EXIT_FAILURE); \
     } \
 }

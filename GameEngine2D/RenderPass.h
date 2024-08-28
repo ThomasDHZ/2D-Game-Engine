@@ -20,8 +20,7 @@ class RenderPass
 		std::vector<VkFramebuffer> FrameBufferList;
 	public:
 		RenderPass();
-		~RenderPass();
-		virtual void BuildRenderPass();
+		virtual ~RenderPass();
 		virtual VkCommandBuffer Draw() = 0;
 		virtual void Destroy();
 };

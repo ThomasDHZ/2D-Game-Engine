@@ -3,11 +3,15 @@
 void Scene::StartUp()
 {
 	texture = std::make_shared<Texture>(Texture("../Textures/awesomeface.png", VK_FORMAT_R8G8B8A8_SRGB, TextureTypeEnum::kType_DiffuseTextureMap));
-	BuildRenderers();
+	BuildRenderPasses();
 }
 
 void Scene::Update()
 {
+	if (global.Renderer.RebuildRendererFlag)
+	{
+		UpdateRenderPasses();
+	}
 }
 
 void Scene::ImGuiUpdate()
@@ -22,9 +26,17 @@ void Scene::ImGuiUpdate()
 	ImGui::Render();
 }
 
-void Scene::BuildRenderers()
+void Scene::BuildRenderPasses()
 {
 	frameRenderPass.BuildRenderPass(texture);
+}
+
+void Scene::UpdateRenderPasses()
+{
+	Renderer_RebuildSwapChain();
+	frameRenderPass.UpdateRenderPass(texture);
+	InterfaceRenderPass::RebuildSwapChain();
+	global.Renderer.RebuildRendererFlag = false;
 }
 
 void Scene::Draw()

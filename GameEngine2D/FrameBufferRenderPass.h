@@ -1,7 +1,6 @@
 #pragma once
 #include <vulkan/vulkan.h>
 #include "RenderPass.h"
-#include "RendereredColorTexture2D.h"
 #include "vertex.h"
 
 class FrameBufferRenderPass : public RenderPass
@@ -20,6 +19,7 @@ public:
 
 	void BuildRenderPass(std::shared_ptr<Texture> renderedTexture);
 	void BuildRenderPipeline(std::shared_ptr<Texture> renderedTexture);
+	void UpdateRenderPass(std::shared_ptr<Texture> texture);
 	VkCommandBuffer Draw();
 	void Destroy() override;
 };

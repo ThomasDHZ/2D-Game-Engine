@@ -333,6 +333,21 @@ void FrameBufferRenderPass::BuildRenderPipeline(std::shared_ptr<Texture> texture
    }
 }
 
+void FrameBufferRenderPass::UpdateRenderPass(std::shared_ptr<Texture> texture)
+{
+    RenderPassResolution = glm::ivec2((int)global.Renderer.SwapChain.SwapChainResolution.width, (int)global.Renderer.SwapChain.SwapChainResolution.height);
+    SampleCount = VK_SAMPLE_COUNT_1_BIT;
+
+    Renderer_DestroyFrameBuffers(FrameBufferList.data());
+    Renderer_DestroyRenderPass(&RenderPassPtr);
+    Renderer_DestroyPipeline(&ShaderPipeline);
+    Renderer_DestroyPipelineLayout(&ShaderPipelineLayout);
+    Renderer_DestroyPipelineCache(&PipelineCache);
+    Renderer_DestroyDescriptorSetLayout(&DescriptorSetLayout);
+    Renderer_DestroyDescriptorPool(&DescriptorPool);
+    BuildRenderPass(texture);
+}
+
 VkCommandBuffer FrameBufferRenderPass::Draw()
 {
     std::vector<VkClearValue> clearValues
@@ -404,10 +419,10 @@ VkCommandBuffer FrameBufferRenderPass::Draw()
 
 void FrameBufferRenderPass::Destroy()
 {
+    RenderPass::Destroy();
     Renderer_DestroyPipeline(&ShaderPipeline);
     Renderer_DestroyPipelineLayout(&ShaderPipelineLayout);
     Renderer_DestroyPipelineCache(&PipelineCache);
-    Renderer_DestroyDescriptorPool(&DescriptorPool);
     Renderer_DestroyDescriptorSetLayout(&DescriptorSetLayout);
-    RenderPass::Destroy();
+    Renderer_DestroyDescriptorPool(&DescriptorPool);
 }

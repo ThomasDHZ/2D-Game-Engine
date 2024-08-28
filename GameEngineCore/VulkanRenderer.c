@@ -261,7 +261,7 @@ static void GetRendererFeatures(VkPhysicalDeviceVulkan11Features* physicalDevice
 
 VkResult Renderer_RendererSetUp()
 {
-    global.Renderer.RebuildSwapChainFlag = false;
+    global.Renderer.RebuildRendererFlag = false;
 
     uint32_t extensionCount;
     SDL_Vulkan_GetInstanceExtensions(global.Window.SDLWindow, &extensionCount, NULL);
@@ -597,7 +597,7 @@ void Renderer_UpdateDescriptorSet(VkWriteDescriptorSet* writeDescriptorSet, uint
 
 VkResult Renderer_RebuildSwapChain()
 {
-    global.Renderer.RebuildSwapChainFlag = true;
+    global.Renderer.RebuildRendererFlag = true;
 
     VULKAN_RESULT(vkDeviceWaitIdle(global.Renderer.Device));
     Vulkan_DestroyImageView();
@@ -616,10 +616,12 @@ VkResult Renderer_StartFrame()
     VkSemaphore renderFinishedSemaphore = global.Renderer.PresentImageSemaphores[global.Renderer.CommandIndex];
 
     VkResult result = vkAcquireNextImageKHR(global.Renderer.Device, global.Renderer.SwapChain.Swapchain, UINT64_MAX, imageAvailableSemaphore, VK_NULL_HANDLE, &global.Renderer.ImageIndex);
-    if (result == VK_ERROR_OUT_OF_DATE_KHR) {
-        Renderer_RebuildSwapChain();
-        return;
+    if (result == VK_ERROR_OUT_OF_DATE_KHR) 
+    {
+        global.Renderer.RebuildRendererFlag = true;
+        return result;
     }
+
     return result;
 }
 
@@ -652,12 +654,12 @@ VkResult Renderer_EndFrame(VkCommandBuffer* pCommandBufferSubmitList, uint32_t c
         .pSwapchains = &global.Renderer.SwapChain.Swapchain,
         .pImageIndices = &global.Renderer.ImageIndex,
     };
-
     VkResult result = vkQueuePresentKHR(global.Renderer.SwapChain.PresentQueue, &presentInfo);
     if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
     {
-        Renderer_RebuildSwapChain();
+        global.Renderer.RebuildRendererFlag = true;
     }
+
     return result;
 }
 
@@ -700,7 +702,7 @@ VkResult Renderer_SubmitDraw(VkCommandBuffer* pCommandBufferSubmitList)
     VkResult result = vkQueuePresentKHR(global.Renderer.SwapChain.PresentQueue, &PresentInfoKHR);
     if (result == VK_ERROR_OUT_OF_DATE_KHR)
     {
-        // RebuildSwapChain();
+        global.Renderer.RebuildRendererFlag = true;
         return result;
     }
     return result;

@@ -16,10 +16,6 @@ RenderPass::~RenderPass()
 {
 }
 
-void RenderPass::BuildRenderPass()
-{
-}
-
 void RenderPass::Destroy()
 {
 	Renderer_DestroyRenderPass(&RenderPassPtr);

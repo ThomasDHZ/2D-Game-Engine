@@ -19,7 +19,8 @@ class Scene
 		void StartUp();
 		void Update();
 		void ImGuiUpdate();
-		void BuildRenderers();
+		void BuildRenderPasses();
+		void UpdateRenderPasses();
 		void Draw();
 		void Destroy();
 };
