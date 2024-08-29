@@ -37,6 +37,8 @@
     <ClCompile Include="LogEntry.cpp" />
     <ClCompile Include="LogLevel.cpp" />
     <ClCompile Include="LoggerLog.cpp" />
+    <ClCompile Include="Material.cpp" />
+    <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="MSVCDebugDriver.cpp" />
     <ClCompile Include="MSVCDriver.cpp" />
     <ClCompile Include="RenderedColorTexture.cpp" />
@@ -44,7 +46,7 @@
     <ClCompile Include="ShaderCompiler.cpp" />
     <ClCompile Include="TextFormatter.cpp" />
     <ClCompile Include="Texture.cpp" />
-    <ClCompile Include="VulkanBuffer.cpp" />
+    <ClCompile Include="Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\External\ChiliTomatoNoodle\ChiliContainer.h" />
@@ -66,12 +68,15 @@
     <ClInclude Include="LogEntry.h" />
     <ClInclude Include="LogLevel.h" />
     <ClInclude Include="LoggerLog.h" />
+    <ClInclude Include="Material.h" />
+    <ClInclude Include="Mesh.h" />
     <ClInclude Include="MSVCDriver.h" />
     <ClInclude Include="RenderedColorTexture.h" />
     <ClInclude Include="RenderPass.h" />
     <ClInclude Include="ShaderCompiler.h" />
     <ClInclude Include="TextFormatter.h" />
     <ClInclude Include="Texture.h" />
+    <ClInclude Include="Timer.h" />
     <ClInclude Include="Typedef.h" />
     <ClInclude Include="VulkanBuffer.h" />
   </ItemGroup>

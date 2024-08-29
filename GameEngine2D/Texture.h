@@ -13,6 +13,15 @@ extern "C"
 #include <ImGui/imgui.h>
 #include <ImGui/imgui_impl_vulkan.h>
 
+struct MeshProperitiesStruct2
+{
+	uint32 MeshIndex;
+	uint32 MaterialIndex;
+	mat4   Projection;
+	mat4   View;
+	float  Timer;
+};
+
 class Texture
 {
 	private:

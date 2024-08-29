@@ -75,9 +75,6 @@
     <ClCompile Include="..\External\ImGui\imgui_impl_sdl2.cpp">
       <Filter>Source Files\ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="VulkanBuffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\External\ChiliTomatoNoodle\ChiliSingletons.cpp">
       <Filter>Source Files\ChiliTomatoNoodle</Filter>
     </ClCompile>
@@ -119,6 +116,15 @@
     </ClCompile>
     <ClCompile Include="TextFormatter.cpp">
       <Filter>Source Files\Logger</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Material.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Timer.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -201,6 +207,15 @@
       <Filter>Header Files\Logger</Filter>
     </ClInclude>
     <ClInclude Include="Typedef.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Timer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
