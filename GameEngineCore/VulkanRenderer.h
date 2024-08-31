@@ -50,7 +50,7 @@ VkResult Renderer_SubmitDraw(VkCommandBuffer* pCommandBufferSubmitList);
 
 uint32 Renderer_GetMemoryType(uint32 typeFilter, VkMemoryPropertyFlags properties);
 VkCommandBuffer Renderer_BeginSingleUseCommandBuffer();
-VkResult Renderer_EndSingleUseCommandBuffer(VkCommandBuffer* commandBuffer);
+VkResult Renderer_EndSingleUseCommandBuffer(VkCommandBuffer commandBuffer);
 
 void Renderer_UpdateDescriptorSet(VkWriteDescriptorSet* writeDescriptorSet, uint32 count);
 void Renderer_DestroyRenderer();
@@ -66,7 +66,6 @@ void Renderer_DestroyDescriptorPool(VkDescriptorPool* descriptorPool);
 void Renderer_DestroyDescriptorSetLayout(VkDescriptorSetLayout* descriptorSetLayout);
 void Renderer_DestroyCommandBuffers(VkCommandPool* commandPool, VkCommandBuffer* commandBufferList);
 void Renderer_DestroyCommnadPool(VkCommandPool* commandPool);
-void Renderer_DestroyBufferMemory(VkDeviceMemory* deviceMemory);
 void Renderer_DestroyBuffer(VkBuffer* buffer);
 void Renderer_DestroyImageView(VkImageView* imageView);
 void Renderer_DestroyImage(VkImage* image);

@@ -3,29 +3,38 @@
 #include <SDL2/SDL.h>
 
 void time_init(float frame_rate) {
-	global.time.frame_rate = frame_rate;
-	global.time.frame_delay = 1000.f / frame_rate;
+    global.time.frame_rate = frame_rate;
+    global.time.frame_delay = 1000.f / frame_rate;
+    global.time.last = (float)SDL_GetTicks();
+    global.time.frame_last = global.time.last;
+    global.time.frame_count = 0; 
 }
 
 void time_update(void) {
-	global.time.now = (float)SDL_GetTicks();
-	global.time.delta = (global.time.now - global.time.last) / 1000.f;
-	global.time.last = global.time.now;
-	++global.time.frame_count;
+    global.time.now = (float)SDL_GetTicks();
 
-	if (global.time.now - (float)global.time.frame_last >= 1000.f) {
-		global.time.frame_rate = (float)global.time.frame_count;
-		global.time.frame_count = 0;
-		global.time.frame_last = (float)global.time.now;
-	}
+    if (global.time.last > global.time.now) {
+        global.time.last = global.time.now;
+    }
+
+    global.time.delta = (global.time.now - global.time.last) / 1000.f;
+    global.time.last = global.time.now;
+    ++global.time.frame_count;
+
+
+    if (global.time.now - global.time.frame_last >= 1000.f) {
+        global.time.frame_rate = (float)global.time.frame_count;
+        global.time.frame_count = 0;
+        global.time.frame_last = global.time.now;
+    }
 }
 
 void time_update_late(void) {
-	global.time.frame_time = (float)SDL_GetTicks() - global.time.now;
+    global.time.frame_time = (float)SDL_GetTicks() - global.time.now;
 
-	if (global.time.frame_delay > global.time.frame_time) {
-		SDL_Delay(global.time.frame_delay - global.time.frame_time);
-	}
+    float time_to_wait = global.time.frame_delay - global.time.frame_time;
+    if (time_to_wait > 0) {
+        SDL_Delay((uint32)time_to_wait);
+    }
 }
-
 

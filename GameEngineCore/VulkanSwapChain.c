@@ -27,33 +27,41 @@ static VkPresentModeKHR SwapChain_FindSwapPresentMode(VkPresentModeKHR* availabl
 	return VK_PRESENT_MODE_FIFO_KHR;
 }
 
-void SwapChain_GetQueueFamilies(VkPhysicalDevice* physicalDevice, uint32* graphicsFamily, uint32* presentFamily)
+void SwapChain_GetQueueFamilies(VkPhysicalDevice physicalDevice, uint32* graphicsFamily, uint32* presentFamily)
 {
-	uint32 queueFamilyCount = UINT32_MAX;
+	uint32 queueFamilyCount = 0;
 	vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount, NULL);
 
 	VkQueueFamilyProperties* queueFamilies = malloc(sizeof(VkQueueFamilyProperties) * queueFamilyCount);
 	vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount, queueFamilies);
-	for (int x = 0; x <= queueFamilies; x++)
+	if (queueFamilies)
 	{
-		VkBool32 presentSupport = false;
-		vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice, x, global.Renderer.Surface, &presentSupport);
-
-		if (queueFamilies->queueFlags & VK_QUEUE_GRAPHICS_BIT)
+		for (uint32 x = 0; x <= queueFamilyCount; x++)
 		{
-			*presentFamily = x;
-			*graphicsFamily = x;
-			break;
-		}
-	}
+			VkBool32 presentSupport = false;
+			vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice, x, global.Renderer.Surface, &presentSupport);
 
-	free(queueFamilies);
+			if (queueFamilies->queueFlags & VK_QUEUE_GRAPHICS_BIT)
+			{
+				*presentFamily = x;
+				*graphicsFamily = x;
+				break;
+			}
+		}
+		free(queueFamilies);
+	}
+	else
+	{
+		free(queueFamilies);
+		Renderer_DestroyRenderer();
+		SDL_Quit();
+	}
 }
 
 VkResult Vulkan_SetUpSwapChain()
 {
 	VkSurfaceFormatKHR* compatibleSwapChainFormatList = NULL;
-	VkSurfaceFormatKHR* compatiblePresentModesList = NULL;
+	VkPresentModeKHR* compatiblePresentModesList = NULL;
 	uint32 surfaceFormatCount = 0;
 	uint32 presentModeCount = 0;
 
@@ -126,33 +134,44 @@ VkResult Vulkan_SetUpSwapChain()
 	global.Renderer.SwapChain.SwapChainImageCount = INT32_MAX;
 	VULKAN_RESULT(vkGetSwapchainImagesKHR(global.Renderer.Device, global.Renderer.SwapChain.Swapchain, &global.Renderer.SwapChain.SwapChainImageCount, NULL));
 
+
 	global.Renderer.SwapChain.SwapChainImages = malloc(sizeof(VkImage) * global.Renderer.SwapChain.SwapChainImageCount);
 	VULKAN_RESULT(vkGetSwapchainImagesKHR(global.Renderer.Device, global.Renderer.SwapChain.Swapchain, &global.Renderer.SwapChain.SwapChainImageCount, global.Renderer.SwapChain.SwapChainImages));
 
 	global.Renderer.SwapChain.SwapChainImageViews = malloc(sizeof(VkImageView) * global.Renderer.SwapChain.SwapChainImageCount);
-	for (uint32 x = 0; x < global.Renderer.SwapChain.SwapChainImageCount; x++)
+	if (global.Renderer.SwapChain.SwapChainImageViews != NULL)
 	{
-		VkImageViewCreateInfo SwapChainViewInfo =
+		for (uint32 x = 0; x < global.Renderer.SwapChain.SwapChainImageCount; x++)
 		{
-			.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
-			.image = global.Renderer.SwapChain.SwapChainImages[x],
-			.viewType = VK_IMAGE_VIEW_TYPE_2D,
-			.format = SwapChainImageFormat.format,
-			.subresourceRange =
+			VkImageViewCreateInfo SwapChainViewInfo =
 			{
-				.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-				.baseMipLevel = 0,
-				.levelCount = 1,
-				.baseArrayLayer = 0,
-				.layerCount = 1
-			}
-		};
+				.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+				.image = global.Renderer.SwapChain.SwapChainImages[x],
+				.viewType = VK_IMAGE_VIEW_TYPE_2D,
+				.format = SwapChainImageFormat.format,
+				.subresourceRange =
+				{
+					.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+					.baseMipLevel = 0,
+					.levelCount = 1,
+					.baseArrayLayer = 0,
+					.layerCount = 1
+				}
+			};
 
-		VULKAN_RESULT(vkCreateImageView(global.Renderer.Device, &SwapChainViewInfo, NULL, &global.Renderer.SwapChain.SwapChainImageViews[x]));
+			VULKAN_RESULT(vkCreateImageView(global.Renderer.Device, &SwapChainViewInfo, NULL, &global.Renderer.SwapChain.SwapChainImageViews[x]));
+		}
+		free(compatibleSwapChainFormatList);
+		free(compatiblePresentModesList);
+	}
+	else
+	{
+		free(compatibleSwapChainFormatList);
+		free(compatiblePresentModesList);
+		Renderer_DestroyRenderer();
+		SDL_Quit();
 	}
 
-	free(compatibleSwapChainFormatList);
-	free(compatiblePresentModesList);
 	return VK_SUCCESS;
 }
 

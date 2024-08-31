@@ -1,5 +1,6 @@
 #include "VulkanRenderer.h"
 #include "Global.h"
+#include "VulkanSwapChain.h"
 
 static const char* DeviceExtensionList[] = {
     VK_KHR_SWAPCHAIN_EXTENSION_NAME,
@@ -80,7 +81,7 @@ VKAPI_ATTR VkBool32 VKAPI_CALL Vulkan_DebugCallBack(VkDebugUtilsMessageSeverityF
     return VK_FALSE;
 }
 
-static VkExtensionProperties* GetDeviceExtensions(VkPhysicalDevice* physicalDevice, uint32* deviceExtensionCountPtr)
+static VkExtensionProperties* GetDeviceExtensions(VkPhysicalDevice physicalDevice, uint32* deviceExtensionCountPtr)
 {
     uint32 deviceExtensionCount = 0;
     VULKAN_RESULT(vkEnumerateDeviceExtensionProperties(physicalDevice, NULL, &deviceExtensionCount, NULL));
@@ -98,7 +99,7 @@ static VkExtensionProperties* GetDeviceExtensions(VkPhysicalDevice* physicalDevi
     return deviceExtensions;
 }
 
-static void GetSurfaceFormats(VkPhysicalDevice* physicalDevice, VkSurfaceFormatKHR* surfaceFormat, uint32* surfaceFormatCount)
+static void GetSurfaceFormats(VkPhysicalDevice physicalDevice, VkSurfaceFormatKHR* surfaceFormat, uint32* surfaceFormatCount)
 {
     VULKAN_RESULT(vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, global.Renderer.Surface, surfaceFormatCount, NULL));
     if (surfaceFormatCount > 0)
@@ -110,11 +111,10 @@ static void GetSurfaceFormats(VkPhysicalDevice* physicalDevice, VkSurfaceFormatK
         }
 
         VULKAN_RESULT(vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, global.Renderer.Surface, surfaceFormatCount, surfaceFormats));
-        return surfaceFormats;
     }
 }
 
-static void GetPresentModes(VkPhysicalDevice* physicalDevice, VkPresentModeKHR* presentMode, int32* presentModeCount)
+static void GetPresentModes(VkPhysicalDevice physicalDevice, VkPresentModeKHR* presentMode, int32* presentModeCount)
 {
     VULKAN_RESULT(vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, global.Renderer.Surface, presentModeCount, NULL));
     if (presentModeCount > 0)
@@ -125,8 +125,7 @@ static void GetPresentModes(VkPhysicalDevice* physicalDevice, VkPresentModeKHR* 
             fprintf(stderr, "Failed to allocate memory for Vulkan.\n");
         }
 
-        VULKAN_RESULT(vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, global.Renderer.Surface, &presentModeCount, presentModes));
-        return presentModes;
+        VULKAN_RESULT(vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, global.Renderer.Surface, presentModeCount, presentModes));
     }
 }
 
@@ -329,8 +328,8 @@ VkResult Renderer_RendererSetUp()
         vkGetPhysicalDeviceFeatures(physicalDeviceList[x], &global.Renderer.PhysicalDeviceFeatures);
         SwapChain_GetQueueFamilies(physicalDeviceList[x], &global.Renderer.SwapChain.GraphicsFamily, &global.Renderer.SwapChain.PresentFamily);
       
-        VkSurfaceFormatKHR* surfaceFormat = NULL;
-        VkPresentModeKHR* presentMode = NULL;
+        VkSurfaceFormatKHR surfaceFormat;
+        VkPresentModeKHR presentMode;
         uint32 surfaceFormatCount = 0;
         uint32 presentModeCount = 0;
         GetSurfaceFormats(physicalDeviceList[x], &surfaceFormat, &surfaceFormatCount);
@@ -343,14 +342,12 @@ VkResult Renderer_RendererSetUp()
             global.Renderer.PhysicalDeviceFeatures.samplerAnisotropy)
         {
             global.Renderer.PhysicalDevice = physicalDeviceList[x];
-            free(surfaceFormat);
-            free(presentMode);
             break;
         }
         else
         {
-            free(surfaceFormat);
-            free(presentMode);
+            Renderer_DestroyRenderer();
+            SDL_Quit();
         }
     }
 
@@ -493,11 +490,21 @@ VkResult Renderer_RendererSetUp()
         .flags = VK_FENCE_CREATE_SIGNALED_BIT
     };
 
-    for (size_t x = 0; x < MAX_FRAMES_IN_FLIGHT; x++)
+    if (global.Renderer.InFlightFences &&
+        global.Renderer.AcquireImageSemaphores &&
+        global.Renderer.PresentImageSemaphores)
     {
-        VULKAN_RESULT(vkCreateSemaphore(global.Renderer.Device, &semaphoreCreateInfo, NULL, &global.Renderer.AcquireImageSemaphores[x]));
-        VULKAN_RESULT(vkCreateSemaphore(global.Renderer.Device, &semaphoreCreateInfo, NULL, &global.Renderer.PresentImageSemaphores[x]));
-        VULKAN_RESULT(vkCreateFence(global.Renderer.Device, &fenceInfo, NULL, &global.Renderer.InFlightFences[x]));
+        for (size_t x = 0; x < MAX_FRAMES_IN_FLIGHT; x++)
+        {
+            VULKAN_RESULT(vkCreateSemaphore(global.Renderer.Device, &semaphoreCreateInfo, NULL, &global.Renderer.AcquireImageSemaphores[x]));
+            VULKAN_RESULT(vkCreateSemaphore(global.Renderer.Device, &semaphoreCreateInfo, NULL, &global.Renderer.PresentImageSemaphores[x]));
+            VULKAN_RESULT(vkCreateFence(global.Renderer.Device, &fenceInfo, NULL, &global.Renderer.InFlightFences[x]));
+        }
+    }
+    else
+    {
+        Renderer_DestroyRenderer();
+        SDL_Quit();
     }
 
     vkGetDeviceQueue(global.Renderer.Device, global.Renderer.SwapChain.GraphicsFamily, 0, &global.Renderer.SwapChain.GraphicsQueue);
@@ -537,7 +544,7 @@ VkResult Renderer_CreateCommandBuffers(VkCommandBuffer* commandBufferList)
 
 VkResult Renderer_CreateFrameBuffer(VkFramebuffer* pFrameBuffer, VkFramebufferCreateInfo* frameBufferCreateInfo)
 {
-    return vkCreateFramebuffer(global.Renderer.Device, *&frameBufferCreateInfo, NULL, &pFrameBuffer);
+    return vkCreateFramebuffer(global.Renderer.Device, *&frameBufferCreateInfo, NULL, pFrameBuffer);
 }
 
 VkResult Renderer_CreateRenderPass(Renderer_RenderPassCreateInfoStruct* renderPassCreateInfo)
@@ -577,7 +584,7 @@ VkResult Renderer_AllocateDescriptorSets(VkDescriptorSet* descriptorSet, VkDescr
 
 VkResult Renderer_AllocateCommandBuffers(VkCommandBuffer* commandBuffer, VkCommandBufferAllocateInfo* ImGuiCommandBuffers)
 {
-    return vkAllocateCommandBuffers(global.Renderer.Device, &ImGuiCommandBuffers, &commandBuffer);
+    return vkAllocateCommandBuffers(global.Renderer.Device, ImGuiCommandBuffers, commandBuffer);
 }
 
 VkResult Renderer_CreateGraphicsPipelines(VkPipeline* graphicPipeline, VkGraphicsPipelineCreateInfo* createGraphicPipelines, uint32 createGraphicPipelinesCount)
@@ -749,7 +756,7 @@ VkCommandBuffer Renderer_BeginSingleUseCommandBuffer()
     return commandBuffer;
 }
 
-VkResult Renderer_EndSingleUseCommandBuffer(VkCommandBuffer* commandBuffer)
+VkResult Renderer_EndSingleUseCommandBuffer(VkCommandBuffer commandBuffer)
 {
     VULKAN_RESULT(vkEndCommandBuffer(commandBuffer));
 

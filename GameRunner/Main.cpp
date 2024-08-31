@@ -13,7 +13,7 @@ extern "C"
 
 int main()
 {
-    time_init(160);
+    time_init(60.0f);
     GameEngine_CreateGraphicsWindow("Game", 1280, 720);
     Renderer_RendererSetUp();
     InterfaceRenderPass::StartUp();

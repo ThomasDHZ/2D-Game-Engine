@@ -80,7 +80,7 @@ static int ConvertToAscii(SDL_Keycode key)
     }
 }
 
-static void UpdateKeyState(const SDL_Event* event, KeyState* keyState)
+static void UpdateKeyState(const SDL_Event* event, KeyState keyState)
 {
     if (keyState == KS_Pressed ||
         keyState == KS_Held)

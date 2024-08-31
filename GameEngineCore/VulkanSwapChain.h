@@ -18,5 +18,6 @@ typedef struct swapChainState
 
 VkResult Vulkan_SetUpSwapChain();
 VkResult Vulkan_RebuildSwapChain();
+void SwapChain_GetQueueFamilies(VkPhysicalDevice physicalDevice, uint32* graphicsFamily, uint32* presentFamily);
 void Vulkan_DestroyImageView();
 void Vulkan_DestroySwapChain();

@@ -59,7 +59,6 @@ char* File_GetFileNameFromPath(const char* fileName)
     char baseFileName[256];
     const char* lastDot = strrchr(fileName, '.');
     const char* firstSlash = strchr(fileName, '/');
-
     if (lastDot != NULL)
     {
         size_t length = lastDot - fileName;
@@ -87,7 +86,6 @@ char* File_GetFileNameFromPath(const char* fileName)
         }
         baseFileName[strlen(baseFileName)] = '\0';
     }
-
     return baseFileName;
 }
 
