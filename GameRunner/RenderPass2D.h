@@ -1,6 +1,7 @@
 #pragma once
 #include <vulkan/vulkan.h>
 #include <RenderedColorTexture.h>
+#include "SceneProperties.h"
 #include "RenderPass.h"
 #include "vertex.h"
 

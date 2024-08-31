@@ -2,8 +2,11 @@
 #define SDL_MAIN_HANDLED
 #include <stdio.h>
 #include <stdbool.h>
+#pragma warning(push)
+#pragma warning(disable : 26819) 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_vulkan.h>
+#pragma warning(pop)
 #include "CTypedef.h"
 
 typedef struct windowState

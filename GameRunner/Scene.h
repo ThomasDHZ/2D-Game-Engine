@@ -9,12 +9,14 @@ extern "C"
 #include <Texture.h>
 #include <FrameBufferRenderPass.h>
 #include <RenderedColorTexture.h>
+#include <Mesh2D.h>
 #include "RenderPass2D.h"
-
 class Scene
 {
 	private:
+		Timer timer;
 		std::shared_ptr<Texture> texture;
+		Mesh2D mesh;
 		FrameBufferRenderPass frameRenderPass;
 		RenderPass2D		  renderPass2D;
 	public:

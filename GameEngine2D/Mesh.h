@@ -12,15 +12,11 @@ extern "C"
 #include "Material.h"
 #include "Timer.h"
 
-
-
 struct MeshProperitiesStruct
 {
 	uint32 MeshIndex;
 	uint32 MaterialIndex;
-	mat4   Projection;
-	mat4   View;
-	float  Timer;
+	mat4   MeshTransform;
 };
 
 class Mesh
@@ -34,13 +30,11 @@ class Mesh
 		const VkMemoryPropertyFlags MeshBufferPropertySettings = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
 												                 VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 
-		uint64 MeshBufferIndex;
-		std::unique_ptr<VulkanBuffer<std::vector<Vertex2D>>> VertexBuffer;
-		std::unique_ptr<VulkanBuffer<std::vector<uint32>>> IndexBuffer;
-		std::unique_ptr<VulkanBuffer<mat4>> TransformBuffer;
-		std::unique_ptr<VulkanBuffer<MeshProperitiesStruct>> MeshPropertiesBuffer;
 
 	protected:
+		uint64 MeshBufferIndex;
+		uint32 VertexCount;
+		uint32 IndexCount;
 
 		MeshProperitiesStruct MeshProperties;
 		mat4 MeshTransform;
@@ -48,11 +42,23 @@ class Mesh
 		vec3 MeshRotation;
 		vec3 MeshScale;
 
-	public:
+		VulkanBuffer<std::vector<Vertex2D>> VertexBuffer;
+		VulkanBuffer<std::vector<uint32>> IndexBuffer;
+		VulkanBuffer<MeshProperitiesStruct> MeshPropertiesBuffer;
 
+		template<class T>
+		void MeshStartUp(std::vector<T>& vertexList, std::vector<uint32>& indexList)
+		{
+			VertexBuffer.CreateBuffer(vertexList, MeshBufferUsageSettings, MeshBufferPropertySettings);
+			IndexBuffer.CreateBuffer(indexList, MeshBufferUsageSettings, MeshBufferPropertySettings);
+			MeshPropertiesBuffer.CreateBuffer(MeshProperties, MeshBufferUsageSettings, MeshBufferPropertySettings);
+		}
+
+	public:
 		Mesh();
 		virtual ~Mesh();
-
-		void Update();
+		virtual void Update(Timer& timer);
+		virtual void Draw(VkCommandBuffer& commandBuffer, VkPipelineLayout& shaderPipelineLayout, VkDescriptorSet& descriptorSet);
+		virtual void Destroy();
 };
 

@@ -85,40 +85,6 @@ void Texture::CreateImageTexture(const std::string& FilePath)
 	int colorChannels = 0;
 	unsigned char* data = stbi_load(FilePath.c_str(), width, height, &colorChannels, 0);
 	VulkanBuffer<unsigned char*> buffer(data, Width * Height * colorChannels, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-	
-	std::vector<MeshProperitiesStruct2> meshList
-	{
-		MeshProperitiesStruct2
-		{
-			.MeshIndex = 54,
-			.MaterialIndex = 34,
-			.Projection = mat4(1.0f),
-			.View = mat4(1.0f),
-			.Timer = 3454.0f
-		},
-		MeshProperitiesStruct2
-		{
-			.MeshIndex = 24,
-			.MaterialIndex = 74,
-			.Projection = mat4(34.0f),
-			.View = mat4(76.0f),
-			.Timer = 354.0f
-		},
-		MeshProperitiesStruct2
-		{
-			.MeshIndex = 154,
-			.MaterialIndex = 134,
-			.Projection = mat4(11.0f),
-			.View = mat4(11.0f),
-			.Timer = 145.0f
-		},
-	};
-	VulkanBuffer<MeshProperitiesStruct2> buffer2(meshList, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-
-	auto zzz = buffer2.ViewListBufferData();
-	zzz[0].MeshIndex = 46346435;
-	buffer2.UpdateBufferData(zzz);
-	auto vvv = buffer2.ViewListBufferData();
 
 	MipMapLevels = static_cast<uint32>(std::floor(std::log2(std::max(Width, Height)))) + 1;
 

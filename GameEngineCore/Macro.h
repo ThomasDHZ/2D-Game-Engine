@@ -1,6 +1,7 @@
 #pragma once
 #include <stdio.h>
 
+
 #define ARRAY_SIZE(arr) (sizeof(arr) / sizeof(arr[0]))
 #define IO_READ_CHUNK_SIZE 2097152
 #define IO_READ_ERROR_GENERAL "Error reading file: %s. error: %d\n"

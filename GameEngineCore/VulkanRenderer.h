@@ -1,6 +1,10 @@
 #pragma once
 #include <windows.h>
+#pragma warning(push)
+#pragma warning(disable : 26819) 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_vulkan.h>
+#pragma warning(pop)
 #include <stdbool.h>
 
 #include "Macro.h"

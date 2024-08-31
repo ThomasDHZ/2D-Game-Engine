@@ -126,6 +126,9 @@
     <ClCompile Include="Timer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Mesh2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="RenderPass.h">
@@ -218,12 +221,24 @@
     <ClInclude Include="Timer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Mesh2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneDataBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Shaders\FrameBufferShader.frag">
       <Filter>Shaders</Filter>
     </None>
     <None Include="..\Shaders\FrameBufferShader.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\Shaders\Shader2D.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\Shaders\Shader2D.vert">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

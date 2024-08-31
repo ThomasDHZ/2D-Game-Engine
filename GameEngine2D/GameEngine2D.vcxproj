@@ -39,6 +39,7 @@
     <ClCompile Include="LoggerLog.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="Mesh2D.cpp" />
     <ClCompile Include="MSVCDebugDriver.cpp" />
     <ClCompile Include="MSVCDriver.cpp" />
     <ClCompile Include="RenderedColorTexture.cpp" />
@@ -70,9 +71,11 @@
     <ClInclude Include="LoggerLog.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="Mesh2D.h" />
     <ClInclude Include="MSVCDriver.h" />
     <ClInclude Include="RenderedColorTexture.h" />
     <ClInclude Include="RenderPass.h" />
+    <ClInclude Include="SceneDataBuffer.h" />
     <ClInclude Include="ShaderCompiler.h" />
     <ClInclude Include="TextFormatter.h" />
     <ClInclude Include="Texture.h" />
@@ -83,6 +86,8 @@
   <ItemGroup>
     <None Include="..\Shaders\FrameBufferShader.frag" />
     <None Include="..\Shaders\FrameBufferShader.vert" />
+    <None Include="..\Shaders\Shader2D.frag" />
+    <None Include="..\Shaders\Shader2D.vert" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
