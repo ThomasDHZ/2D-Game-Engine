@@ -11,13 +11,12 @@ public:
 	virtual ~Mesh2D();
 
 	Mesh2D& operator=(Mesh2D&& other) noexcept {
-		if (this != &other) {
-			// Release any resources before moving
+		if (this != &other) 
+		{
 			VertexBuffer = std::move(other.VertexBuffer);
 			IndexBuffer = std::move(other.IndexBuffer);
 			MeshPropertiesBuffer = std::move(other.MeshPropertiesBuffer);
 
-			// Copy other data...
 			MeshBufferIndex = other.MeshBufferIndex;
 		}
 		return *this;

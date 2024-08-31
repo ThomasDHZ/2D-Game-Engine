@@ -45,7 +45,7 @@ void Scene::ImGuiUpdate()
 
 void Scene::BuildRenderPasses()
 {
-	renderPass2D.BuildRenderPass();
+	renderPass2D.BuildRenderPass(mesh);
 	frameRenderPass.BuildRenderPass(texture);
 }
 

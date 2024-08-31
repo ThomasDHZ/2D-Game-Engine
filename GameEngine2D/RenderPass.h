@@ -21,7 +21,7 @@ class RenderPass
 	public:
 		RenderPass();
 		virtual ~RenderPass();
-		virtual VkCommandBuffer Draw() = 0;
+		virtual VkCommandBuffer Draw();
 		virtual void Destroy();
 };
 

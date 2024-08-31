@@ -10,10 +10,25 @@ layout(location = 2) in vec3 Color;
 
 layout(location = 0) out vec4 outColor;
 
+layout(push_constant) uniform SceneDataBuffer
+{
+	mat4 Projection;
+	mat4 View;
+	vec3 CameraPosition;
+}sceneData;
+
+struct MeshProperitiesBuffer
+{
+	int	   MeshIndex;
+	int	   MaterialIndex;
+	mat4   MeshTransform;
+};
+
+layout(binding = 0) buffer MeshProperities { MeshProperitiesBuffer meshProperties; } meshBuffer;
+layout(binding = 1) uniform sampler2D TextureMap;
+
 void main() 
 {
-//
-//	MaterialProperties material = materialBuffer[sceneData.MaterialIndex].materialProperties;
 //	material.Albedo = texture(TextureMap[material.AlbedoMap], UV).rgb;
 //	material.Alpha = texture(TextureMap[material.AlbedoMap], UV).a;
 //	
@@ -26,6 +41,6 @@ void main()
 //   
 //   vec3 finalResult = vec3(1.0) - exp(-result * 1.0f);
 //		finalResult = pow(finalResult, vec3(1.0 / 2.2f));
-//
-//   outColor = vec4(finalResult,1.0f);
+
+   outColor = vec4(texture(TextureMap, UV).rgb,1.0f);
 }

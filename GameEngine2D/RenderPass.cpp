@@ -16,6 +16,11 @@ RenderPass::~RenderPass()
 {
 }
 
+VkCommandBuffer RenderPass::Draw()
+{
+	return VK_NULL_HANDLE;
+}
+
 void RenderPass::Destroy()
 {
 	Renderer_DestroyRenderPass(&RenderPassPtr);

@@ -2,6 +2,7 @@
 #include <Global.h>
 #include "ShaderCompiler.h"
 #include <stdexcept>
+#include <SceneDataBuffer.h>
 
 RenderPass2D::RenderPass2D() : RenderPass()
 {
@@ -11,7 +12,7 @@ RenderPass2D::~RenderPass2D()
 {
 }
 
-void RenderPass2D::BuildRenderPass()
+void RenderPass2D::BuildRenderPass(Mesh2D& mesh)
 {
     RenderedTexture = std::make_shared<RenderedColorTexture>(RenderedColorTexture(RenderPassResolution, VK_FORMAT_R32G32B32A32_SFLOAT));
 
@@ -98,10 +99,10 @@ void RenderPass2D::BuildRenderPass()
         };
         VULKAN_RESULT(vkCreateFramebuffer(global.Renderer.Device, &framebufferInfo, nullptr, &FrameBufferList[x]));
     }
-    BuildRenderPipeline();
+    BuildRenderPipeline(mesh);
 }
 
-void RenderPass2D::BuildRenderPipeline()
+void RenderPass2D::BuildRenderPipeline(Mesh2D& mesh)
 {
     std::vector<VkDescriptorPoolSize> DescriptorPoolBinding =
     {
@@ -120,12 +121,26 @@ void RenderPass2D::BuildRenderPipeline()
     };
     VULKAN_RESULT(Renderer_CreateDescriptorPool(&DescriptorPool, &poolInfo));
 
-
     std::vector<VkDescriptorSetLayoutBinding> LayoutBindingList =
     {
-        { 0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr },
-        { 1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr },
+        VkDescriptorSetLayoutBinding
+        { 
+            0, 
+            VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 
+            1, 
+            VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
+            nullptr 
+        },
+        VkDescriptorSetLayoutBinding
+        { 
+            1, 
+            VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 
+            1, 
+            VK_SHADER_STAGE_FRAGMENT_BIT, 
+            nullptr 
+        },
     };
+
     VkDescriptorSetLayoutCreateInfo layoutInfo
     {
         .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
@@ -152,6 +167,17 @@ void RenderPass2D::BuildRenderPipeline()
             .imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
         }
     };
+
+    std::vector<VkDescriptorBufferInfo> bufferDescriptorInfo
+    {
+        VkDescriptorBufferInfo
+        {
+            .buffer = mesh.GetMeshPropertiesBuffer().Buffer,
+            .offset = 0,
+            .range = VK_WHOLE_SIZE
+        }
+    };
+
     for (size_t x = 0; x < global.Renderer.SwapChain.SwapChainImageCount; x++)
     {
         std::vector<VkWriteDescriptorSet> descriptorSets
@@ -161,6 +187,16 @@ void RenderPass2D::BuildRenderPipeline()
                 .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
                 .dstSet = DescriptorSet,
                 .dstBinding = 0,
+                .dstArrayElement = 0,
+                .descriptorCount = static_cast<uint32_t>(bufferDescriptorInfo.size()),
+                .descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
+                .pBufferInfo = bufferDescriptorInfo.data(),
+            },
+            VkWriteDescriptorSet
+            {
+                .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+                .dstSet = DescriptorSet,
+                .dstBinding = 1,
                 .dstArrayElement = 0,
                 .descriptorCount = 1,
                 .descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
@@ -300,8 +336,8 @@ void RenderPass2D::BuildRenderPipeline()
 
     std::vector<VkPipelineShaderStageCreateInfo> PipelineShaderStageList
     {
-        ShaderCompiler::CreateShader("C:/Users/DHZ/Documents/GitHub/2D-Game-Engine/Shaders/FrameBufferShaderVert.spv", VK_SHADER_STAGE_VERTEX_BIT),
-        ShaderCompiler::CreateShader("C:/Users/DHZ/Documents/GitHub/2D-Game-Engine/Shaders/FrameBufferShaderFrag.spv", VK_SHADER_STAGE_FRAGMENT_BIT)
+        ShaderCompiler::CreateShader("C:/Users/dotha/Documents/GitHub/2D-Game-Engine/Shaders/Shader2DVert.spv", VK_SHADER_STAGE_VERTEX_BIT),
+        ShaderCompiler::CreateShader("C:/Users/dotha/Documents/GitHub/2D-Game-Engine/Shaders/Shader2DFrag.spv", VK_SHADER_STAGE_FRAGMENT_BIT)
     };
     std::vector<VkGraphicsPipelineCreateInfo> pipelineInfo
     {
@@ -331,7 +367,7 @@ void RenderPass2D::BuildRenderPipeline()
     }
 }
 
-void RenderPass2D::UpdateRenderPass()
+void RenderPass2D::UpdateRenderPass(Mesh2D& mesh)
 {
     Renderer_DestroyFrameBuffers(FrameBufferList.data());
     Renderer_DestroyRenderPass(&RenderPassPtr);
@@ -342,10 +378,10 @@ void RenderPass2D::UpdateRenderPass()
     Renderer_DestroyDescriptorPool(&DescriptorPool);
     RenderPassResolution = glm::ivec2((int)global.Renderer.SwapChain.SwapChainResolution.width, (int)global.Renderer.SwapChain.SwapChainResolution.height);
     SampleCount = VK_SAMPLE_COUNT_1_BIT;
-    BuildRenderPass();
+    BuildRenderPass(mesh);
 }
 
-VkCommandBuffer RenderPass2D::Draw()
+VkCommandBuffer RenderPass2D::Draw(Mesh2D& mesh)
 {
     std::vector<VkClearValue> clearValues
     {
@@ -406,9 +442,7 @@ VkCommandBuffer RenderPass2D::Draw()
     vkCmdBeginRenderPass(CommandBufferList[global.Renderer.CommandIndex], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
     vkCmdSetViewport(CommandBufferList[global.Renderer.CommandIndex], 0, static_cast<uint32>(viewport.size()), viewport.data());
     vkCmdSetScissor(CommandBufferList[global.Renderer.CommandIndex], 0, static_cast<uint32>(rect2D.size()), rect2D.data());
-    vkCmdBindPipeline(CommandBufferList[global.Renderer.CommandIndex], VK_PIPELINE_BIND_POINT_GRAPHICS, ShaderPipeline);
-    vkCmdBindDescriptorSets(CommandBufferList[global.Renderer.CommandIndex], VK_PIPELINE_BIND_POINT_GRAPHICS, ShaderPipelineLayout, 0, 1, &DescriptorSet, 0, nullptr);
-    vkCmdDraw(CommandBufferList[global.Renderer.CommandIndex], 6, 1, 0, 0);
+    mesh.Draw(CommandBufferList[global.Renderer.CommandIndex], ShaderPipelineLayout, DescriptorSet);
     vkCmdEndRenderPass(CommandBufferList[global.Renderer.CommandIndex]);
     VULKAN_RESULT(Renderer_EndCommandBuffer(&CommandBufferList[global.Renderer.CommandIndex]));
     return CommandBufferList[global.Renderer.CommandIndex];

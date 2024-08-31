@@ -27,7 +27,7 @@ static VkResult Buffer_AllocateMemory(struct BufferInfo* bufferInfo, VkMemoryPro
     return vkAllocateMemory(global.Renderer.Device, &allocInfo, NULL, bufferInfo->BufferMemory);
 }
 
-VkResult Buffer_CreateBuffer(struct BufferInfo* bufferInfo, void* bufferData, VkDeviceSize bufferSize, VkBufferUsageFlags bufferUsage, VkMemoryPropertyFlags properties) 
+VkResult Buffer_CreateBuffer(struct BufferInfo* bufferInfo, void* bufferData, VkDeviceSize bufferSize, VkBufferUsageFlags bufferUsage, VkMemoryPropertyFlags properties)
 {
     if (bufferData == NULL ||
         bufferSize == 0)
@@ -36,12 +36,12 @@ VkResult Buffer_CreateBuffer(struct BufferInfo* bufferInfo, void* bufferData, Vk
         return VK_ERROR_MEMORY_MAP_FAILED;
     }
 
-    *bufferInfo->BufferSize = bufferSize;           
+    *bufferInfo->BufferSize = bufferSize;
     *bufferInfo->BufferUsage = bufferUsage;
     *bufferInfo->BufferProperties = properties;
-    *bufferInfo->Buffer = bufferData; 
+    *bufferInfo->Buffer = bufferData;
 
-    VkBufferCreateInfo buffer = 
+    VkBufferCreateInfo buffer =
     {
         .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
         .size = bufferSize,
@@ -52,7 +52,7 @@ VkResult Buffer_CreateBuffer(struct BufferInfo* bufferInfo, void* bufferData, Vk
     VULKAN_RESULT(vkCreateBuffer(global.Renderer.Device, &buffer, NULL, bufferInfo->Buffer));
     VULKAN_RESULT(Buffer_AllocateMemory(bufferInfo, properties));
 
-    if (bufferData != NULL) 
+    if (bufferData != NULL)
     {
         VULKAN_RESULT(vkMapMemory(global.Renderer.Device, *bufferInfo->BufferMemory, 0, *bufferInfo->BufferSize, 0, bufferInfo->BufferData));
         memcpy(*bufferInfo->BufferData, bufferData, (size_t)*bufferInfo->BufferSize);
@@ -71,39 +71,39 @@ VkResult Buffer_CopyBuffer(struct BufferInfo* bufferInfo, VkBuffer* srcBuffer, V
         return VK_ERROR_MEMORY_MAP_FAILED;
     }
 
-    VkBufferCopy copyRegion = 
+    VkBufferCopy copyRegion =
     {
         .srcOffset = 0,
         .dstOffset = 0,
         .size = size
     };
     VkCommandBuffer commandBuffer = Renderer_BeginSingleUseCommandBuffer();
-    vkCmdCopyBuffer(commandBuffer, *srcBuffer, *dstBuffer, 1, &copyRegion);
-    return Renderer_EndSingleUseCommandBuffer(commandBuffer);
+    vkCmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
+    return Renderer_EndSingleUseCommandBuffer(&commandBuffer);
 }
 
 VkResult Buffer_UpdateBufferSize(struct BufferInfo* bufferInfo, VkDeviceSize bufferSize)
 {
-    if (*bufferInfo->BufferSize < bufferSize)
+    if (bufferInfo->BufferSize < bufferSize)
     {
         RENDERER_ERROR("New buffer size can't be less than the old buffer size.");
         return VK_ERROR_MEMORY_MAP_FAILED;
     }
 
-    *bufferInfo->BufferSize = bufferSize;
+    bufferInfo->BufferSize = bufferSize;
     Buffer_DestroyBuffer(bufferInfo);
 
     VkBufferCreateInfo buffer =
     {
         .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-        .size = *bufferInfo->BufferSize,
-        .usage = *bufferInfo->BufferUsage,
+        .size = bufferInfo->BufferSize,
+        .usage = bufferInfo->BufferUsage,
         .sharingMode = VK_SHARING_MODE_EXCLUSIVE
     };
-    VULKAN_RESULT(vkCreateBuffer(global.Renderer.Device, &buffer, NULL, bufferInfo->Buffer));
-    VULKAN_RESULT(Buffer_AllocateMemory(bufferInfo, *bufferInfo->BufferProperties));
-    VULKAN_RESULT(vkBindBufferMemory(global.Renderer.Device, *bufferInfo->Buffer, *bufferInfo->BufferMemory, 0));
-    return vkMapMemory(global.Renderer.Device, *bufferInfo->BufferMemory, 0, *bufferInfo->BufferSize, 0, bufferInfo->BufferData);
+    VULKAN_RESULT(vkCreateBuffer(global.Renderer.Device, &buffer, NULL, &bufferInfo->Buffer));
+    VULKAN_RESULT(Buffer_AllocateMemory(bufferInfo, bufferInfo->BufferProperties));
+    VULKAN_RESULT(vkBindBufferMemory(global.Renderer.Device, bufferInfo->Buffer, bufferInfo->BufferMemory, 0));
+    return vkMapMemory(global.Renderer.Device, bufferInfo->BufferMemory, 0, bufferInfo->BufferSize, 0, &bufferInfo->BufferData);
 }
 
 void Buffer_UpdateBufferMemory(void* dataBuffer, void* DataToCopy, VkDeviceSize BufferSize)
@@ -112,6 +112,7 @@ void Buffer_UpdateBufferMemory(void* dataBuffer, void* DataToCopy, VkDeviceSize 
         BufferSize == 0)
     {
         RENDERER_ERROR("Buffer Data and Size can't be NULL");
+        return VK_ERROR_MEMORY_MAP_FAILED;
     }
     memcpy(dataBuffer, DataToCopy, (size_t)BufferSize);
 }

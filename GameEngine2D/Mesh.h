@@ -28,7 +28,8 @@ class Mesh
 														   VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR;
 
 		const VkMemoryPropertyFlags MeshBufferPropertySettings = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
-												                 VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+												                 VK_MEMORY_PROPERTY_HOST_COHERENT_BIT |
+																 VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT;
 
 
 	protected:
@@ -60,5 +61,7 @@ class Mesh
 		virtual void Update(Timer& timer);
 		virtual void Draw(VkCommandBuffer& commandBuffer, VkPipelineLayout& shaderPipelineLayout, VkDescriptorSet& descriptorSet);
 		virtual void Destroy();
+
+		VulkanBuffer<MeshProperitiesStruct>& GetMeshPropertiesBuffer() { return MeshPropertiesBuffer; }
 };
 
