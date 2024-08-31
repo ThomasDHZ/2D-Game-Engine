@@ -1,9 +1,9 @@
 #include "VulkanSwapChain.h"
 #include "Global.h"
 
-static VkSurfaceFormatKHR SwapChain_FindSwapSurfaceFormat(VkSurfaceFormatKHR* availableFormats)
+static VkSurfaceFormatKHR SwapChain_FindSwapSurfaceFormat(VkSurfaceFormatKHR* availableFormats, uint32* availableFormatsCount)
 {
-	for (int x = 0; x < ARRAY_SIZE(availableFormats); x++)
+	for (uint32 x = 0; x < *availableFormatsCount; x++)
 	{
 		if (availableFormats[x].format == VK_FORMAT_B8G8R8A8_UNORM &&
 			availableFormats[x].colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
@@ -12,19 +12,18 @@ static VkSurfaceFormatKHR SwapChain_FindSwapSurfaceFormat(VkSurfaceFormatKHR* av
 		}
 	}
 	fprintf(stderr, "Couldn't find a usable swap surface format.\n");
-	return;
+	return (VkSurfaceFormatKHR) { VK_FORMAT_UNDEFINED, VK_COLOR_SPACE_MAX_ENUM_KHR };
 }
 
-static VkPresentModeKHR SwapChain_FindSwapPresentMode(VkPresentModeKHR* availablePresentModes)
+static VkPresentModeKHR SwapChain_FindSwapPresentMode(VkPresentModeKHR* availablePresentModes, uint32* availablePresentModesCount)
 {
-	for (int x = 0; x < ARRAY_SIZE(availablePresentModes); x++)
+	for (uint32 x = 0; x < *availablePresentModesCount; x++)
 	{
 		if (availablePresentModes[x] == VK_PRESENT_MODE_MAILBOX_KHR)
 		{
 			return availablePresentModes[x];
 		}
 	}
-
 	return VK_PRESENT_MODE_FIFO_KHR;
 }
 
@@ -55,8 +54,9 @@ VkResult Vulkan_SetUpSwapChain()
 {
 	VkSurfaceFormatKHR* compatibleSwapChainFormatList = NULL;
 	VkSurfaceFormatKHR* compatiblePresentModesList = NULL;
+	uint32 surfaceFormatCount = 0;
+	uint32 presentModeCount = 0;
 
-	uint32 surfaceFormatCount = UINT32_MAX;
 	VkSurfaceCapabilitiesKHR surfaceCapabilities;
 	VULKAN_RESULT(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(global.Renderer.PhysicalDevice, global.Renderer.Surface, &surfaceCapabilities));
 	VULKAN_RESULT(vkGetPhysicalDeviceSurfaceFormatsKHR(global.Renderer.PhysicalDevice, global.Renderer.Surface, &surfaceFormatCount, NULL));
@@ -66,7 +66,6 @@ VkResult Vulkan_SetUpSwapChain()
 		VULKAN_RESULT(vkGetPhysicalDeviceSurfaceFormatsKHR(global.Renderer.PhysicalDevice, global.Renderer.Surface, &surfaceFormatCount, compatibleSwapChainFormatList));
 	}
 
-	uint32 presentModeCount = UINT32_MAX;
 	VULKAN_RESULT(vkGetPhysicalDeviceSurfacePresentModesKHR(global.Renderer.PhysicalDevice, global.Renderer.Surface, &presentModeCount, NULL));
 	if (presentModeCount != 0)
 	{
@@ -75,8 +74,8 @@ VkResult Vulkan_SetUpSwapChain()
 	}
 
 	SwapChain_GetQueueFamilies(global.Renderer.PhysicalDevice, &global.Renderer.SwapChain.GraphicsFamily, &global.Renderer.SwapChain.PresentFamily);
-	VkSurfaceFormatKHR SwapChainImageFormat = SwapChain_FindSwapSurfaceFormat(compatibleSwapChainFormatList);
-	VkPresentModeKHR SwapChainPresentMode = SwapChain_FindSwapPresentMode(compatiblePresentModesList);
+	VkSurfaceFormatKHR SwapChainImageFormat = SwapChain_FindSwapSurfaceFormat(compatibleSwapChainFormatList, &surfaceFormatCount);
+	VkPresentModeKHR SwapChainPresentMode = SwapChain_FindSwapPresentMode(compatiblePresentModesList, &presentModeCount);
 
 	int width = INT32_MAX;
 	int height = INT32_MAX;
@@ -164,7 +163,7 @@ VkResult Vulkan_RebuildSwapChain()
 
 void Vulkan_DestroyImageView()
 {
-	for (int x = 0; x < global.Renderer.SwapChain.SwapChainImageCount; x++)
+	for (uint32 x = 0; x < global.Renderer.SwapChain.SwapChainImageCount; x++)
 	{
 		if (global.Renderer.Surface != VK_NULL_HANDLE)
 		{

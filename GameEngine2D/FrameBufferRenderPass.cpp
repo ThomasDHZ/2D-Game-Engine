@@ -165,7 +165,7 @@ void FrameBufferRenderPass::BuildRenderPipeline(std::shared_ptr<Texture> texture
                 .pImageInfo = ColorDescriptorImage.data(),
             }
         };
-        Renderer_UpdateDescriptorSet(descriptorSets.data(), descriptorSets.size());
+        Renderer_UpdateDescriptorSet(descriptorSets.data(), static_cast<uint32_t>(descriptorSets.size()));
     }
 
     /*  std::vector<VkVertexInputBindingDescription> bindingDescriptions

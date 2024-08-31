@@ -115,11 +115,10 @@ void Texture::CreateImageTexture(const std::string& FilePath)
 	};
 	VulkanBuffer<MeshProperitiesStruct2> buffer2(meshList, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
-	auto buffer24 = buffer2.ViewListBufferData();
-	buffer24[0].MeshIndex = 7890;
-	buffer2.UpdateBufferData(buffer24);
-
-	auto buffer25 = buffer2.ViewListBufferData();
+	auto zzz = buffer2.ViewListBufferData();
+	zzz[0].MeshIndex = 46346435;
+	buffer2.UpdateBufferData(zzz);
+	auto vvv = buffer2.ViewListBufferData();
 
 	MipMapLevels = static_cast<uint32>(std::floor(std::log2(std::max(Width, Height)))) + 1;
 

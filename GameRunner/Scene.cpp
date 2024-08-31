@@ -46,7 +46,7 @@ void Scene::Draw()
 	VULKAN_RESULT(Renderer_StartFrame());
 	CommandBufferSubmitList.emplace_back(frameRenderPass.Draw());
 	CommandBufferSubmitList.emplace_back(InterfaceRenderPass::Draw());
-	VULKAN_RESULT(Renderer_EndFrame(CommandBufferSubmitList.data(), CommandBufferSubmitList.size()));
+	VULKAN_RESULT(Renderer_EndFrame(CommandBufferSubmitList.data(), static_cast<uint32_t>(CommandBufferSubmitList.size())));
 }
 
 void Scene::Destroy()

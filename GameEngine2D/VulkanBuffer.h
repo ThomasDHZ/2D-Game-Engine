@@ -97,20 +97,12 @@ class VulkanBuffer
 
 		void UpdateBufferData(List<T>& bufferData)
 		{
-			if (BufferSize != sizeof(T) * bufferData.size())
+			const VkDeviceSize newBufferSize = sizeof(T) * bufferData.size();
+			if (BufferSize != newBufferSize)
 			{
-				UpdateBufferSize(sizeof(T) * bufferData.size());
+				UpdateBufferSize(newBufferSize);
 			}
-			Buffer_UpdateBufferMemory(SendCBufferInfo().get(), &bufferData, BufferSize);
-		}
-
-		void UpdateBufferData(void* bufferData, uint32 bufferSize)
-		{
-			if (BufferSize != bufferSize)
-			{
-				UpdateBufferSize(bufferSize);
-			}
-			Buffer_UpdateBufferMemory(SendCBufferInfo().get(), &bufferData, BufferSize);
+			Buffer_UpdateBufferMemory(BufferData, bufferData.data(), BufferSize);
 		}
 
 		T ViewBufferData()
@@ -124,9 +116,23 @@ class VulkanBuffer
 
 		List<T> ViewListBufferData()
 		{
-			const size_t elementCount = BufferSize / sizeof(T);
+			if (BufferData == nullptr ||
+				BufferSize <= 0)
+			{
+				RENDERER_ERROR("Nothing in the buffer.");
+				return List<T>();
+			}
+
+			const uint32 elementCount = (uint32)BufferSize / sizeof(T);
+			if (elementCount * sizeof(T) != BufferSize)
+			{
+				RENDERER_ERROR("Error with buffer size.");
+				return List<T>();
+			}
+
 			List<T> dataArray(elementCount);
 			std::memcpy(dataArray.data(), BufferData, BufferSize);
+
 			return dataArray;
 		}
 

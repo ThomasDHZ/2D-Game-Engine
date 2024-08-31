@@ -109,7 +109,7 @@ void Texture_CopyBufferToTexture(struct TextureInfo* textureInfo, VkBuffer* buff
 
 void Texture_GenerateMipmaps(struct TextureInfo* textureInfo)
 {
-	if ((int)textureInfo->MipMapLevels > 1)
+	if (textureInfo->MipMapLevels > (uint32)1)
 	{
 		int32_t mipWidth = *textureInfo->Width;
 		int32_t mipHeight = *textureInfo->Height;

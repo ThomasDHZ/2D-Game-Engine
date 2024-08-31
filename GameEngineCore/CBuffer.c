@@ -90,18 +90,18 @@ VkResult Buffer_UpdateBufferSize(struct BufferInfo* bufferInfo, VkDeviceSize buf
         return VK_ERROR_MEMORY_MAP_FAILED;
     }
 
-    *bufferInfo->BufferSize = bufferSize;
+    bufferInfo->BufferSize = bufferSize;
     Buffer_DestroyBuffer(bufferInfo);
 
-    VkBufferCreateInfo buffer = 
+    VkBufferCreateInfo buffer =
     {
         .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-        .size = *bufferInfo->BufferSize,
-        .usage = *bufferInfo->BufferUsage,
+        .size = bufferInfo->BufferSize,
+        .usage = bufferInfo->BufferUsage,
         .sharingMode = VK_SHARING_MODE_EXCLUSIVE
     };
-    VULKAN_RESULT(vkCreateBuffer(global.Renderer.Device, &buffer, NULL, bufferInfo->Buffer));
-    VULKAN_RESULT(Buffer_AllocateMemory(bufferInfo, *bufferInfo->BufferProperties));
+    VULKAN_RESULT(vkCreateBuffer(global.Renderer.Device, &buffer, NULL, &bufferInfo->Buffer));
+    VULKAN_RESULT(Buffer_AllocateMemory(bufferInfo, bufferInfo->BufferProperties));
     VULKAN_RESULT(vkBindBufferMemory(global.Renderer.Device, bufferInfo->Buffer, bufferInfo->BufferMemory, 0));
     return vkMapMemory(global.Renderer.Device, bufferInfo->BufferMemory, 0, bufferInfo->BufferSize, 0, &bufferInfo->BufferData);
 }

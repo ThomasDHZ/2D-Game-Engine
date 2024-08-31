@@ -98,7 +98,7 @@ FileState File_Read(const char* path)
     FILE* fp = fopen(path, "rb");
     if (!fp || ferror(fp))
     {
-        RENDERER_ERROR(fileState, IO_READ_ERROR_GENERAL, path, errno);
+        ERROR_RETURN(fileState, IO_READ_ERROR_GENERAL, path, errno);
     }
 
 
@@ -116,14 +116,14 @@ FileState File_Read(const char* path)
             if (size <= used) 
             {
                 free(data);
-                RENDERER_ERROR(fileState, "Input file too large: %s\n", path);
+                ERROR_RETURN(fileState, "Input file too large: %s\n", path);
             }
 
             tmp = (char*)realloc(data, size);
             if (!tmp) 
             {
                 free(data);
-                RENDERER_ERROR(fileState, IO_READ_ERROR_MEMORY, path);
+                ERROR_RETURN(fileState, IO_READ_ERROR_MEMORY, path);
             }
             data = tmp;
         }
@@ -137,13 +137,13 @@ FileState File_Read(const char* path)
 
     if (ferror(fp)) {
         free(data);
-        RENDERER_ERROR(fileState, IO_READ_ERROR_GENERAL, path, errno);
+        ERROR_RETURN(fileState, IO_READ_ERROR_GENERAL, path, errno);
     }
 
     tmp = (char*)realloc(data, used + 1);
     if (!tmp) {
         free(data);
-        RENDERER_ERROR(fileState, IO_READ_ERROR_MEMORY, path);
+        ERROR_RETURN(fileState, IO_READ_ERROR_MEMORY, path);
     }
     data = tmp;
     data[used] = 0;
@@ -160,7 +160,7 @@ int File_Write(void* buffer, size_t size, const char* path)
     FILE* filePath = fopen(path, "wb");
     if (!filePath || ferror(filePath))
     {
-        RENDERER_ERROR(1, "Cannot write files: %s.\n", path);
+        ERROR_RETURN(1, "Cannot write files: %s.\n", path);
     }
 
     size_t chunks_written = fwrite(buffer, size, 1, filePath);
@@ -168,7 +168,7 @@ int File_Write(void* buffer, size_t size, const char* path)
     fclose(filePath);
     if (chunks_written != 1)
     {
-        RENDERER_ERROR(1, "Write error. ", "Expected 1 chunk, got %zu.\n", chunks_written);
+        ERROR_RETURN(1, "Write error expected 1 chunk, got %zu.\n", chunks_written);
     }
 
     return 0;

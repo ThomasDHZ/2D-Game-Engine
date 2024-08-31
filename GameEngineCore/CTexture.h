@@ -41,7 +41,7 @@ enum TextureTypeEnum
     kType_BakedTexture
 };
 
-typedef struct TextureInfo 
+struct TextureInfo 
 {
     int* Width;
     int* Height;

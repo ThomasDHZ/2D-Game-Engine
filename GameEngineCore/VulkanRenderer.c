@@ -98,42 +98,36 @@ static VkExtensionProperties* GetDeviceExtensions(VkPhysicalDevice* physicalDevi
     return deviceExtensions;
 }
 
-static VkSurfaceFormatKHR* GetSurfaceFormats(VkPhysicalDevice* physicalDevice)
+static void GetSurfaceFormats(VkPhysicalDevice* physicalDevice, VkSurfaceFormatKHR* surfaceFormat, uint32* surfaceFormatCount)
 {
-    uint32 surfaceFormatCount;
-    VULKAN_RESULT(vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, global.Renderer.Surface, &surfaceFormatCount, NULL));
+    VULKAN_RESULT(vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, global.Renderer.Surface, surfaceFormatCount, NULL));
     if (surfaceFormatCount > 0)
     {
-        VkSurfaceFormatKHR* surfaceFormats = malloc(sizeof(VkSurfaceFormatKHR) * surfaceFormatCount);
+        VkSurfaceFormatKHR* surfaceFormats = malloc(sizeof(VkSurfaceFormatKHR) * *surfaceFormatCount);
         if (!surfaceFormats)
         {
             fprintf(stderr, "Failed to allocate memory for Vulkan.\n");
-            return NULL;
         }
 
-        VULKAN_RESULT(vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, global.Renderer.Surface, &surfaceFormatCount, surfaceFormats));
+        VULKAN_RESULT(vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, global.Renderer.Surface, surfaceFormatCount, surfaceFormats));
         return surfaceFormats;
     }
-    return NULL;
 }
 
-static VkPresentModeKHR* GetPresentModes(VkPhysicalDevice* physicalDevice)
+static void GetPresentModes(VkPhysicalDevice* physicalDevice, VkPresentModeKHR* presentMode, int32* presentModeCount)
 {
-    uint32 presentModeCount;
-    VULKAN_RESULT(vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, global.Renderer.Surface, &presentModeCount, NULL));
+    VULKAN_RESULT(vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, global.Renderer.Surface, presentModeCount, NULL));
     if (presentModeCount > 0)
     {
-        VkPresentModeKHR* presentModes = malloc(sizeof(VkPresentModeKHR) * presentModeCount);
+        VkPresentModeKHR* presentModes = malloc(sizeof(VkPresentModeKHR) * *presentModeCount);
         if (!presentModes)
         {
             fprintf(stderr, "Failed to allocate memory for Vulkan.\n");
-            return NULL;
         }
 
         VULKAN_RESULT(vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, global.Renderer.Surface, &presentModeCount, presentModes));
         return presentModes;
     }
-    return NULL;
 }
 
 static bool GetRayTracingSupport()
@@ -269,7 +263,7 @@ VkResult Renderer_RendererSetUp()
     if (!extensions)
     {
         fprintf(stderr, "Failed to allocate memory for Vulkan.\n");
-        return;
+        return VK_RESULT_MAX_ENUM;
     }
 
     SDL_Vulkan_GetInstanceExtensions(global.Window.SDLWindow, &extensionCount, extensions);
@@ -320,7 +314,7 @@ VkResult Renderer_RendererSetUp()
         fprintf(stderr, "Failed to create Vulkan surface: %s\n", SDL_GetError());
         Renderer_DestroyRenderer();
         free(extensions);
-        return;
+        return VK_RESULT_MAX_ENUM;
     }
 
     uint32 deviceCount = UINT32_MAX;
@@ -330,16 +324,22 @@ VkResult Renderer_RendererSetUp()
     VULKAN_RESULT(vkEnumeratePhysicalDevices(global.Renderer.Instance, &deviceCount, physicalDeviceList));
 
     VkPresentModeKHR* presentMode = NULL;
-    for (int x = 0; x < deviceCount; x++)
+    for (uint32 x = 0; x < deviceCount; x++)
     {
         vkGetPhysicalDeviceFeatures(physicalDeviceList[x], &global.Renderer.PhysicalDeviceFeatures);
         SwapChain_GetQueueFamilies(physicalDeviceList[x], &global.Renderer.SwapChain.GraphicsFamily, &global.Renderer.SwapChain.PresentFamily);
-        VkSurfaceFormatKHR* surfaceFormat = GetSurfaceFormats(physicalDeviceList[x]);
-        VkPresentModeKHR* presentMode = GetPresentModes(physicalDeviceList[x]);
+      
+        VkSurfaceFormatKHR* surfaceFormat = NULL;
+        VkPresentModeKHR* presentMode = NULL;
+        uint32 surfaceFormatCount = 0;
+        uint32 presentModeCount = 0;
+        GetSurfaceFormats(physicalDeviceList[x], &surfaceFormat, &surfaceFormatCount);
+        GetPresentModes(physicalDeviceList[x], &presentMode, &presentModeCount);
+
         if (global.Renderer.SwapChain.GraphicsFamily != -1 &&
             global.Renderer.SwapChain.PresentFamily != -1 &&
-            ARRAY_SIZE(surfaceFormat) > 0 &&
-            ARRAY_SIZE(presentMode) != 0 &&
+            surfaceFormatCount > 0 &&
+            presentModeCount != 0 &&
             global.Renderer.PhysicalDeviceFeatures.samplerAnisotropy)
         {
             global.Renderer.PhysicalDevice = physicalDeviceList[x];
@@ -602,7 +602,7 @@ VkResult Renderer_RebuildSwapChain()
     VULKAN_RESULT(vkDeviceWaitIdle(global.Renderer.Device));
     Vulkan_DestroyImageView();
     vkDestroySwapchainKHR(global.Renderer.Device, global.Renderer.SwapChain.Swapchain, NULL);
-    Vulkan_RebuildSwapChain();
+    return Vulkan_RebuildSwapChain();
 }
 
 VkResult Renderer_StartFrame()
@@ -725,6 +725,7 @@ uint32 Renderer_GetMemoryType(uint32 typeFilter, VkMemoryPropertyFlags propertie
     fprintf(stderr, "Couldn't find suitable memory type.\n");
     Renderer_DestroyRenderer();
     GameEngine_DestroyWindow();
+    return -1;
 }
 
 VkCommandBuffer Renderer_BeginSingleUseCommandBuffer()
@@ -896,15 +897,6 @@ void Renderer_DestroyCommnadPool(VkCommandPool* commandPool)
     {
         vkDestroyCommandPool(global.Renderer.Device, *commandPool, NULL);
         *commandPool = VK_NULL_HANDLE;
-    }
-}
-
-void Renderer_DestroyBufferMemory(VkDeviceMemory* deviceMemory)
-{
-    if (*deviceMemory != VK_NULL_HANDLE)
-    {
-        vkDestroyCommandPool(global.Renderer.Device, *deviceMemory, NULL);
-        *deviceMemory = VK_NULL_HANDLE;
     }
 }
 
