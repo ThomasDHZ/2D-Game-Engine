@@ -91,8 +91,10 @@ class VulkanBuffer
 			if (BufferSize < sizeof(T))
 			{
 				RENDERER_ERROR("Buffer does not contain enough data for a single T object.");
+				return;
 			}
-			Buffer_UpdateBufferMemory(SendCBufferInfo().get(), &bufferData, BufferSize);
+
+			Buffer_UpdateBufferMemory(BufferData, static_cast<void*>(&bufferData), sizeof(T));
 		}
 
 		void UpdateBufferData(List<T>& bufferData)

@@ -16,7 +16,7 @@ struct MeshProperitiesStruct
 {
 	uint32 MeshIndex;
 	uint32 MaterialIndex;
-	mat4   MeshTransform;
+	mat4   MeshTransform = mat4(1.0f);
 };
 
 typedef VulkanBuffer<List<Vertex2D>> VertexBuffer;
@@ -53,9 +53,9 @@ class Mesh
 		template<class T>
 		void MeshStartUp(List<T>& vertexList, List<uint32>& indexList)
 		{
-			MeshVertexBuffer = std::make_shared<VertexBuffer>(vertexList, MeshBufferUsageSettings, MeshBufferPropertySettings);
-			MeshIndexBuffer = std::make_shared<IndexBuffer>(indexList, MeshBufferUsageSettings, MeshBufferPropertySettings);
-			PropertiesBuffer = std::make_shared<MeshPropertiesBuffer>(MeshProperties, MeshBufferUsageSettings, MeshBufferPropertySettings);
+			MeshVertexBuffer = std::make_shared<VertexBuffer>(VertexBuffer(vertexList, MeshBufferUsageSettings, MeshBufferPropertySettings));
+			MeshIndexBuffer = std::make_shared<IndexBuffer>(IndexBuffer(indexList, MeshBufferUsageSettings, MeshBufferPropertySettings));
+			PropertiesBuffer = std::make_shared<MeshPropertiesBuffer>(MeshPropertiesBuffer(MeshProperties, MeshBufferUsageSettings, MeshBufferPropertySettings));
 		}
 
 	public:
