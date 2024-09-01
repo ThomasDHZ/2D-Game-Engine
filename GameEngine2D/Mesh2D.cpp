@@ -4,7 +4,7 @@ Mesh2D::Mesh2D() : Mesh()
 {
 }
 
-Mesh2D::Mesh2D(std::vector<Vertex2D>& vertexList, std::vector<uint32>& indexList) : Mesh()
+Mesh2D::Mesh2D(List<Vertex2D>& vertexList, List<uint32>& indexList) : Mesh()
 {
 	MeshStartUp<Vertex2D>(vertexList, indexList);
 }

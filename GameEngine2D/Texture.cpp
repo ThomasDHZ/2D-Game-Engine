@@ -80,13 +80,13 @@ void Texture::Destroy()
 
 void Texture::CreateImageTexture(const std::string& FilePath)
 {
+	MipMapLevels = static_cast<uint32>(std::floor(std::log2(std::max(Width, Height)))) + 1;
+
 	int* width = &Width;
 	int* height = &Height;
 	int colorChannels = 0;
 	unsigned char* data = stbi_load(FilePath.c_str(), width, height, &colorChannels, 0);
 	VulkanBuffer<unsigned char*> buffer(data, Width * Height * colorChannels, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-
-	MipMapLevels = static_cast<uint32>(std::floor(std::log2(std::max(Width, Height)))) + 1;
 
 	Texture_CreateTextureImage(SendCTextureInfo().get());
 	Texture_TransitionImageLayout(SendCTextureInfo().get(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);

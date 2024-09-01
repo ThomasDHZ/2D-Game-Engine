@@ -7,15 +7,15 @@ private:
 protected:
 public:
 	Mesh2D();
-	Mesh2D(std::vector<Vertex2D>& vertexList, std::vector<uint32>& indexList);
+	Mesh2D(List<Vertex2D>& vertexList, List<uint32>& indexList);
 	virtual ~Mesh2D();
 
 	Mesh2D& operator=(Mesh2D&& other) noexcept {
 		if (this != &other) 
 		{
-			VertexBuffer = std::move(other.VertexBuffer);
-			IndexBuffer = std::move(other.IndexBuffer);
-			MeshPropertiesBuffer = std::move(other.MeshPropertiesBuffer);
+			MeshVertexBuffer = std::move(other.MeshVertexBuffer);
+			MeshIndexBuffer = std::move(other.MeshIndexBuffer);
+			PropertiesBuffer = std::move(other.PropertiesBuffer);
 
 			MeshBufferIndex = other.MeshBufferIndex;
 		}

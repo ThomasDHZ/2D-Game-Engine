@@ -27,4 +27,6 @@ public:
 	void UpdateRenderPass(Mesh2D& mesh);
 	VkCommandBuffer Draw(Mesh2D& mesh);
 	void Destroy() override;
+
+	std::shared_ptr<RenderedColorTexture> GetRenderedTexture() { return RenderedTexture; }
 };

@@ -172,7 +172,7 @@ void RenderPass2D::BuildRenderPipeline(Mesh2D& mesh)
     {
         VkDescriptorBufferInfo
         {
-            .buffer = mesh.GetMeshPropertiesBuffer().Buffer,
+            .buffer = mesh.GetMeshPropertiesBuffer()->Buffer,
             .offset = 0,
             .range = VK_WHOLE_SIZE
         }

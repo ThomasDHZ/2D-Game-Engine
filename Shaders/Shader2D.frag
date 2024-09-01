@@ -42,5 +42,5 @@ void main()
 //   vec3 finalResult = vec3(1.0) - exp(-result * 1.0f);
 //		finalResult = pow(finalResult, vec3(1.0 / 2.2f));
 
-   outColor = vec4(texture(TextureMap, UV).rgb,1.0f);
+   outColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);
 }
