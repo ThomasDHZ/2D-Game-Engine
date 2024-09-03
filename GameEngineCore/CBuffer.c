@@ -1,16 +1,16 @@
 #include "CBuffer.h"
 #include "Global.h"
 
-static VkResult Buffer_AllocateMemory(struct BufferInfo* bufferInfo, VkMemoryPropertyFlags properties)
+static VkResult Buffer_AllocateMemory(VkBuffer* bufferData, VkDeviceMemory* bufferMemory, VkMemoryPropertyFlags properties)
 {
-    if (bufferInfo->BufferData == NULL)
+    if (bufferData == NULL)
     {
         RENDERER_ERROR("Buffer Data is NULL");
         return VK_ERROR_MEMORY_MAP_FAILED;
     }
 
     VkMemoryRequirements memRequirements;
-    vkGetBufferMemoryRequirements(global.Renderer.Device, *bufferInfo->Buffer, &memRequirements);
+    vkGetBufferMemoryRequirements(global.Renderer.Device, *bufferData, &memRequirements);
 
     VkMemoryAllocateFlagsInfoKHR ExtendedAllocFlagsInfo =
     {
@@ -24,13 +24,36 @@ static VkResult Buffer_AllocateMemory(struct BufferInfo* bufferInfo, VkMemoryPro
         .pNext = &ExtendedAllocFlagsInfo,
     };
 
-    return vkAllocateMemory(global.Renderer.Device, &allocInfo, NULL, bufferInfo->BufferMemory);
+    return vkAllocateMemory(global.Renderer.Device, &allocInfo, NULL, bufferMemory);
+}
+
+ void* Buffer_MapBufferMemory(struct BufferInfo* bufferInfo)
+{
+    if (*bufferInfo->IsMapped) 
+    {
+        RENDERER_ERROR("Buffer already mapped!\n");
+        return NULL;
+    }
+
+    void* mappedData;
+    VULKAN_RESULT(vkMapMemory(global.Renderer.Device, *bufferInfo->BufferMemory, 0, *bufferInfo->BufferSize, 0, &mappedData));
+    *bufferInfo->IsMapped = true; 
+    return mappedData; 
+}
+
+ VkResult Buffer_UnmapBufferMemory(struct BufferInfo* bufferInfo)
+{
+    if (*bufferInfo->IsMapped)
+    {
+        vkUnmapMemory(global.Renderer.Device, *bufferInfo->BufferMemory);
+        *bufferInfo->IsMapped = false;
+    }
+    return VK_SUCCESS;
 }
 
 VkResult Buffer_CreateBuffer(struct BufferInfo* bufferInfo, void* bufferData, VkDeviceSize bufferSize, VkBufferUsageFlags bufferUsage, VkMemoryPropertyFlags properties)
 {
-    if (bufferData == NULL ||
-        bufferSize == 0)
+    if (bufferData == NULL || bufferSize == 0)
     {
         RENDERER_ERROR("Buffer Data and Size can't be NULL");
         return VK_ERROR_MEMORY_MAP_FAILED;
@@ -39,28 +62,39 @@ VkResult Buffer_CreateBuffer(struct BufferInfo* bufferInfo, void* bufferData, Vk
     *bufferInfo->BufferSize = bufferSize;
     *bufferInfo->BufferUsage = bufferUsage;
     *bufferInfo->BufferProperties = properties;
-    *bufferInfo->Buffer = bufferData;
 
-    VkBufferCreateInfo buffer =
+    VkBufferCreateInfo bufferInfoStruct = { 0 };
+    bufferInfoStruct.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+    bufferInfoStruct.size = bufferSize;
+    bufferInfoStruct.usage = bufferUsage;
+    bufferInfoStruct.sharingMode = VK_SHARING_MODE_EXCLUSIVE; 
+
+    VULKAN_RESULT(vkCreateBuffer(global.Renderer.Device, &bufferInfoStruct, NULL, bufferInfo->Buffer));
+    VULKAN_RESULT(Buffer_AllocateMemory(bufferInfo->Buffer, bufferInfo->BufferMemory, properties));
+    VULKAN_RESULT(vkBindBufferMemory(global.Renderer.Device, *bufferInfo->Buffer, *bufferInfo->BufferMemory, 0));
+
+    void* mappedData;
+    VULKAN_RESULT(vkMapMemory(global.Renderer.Device, *bufferInfo->BufferMemory, 0, *bufferInfo->BufferSize, 0, &mappedData));
+    memcpy(mappedData, bufferData, (size_t)*bufferInfo->BufferSize);
+    vkUnmapMemory(global.Renderer.Device, *bufferInfo->BufferMemory);
+
+    return VK_SUCCESS;
+}
+
+VkResult Buffer_CreateStagingBuffer(struct BufferInfo* bufferInfo, void* bufferData, VkDeviceSize bufferSize, VkBufferUsageFlags bufferUsage, VkMemoryPropertyFlags properties)
+{
+    VkMemoryRequirements memRequirements;
+    VkBufferCreateInfo bufferCreateInfo =
     {
         .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
         .size = bufferSize,
-        .usage = bufferUsage,
-        .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
+        .usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+        .sharingMode = VK_SHARING_MODE_EXCLUSIVE
     };
-
-    VULKAN_RESULT(vkCreateBuffer(global.Renderer.Device, &buffer, NULL, bufferInfo->Buffer));
-    VULKAN_RESULT(Buffer_AllocateMemory(bufferInfo, properties));
-
-    if (bufferData != NULL)
-    {
-        VULKAN_RESULT(vkMapMemory(global.Renderer.Device, *bufferInfo->BufferMemory, 0, *bufferInfo->BufferSize, 0, bufferInfo->BufferData));
-        memcpy(*bufferInfo->BufferData, bufferData, (size_t)*bufferInfo->BufferSize);
-        vkUnmapMemory(global.Renderer.Device, *bufferInfo->BufferMemory);
-    }
-
-    VULKAN_RESULT(vkBindBufferMemory(global.Renderer.Device, *bufferInfo->Buffer, *bufferInfo->BufferMemory, 0));
-    return vkMapMemory(global.Renderer.Device, *bufferInfo->BufferMemory, 0, *bufferInfo->BufferSize, 0, bufferInfo->BufferData);
+    VULKAN_RESULT(vkCreateBuffer(global.Renderer.Device, &bufferCreateInfo, NULL, bufferInfo->StagingBuffer));
+    vkGetBufferMemoryRequirements(global.Renderer.Device, *bufferInfo->StagingBuffer, &memRequirements);
+    VULKAN_RESULT(Buffer_AllocateMemory(bufferInfo->StagingBuffer, bufferInfo->StagingBufferMemory, properties));
+    return vkBindBufferMemory(global.Renderer.Device, *bufferInfo->StagingBuffer, *bufferInfo->StagingBufferMemory, 0);
 }
 
 VkResult Buffer_CopyBuffer(struct BufferInfo* bufferInfo, VkBuffer* srcBuffer, VkBuffer* dstBuffer, VkDeviceSize size)
@@ -82,6 +116,24 @@ VkResult Buffer_CopyBuffer(struct BufferInfo* bufferInfo, VkBuffer* srcBuffer, V
     return Renderer_EndSingleUseCommandBuffer(&commandBuffer);
 }
 
+VkResult Buffer_CopyStagingBuffer(struct BufferInfo* bufferInfo, VkCommandBuffer* commandBuffer, VkBuffer* srcBuffer, VkBuffer* dstBuffer, VkDeviceSize size)
+{
+    if (srcBuffer == NULL)
+    {
+        RENDERER_ERROR("Source Buffer is NULL");
+        return VK_ERROR_MEMORY_MAP_FAILED;
+    }
+
+    VkBufferCopy copyRegion =
+    {
+        .srcOffset = 0,
+        .dstOffset = 0,
+        .size = size
+    };
+    vkCmdCopyBuffer(*commandBuffer, *srcBuffer, *dstBuffer, 1, &copyRegion);
+    return VK_SUCCESS;
+}
+
 VkResult Buffer_UpdateBufferSize(struct BufferInfo* bufferInfo, VkDeviceSize bufferSize)
 {
     if (bufferInfo->BufferSize < bufferSize)
@@ -101,20 +153,38 @@ VkResult Buffer_UpdateBufferSize(struct BufferInfo* bufferInfo, VkDeviceSize buf
         .sharingMode = VK_SHARING_MODE_EXCLUSIVE
     };
     VULKAN_RESULT(vkCreateBuffer(global.Renderer.Device, &buffer, NULL, &bufferInfo->Buffer));
-    VULKAN_RESULT(Buffer_AllocateMemory(bufferInfo, bufferInfo->BufferProperties));
+    VULKAN_RESULT(Buffer_AllocateMemory(bufferInfo->Buffer, bufferInfo->BufferMemory, bufferInfo->BufferProperties));
     VULKAN_RESULT(vkBindBufferMemory(global.Renderer.Device, bufferInfo->Buffer, bufferInfo->BufferMemory, 0));
     return vkMapMemory(global.Renderer.Device, bufferInfo->BufferMemory, 0, bufferInfo->BufferSize, 0, &bufferInfo->BufferData);
 }
 
-void Buffer_UpdateBufferMemory(void* dataBuffer, void* DataToCopy, VkDeviceSize BufferSize)
+VkResult Buffer_UpdateBufferMemory(struct BufferInfo* bufferInfo, void* dataToCopy, VkDeviceSize bufferSize)
 {
-    if (DataToCopy == NULL ||
-        BufferSize == 0)
+    if (dataToCopy == NULL || bufferSize == 0)
     {
         RENDERER_ERROR("Buffer Data and Size can't be NULL");
         return VK_ERROR_MEMORY_MAP_FAILED;
     }
-    memcpy(dataBuffer, DataToCopy, (size_t)BufferSize);
+
+    void* mappedData;
+    VkResult result = vkMapMemory(global.Renderer.Device, *bufferInfo->BufferMemory, 0, bufferSize, 0, &mappedData);
+    if (result != VK_SUCCESS) {
+        RENDERER_ERROR("Failed to map buffer memory.");
+        return result;
+    }
+
+    memcpy(mappedData, dataToCopy, (size_t)bufferSize);
+    vkUnmapMemory(global.Renderer.Device, *bufferInfo->BufferMemory);
+
+    return VK_SUCCESS;
+}
+
+VkResult Buffer_UpdateStagingBufferMemory(struct BufferInfo* bufferInfo, void* DataToCopy, VkDeviceSize BufferSize)
+{
+    void* mappedData;
+    vkMapMemory(global.Renderer.Device, bufferInfo->StagingBufferMemory, 0, BufferSize, 0, &mappedData);
+    memcpy(mappedData, DataToCopy, (size_t)BufferSize);
+    vkUnmapMemory(global.Renderer.Device, bufferInfo->StagingBufferMemory);
 }
 
 void Buffer_DestroyBuffer(struct BufferInfo* bufferInfo)

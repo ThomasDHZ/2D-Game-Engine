@@ -11,10 +11,6 @@ Mesh::Mesh()
 
 	VertexCount = 0;
 	IndexCount = 0;
-
-	MeshVertexBuffer = nullptr;
-	MeshIndexBuffer = nullptr;
-	PropertiesBuffer = nullptr;
 }
 
 Mesh::~Mesh()
@@ -23,6 +19,10 @@ Mesh::~Mesh()
 
 void Mesh::Update(Timer& timer)
 {
+}
+
+void Mesh::BufferUpdate(VkCommandBuffer& commandBuffer)
+{
 	mat4 MeshMatrix = mat4(1.0f);
 	MeshMatrix = glm::translate(MeshMatrix, MeshPosition);
 	MeshMatrix = glm::rotate(MeshMatrix, glm::radians(MeshRotation.x), vec3(1.0f, 0.0f, 0.0f));
@@ -30,25 +30,29 @@ void Mesh::Update(Timer& timer)
 	MeshMatrix = glm::rotate(MeshMatrix, glm::radians(MeshRotation.z), vec3(0.0f, 0.0f, 1.0f));
 	MeshMatrix = glm::scale(MeshMatrix, MeshScale);
 
-	MeshProperties.MeshIndex = 0;
-	MeshProperties.MaterialIndex = 0;
+	MeshProperties.MeshIndex++;
+	MeshProperties.MaterialIndex++;
 	MeshProperties.MeshTransform = MeshTransform;
-	PropertiesBuffer->UpdateBufferData(MeshProperties);
+	PropertiesBuffer.UpdateBuffer(commandBuffer, static_cast<void*>(&MeshProperties));
+
+	auto b = PropertiesBuffer.CheckBufferContents();
 }
 
-void Mesh::Draw(VkCommandBuffer& commandBuffer, VkPipelineLayout& shaderPipelineLayout, VkDescriptorSet& descriptorSet)
+void Mesh::Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& shaderPipelineLayout, VkDescriptorSet& descriptorSet)
 {
+	
 	VkDeviceSize offsets[] = { 0 };
+	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
 	vkCmdPushConstants(commandBuffer, shaderPipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SceneProperties), &SceneProperties);
-	vkCmdBindVertexBuffers(commandBuffer, 0, 1, &MeshVertexBuffer->Buffer, offsets);
+	vkCmdBindVertexBuffers(commandBuffer, 0, 1, &MeshVertexBuffer.Buffer, offsets);
+	vkCmdBindIndexBuffer(commandBuffer, MeshIndexBuffer.Buffer, 0, VK_INDEX_TYPE_UINT32);
 	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, shaderPipelineLayout, 0, 1, &descriptorSet, 0, nullptr);
-	vkCmdBindIndexBuffer(commandBuffer, MeshIndexBuffer->Buffer, 0, VK_INDEX_TYPE_UINT32);
 	vkCmdDrawIndexed(commandBuffer, IndexCount, 1, 0, 0, 0);
 }
 
 void Mesh::Destroy()
 {
-	MeshVertexBuffer->DestroyBuffer();
-	MeshIndexBuffer->DestroyBuffer();
-	PropertiesBuffer->DestroyBuffer();
+	MeshVertexBuffer.DestroyBuffer();
+	MeshIndexBuffer.DestroyBuffer();
+	PropertiesBuffer.DestroyBuffer();
 }

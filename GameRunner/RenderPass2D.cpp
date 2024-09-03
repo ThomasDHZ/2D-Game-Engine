@@ -12,7 +12,7 @@ RenderPass2D::~RenderPass2D()
 {
 }
 
-void RenderPass2D::BuildRenderPass(Mesh2D& mesh)
+void RenderPass2D::BuildRenderPass(std::shared_ptr<Mesh2D> mesh)
 {
     RenderedTexture = std::make_shared<RenderedColorTexture>(RenderedColorTexture(RenderPassResolution, VK_FORMAT_R32G32B32A32_SFLOAT));
 
@@ -85,7 +85,7 @@ void RenderPass2D::BuildRenderPass(Mesh2D& mesh)
     for (size_t x = 0; x < global.Renderer.SwapChain.SwapChainImageCount; x++)
     {
         std::vector<VkImageView> TextureAttachmentList;
-        TextureAttachmentList.emplace_back(global.Renderer.SwapChain.SwapChainImageViews[x]);
+        TextureAttachmentList.emplace_back(RenderedTexture->View);
 
         VkFramebufferCreateInfo framebufferInfo
         {
@@ -102,7 +102,7 @@ void RenderPass2D::BuildRenderPass(Mesh2D& mesh)
     BuildRenderPipeline(mesh);
 }
 
-void RenderPass2D::BuildRenderPipeline(Mesh2D& mesh)
+void RenderPass2D::BuildRenderPipeline(std::shared_ptr<Mesh2D> mesh)
 {
     std::vector<VkDescriptorPoolSize> DescriptorPoolBinding =
     {
@@ -172,7 +172,7 @@ void RenderPass2D::BuildRenderPipeline(Mesh2D& mesh)
     {
         VkDescriptorBufferInfo
         {
-            .buffer = mesh.GetMeshPropertiesBuffer()->Buffer,
+            .buffer = mesh->GetMeshPropertiesBuffer()->Buffer,
             .offset = 0,
             .range = VK_WHOLE_SIZE
         }
@@ -206,21 +206,42 @@ void RenderPass2D::BuildRenderPipeline(Mesh2D& mesh)
         Renderer_UpdateDescriptorSet(descriptorSets.data(), static_cast<uint32_t>(descriptorSets.size()));
     }
 
-      std::vector<VkVertexInputBindingDescription> bindingDescriptions
-      {
-          Vertex2D::getBindingDescriptions()
-      };
-      std::vector<VkVertexInputAttributeDescription> attributeDescriptions
-      {
-          Vertex2D::getAttributeDescriptions()
-      };
+    std::vector<VkVertexInputBindingDescription>  bindingDescriptionList{};
+    VkVertexInputBindingDescription bindingDescription{};
+
+    bindingDescription.binding = 0;
+    bindingDescription.stride = sizeof(Vertex2D);
+    bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+    bindingDescriptionList.emplace_back(bindingDescription);
+
+      std::vector<VkVertexInputAttributeDescription> AttributeDescriptions = {};
+
+      VkVertexInputAttributeDescription AttributeDescription;
+
+      AttributeDescription.binding = 0;
+      AttributeDescription.location = 0;
+      AttributeDescription.format = VK_FORMAT_R32G32_SFLOAT;
+      AttributeDescription.offset = offsetof(Vertex2D, Position);
+      AttributeDescriptions.emplace_back(AttributeDescription);
+
+      AttributeDescription.binding = 0;
+      AttributeDescription.location = 1;
+      AttributeDescription.format = VK_FORMAT_R32G32_SFLOAT;
+      AttributeDescription.offset = offsetof(Vertex2D, UV);
+      AttributeDescriptions.emplace_back(AttributeDescription);
+
+      AttributeDescription.binding = 0;
+      AttributeDescription.location = 2;
+      AttributeDescription.format = VK_FORMAT_R32G32B32A32_SFLOAT;
+      AttributeDescription.offset = offsetof(Vertex2D, Color);
+      AttributeDescriptions.emplace_back(AttributeDescription);
 
       VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
       vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-      vertexInputInfo.vertexBindingDescriptionCount = static_cast<uint32>(bindingDescriptions.size());
-      vertexInputInfo.pVertexBindingDescriptions = bindingDescriptions.data();
-      vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32>(attributeDescriptions.size());
-      vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
+      vertexInputInfo.vertexBindingDescriptionCount = static_cast<uint32>(bindingDescriptionList.size());
+      vertexInputInfo.pVertexBindingDescriptions = bindingDescriptionList.data();
+      vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32>(AttributeDescriptions.size());
+      vertexInputInfo.pVertexAttributeDescriptions = AttributeDescriptions.data();
 
     VkPipelineInputAssemblyStateCreateInfo inputAssembly =
     {
@@ -367,7 +388,7 @@ void RenderPass2D::BuildRenderPipeline(Mesh2D& mesh)
     }
 }
 
-void RenderPass2D::UpdateRenderPass(Mesh2D& mesh)
+void RenderPass2D::UpdateRenderPass(std::shared_ptr<Mesh2D> mesh)
 {
     Renderer_DestroyFrameBuffers(FrameBufferList.data());
     Renderer_DestroyRenderPass(&RenderPassPtr);
@@ -381,7 +402,7 @@ void RenderPass2D::UpdateRenderPass(Mesh2D& mesh)
     BuildRenderPass(mesh);
 }
 
-VkCommandBuffer RenderPass2D::Draw(Mesh2D& mesh)
+VkCommandBuffer RenderPass2D::Draw(std::shared_ptr<Mesh2D> mesh)
 {
     std::vector<VkClearValue> clearValues
     {
@@ -438,11 +459,17 @@ VkCommandBuffer RenderPass2D::Draw(Mesh2D& mesh)
         .flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT
     };
 
+    VkDeviceSize offsets[] = { 0 };
     VULKAN_RESULT(vkBeginCommandBuffer(CommandBufferList[global.Renderer.CommandIndex], &CommandBufferBeginInfo));
     vkCmdBeginRenderPass(CommandBufferList[global.Renderer.CommandIndex], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
     vkCmdSetViewport(CommandBufferList[global.Renderer.CommandIndex], 0, static_cast<uint32>(viewport.size()), viewport.data());
     vkCmdSetScissor(CommandBufferList[global.Renderer.CommandIndex], 0, static_cast<uint32>(rect2D.size()), rect2D.data());
-    mesh.Draw(CommandBufferList[global.Renderer.CommandIndex], ShaderPipelineLayout, DescriptorSet);
+    vkCmdPushConstants(CommandBufferList[global.Renderer.CommandIndex], ShaderPipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SceneProperties), &SceneProperties);
+    vkCmdBindPipeline(CommandBufferList[global.Renderer.CommandIndex], VK_PIPELINE_BIND_POINT_GRAPHICS, ShaderPipeline);
+    vkCmdBindDescriptorSets(CommandBufferList[global.Renderer.CommandIndex], VK_PIPELINE_BIND_POINT_GRAPHICS, ShaderPipelineLayout, 0, 1, &DescriptorSet, 0, nullptr);
+	vkCmdBindVertexBuffers(CommandBufferList[global.Renderer.CommandIndex], 0, 1, &mesh->MeshVertexBuffer.Buffer, offsets);
+	vkCmdBindIndexBuffer(CommandBufferList[global.Renderer.CommandIndex], mesh->MeshIndexBuffer.Buffer, 0, VK_INDEX_TYPE_UINT32);
+	vkCmdDrawIndexed(CommandBufferList[global.Renderer.CommandIndex], 6, 1, 0, 0, 0);
     vkCmdEndRenderPass(CommandBufferList[global.Renderer.CommandIndex]);
     VULKAN_RESULT(Renderer_EndCommandBuffer(&CommandBufferList[global.Renderer.CommandIndex]));
     return CommandBufferList[global.Renderer.CommandIndex];

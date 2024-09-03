@@ -5,15 +5,28 @@
 #include <vector>
 #include <vulkan/vulkan_core.h>
 
+using glm::vec2; // or use glm::vec2 directly
+using glm::vec4;
+
 struct Vertex2D
 {
-    glm::vec2 Position = glm::vec2(0.0f);
-    glm::vec2 UV = glm::vec2(0.0f);
-    glm::vec4 Color = glm::vec4(1.0f);
+    vec2 Position; // Changed from initialization to direct declaration
+    vec2 UV;
+    vec4 Color;
+
+    Vertex2D()
+        : Position(0.0f), UV(0.0f), Color(1.0f) // Use member initializer list for default constructor
+    {
+    }
+
+    Vertex2D(vec2 position, vec2 uv, vec4 color)
+        : Position(position), UV(uv), Color(color) // Same for parameterized constructor
+    {
+    }
 
     static std::vector<VkVertexInputBindingDescription> getBindingDescriptions()
     {
-        std::vector<VkVertexInputBindingDescription>  bindingDescriptionList{};
+        std::vector<VkVertexInputBindingDescription> bindingDescriptionList{};
         VkVertexInputBindingDescription bindingDescription{};
 
         bindingDescription.binding = 0;
@@ -27,7 +40,6 @@ struct Vertex2D
     static std::vector<VkVertexInputAttributeDescription> getAttributeDescriptions()
     {
         std::vector<VkVertexInputAttributeDescription> AttributeDescriptions = {};
-
         VkVertexInputAttributeDescription AttributeDescription;
 
         AttributeDescription.binding = 0;
@@ -51,51 +63,3 @@ struct Vertex2D
         return AttributeDescriptions;
     }
 };
-//struct Vertex2D
-//{
-//    glm::vec2 Position = glm::vec2(0.0f);
-//    glm::vec2 UV = glm::vec2(0.0f);
-//    glm::vec4 Color = glm::vec4(1.0f);
-//
-//    static std::vector<VkVertexInputBindingDescription> GetBindingDescriptions()
-//    {
-//        return
-//        {
-//            VkVertexInputBindingDescription
-//            {
-//                .binding = 0,
-//                .stride = sizeof(Vertex2D),
-//                .inputRate = VK_VERTEX_INPUT_RATE_VERTEX
-//            }
-//        };
-//    }
-//
-//    static std::vector<VkVertexInputAttributeDescription> GetAttributeDescriptions()
-//    {
-//        return  
-//        {
-//            VkVertexInputAttributeDescription
-//            {
-//                .location = 0,
-//                .binding = 0,
-//                .format = VK_FORMAT_R32G32_SFLOAT,
-//                .offset = offsetof(Vertex2D, Position)
-//            },
-//            VkVertexInputAttributeDescription
-//            {
-//                .location = 0,
-//                .binding = 1,
-//                .format = VK_FORMAT_R32G32_SFLOAT,
-//                .offset = offsetof(Vertex2D, UV)
-//            },
-//            VkVertexInputAttributeDescription
-//            {
-//                .location = 0,
-//                .binding = 2,
-//                .format = VK_FORMAT_R32G32B32A32_SFLOAT,
-//                .offset = offsetof(Vertex2D, Color)
-//            }
-//        };
-//    }
-//};
-

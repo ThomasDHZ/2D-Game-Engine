@@ -22,10 +22,10 @@ public:
 	RenderPass2D();
 	virtual ~RenderPass2D();
 
-	void BuildRenderPass(Mesh2D& mesh);
-	void BuildRenderPipeline(Mesh2D& mesh);
-	void UpdateRenderPass(Mesh2D& mesh);
-	VkCommandBuffer Draw(Mesh2D& mesh);
+	void BuildRenderPass(std::shared_ptr<Mesh2D> mesh);
+	void BuildRenderPipeline(std::shared_ptr<Mesh2D> mesh);
+	void UpdateRenderPass(std::shared_ptr<Mesh2D> mesh);
+	VkCommandBuffer Draw(std::shared_ptr<Mesh2D> mesh);
 	void Destroy() override;
 
 	std::shared_ptr<RenderedColorTexture> GetRenderedTexture() { return RenderedTexture; }

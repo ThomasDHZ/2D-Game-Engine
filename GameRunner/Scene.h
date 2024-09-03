@@ -11,14 +11,18 @@ extern "C"
 #include <RenderedColorTexture.h>
 #include <Mesh2D.h>
 #include "RenderPass2D.h"
+
 class Scene
 {
 	private:
+		std::vector<Vertex2D> SpriteVertexList;
+
 		Timer timer;
 		std::shared_ptr<Texture> texture;
-		Mesh2D mesh;
+		std::shared_ptr<Mesh2D> mesh;
 		FrameBufferRenderPass frameRenderPass;
 		RenderPass2D		  renderPass2D;
+	
 	public:
 		void StartUp();
 		void Update();

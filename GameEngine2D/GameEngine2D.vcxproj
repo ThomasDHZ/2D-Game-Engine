@@ -81,7 +81,9 @@
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Typedef.h" />
+    <ClInclude Include="Vertex.h" />
     <ClInclude Include="VulkanBuffer.h" />
+    <ClInclude Include="VulkanDynamicBuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Shaders\FrameBufferShader.frag" />

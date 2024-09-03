@@ -20,6 +20,7 @@ int main()
 
     Scene scene;
     scene.StartUp();
+
     while (!global.Window.ExitWindow)
     {
         while (SDL_PollEvent(&global.Window.Event))

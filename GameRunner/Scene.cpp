@@ -2,13 +2,7 @@
 #include <Global.h>
 void Scene::StartUp()
 {
-	std::vector<Vertex2D> SpriteVertexList =
-	{
-	  { {0.0f, 1.0f},  {0.0f, 0.0f}, {1.0f, 0.0f, 0.0f, 1.0f} },
-	  { {1.0f, 1.0f},  {1.0f, 0.0f}, {0.0f, 1.0f, 0.0f, 1.0f} },
-	  { {1.0f, 0.0f},  {1.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f} },
-	  { {0.0f, 0.0f},  {0.0f, 1.0f}, {1.0f, 1.0f, 0.0f, 1.0f} }
-	};
+
 	std::vector<uint32> SpriteIndexList = {
 	   0, 1, 3,
 	   1, 2, 3
@@ -18,7 +12,7 @@ void Scene::StartUp()
 	timer.Time = 0.0f;
 
 	texture = std::make_shared<Texture>(Texture("../Textures/awesomeface.png", VK_FORMAT_R8G8B8A8_SRGB, TextureTypeEnum::kType_DiffuseTextureMap));
-	mesh = Mesh2D(SpriteVertexList, SpriteIndexList);
+	mesh = std::make_shared<Mesh2D>(Mesh2D(SpriteVertexList, SpriteIndexList));
 	BuildRenderPasses();
 }
 
@@ -28,7 +22,9 @@ void Scene::Update()
 	{
 		UpdateRenderPasses();
 	}
-	mesh.Update(timer);
+	VkCommandBuffer commandBuffer = Renderer_BeginSingleUseCommandBuffer();
+	mesh->BufferUpdate(commandBuffer);
+	Renderer_EndSingleUseCommandBuffer(commandBuffer);
 }
 
 void Scene::ImGuiUpdate()
@@ -52,7 +48,8 @@ void Scene::BuildRenderPasses()
 void Scene::UpdateRenderPasses()
 {
 	Renderer_RebuildSwapChain();
-	frameRenderPass.UpdateRenderPass(texture);
+	renderPass2D.UpdateRenderPass(mesh);
+	frameRenderPass.UpdateRenderPass(renderPass2D.GetRenderedTexture());
 	InterfaceRenderPass::RebuildSwapChain();
 	global.Renderer.RebuildRendererFlag = false;
 }
@@ -62,6 +59,7 @@ void Scene::Draw()
 	std::vector<VkCommandBuffer> CommandBufferSubmitList;
 
 	VULKAN_RESULT(Renderer_StartFrame());
+	CommandBufferSubmitList.emplace_back(renderPass2D.Draw(mesh));
 	CommandBufferSubmitList.emplace_back(frameRenderPass.Draw());
 	CommandBufferSubmitList.emplace_back(InterfaceRenderPass::Draw());
 	VULKAN_RESULT(Renderer_EndFrame(CommandBufferSubmitList.data(), static_cast<uint32_t>(CommandBufferSubmitList.size())));
@@ -69,7 +67,7 @@ void Scene::Draw()
 
 void Scene::Destroy()
 {
-	mesh.Destroy();
+	mesh->Destroy();
 	texture->Destroy();
 	frameRenderPass.Destroy();
 }

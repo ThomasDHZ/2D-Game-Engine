@@ -8,12 +8,15 @@ extern "C"
 #include <iostream>
 #include <memory>
 #include <vector>
+#include "Vertex.h"
 #include "Typedef.h"
 
 template <class T>
 class VulkanBuffer
 {
-	private:
+	protected:
+		VkBuffer StagingBuffer = VK_NULL_HANDLE;
+		VkDeviceMemory StagingBufferMemory = VK_NULL_HANDLE;
 		VkDeviceMemory BufferMemory = VK_NULL_HANDLE;
 		VkDeviceSize BufferSize = 0;
 		VkBufferUsageFlags BufferUsage;
@@ -21,18 +24,22 @@ class VulkanBuffer
 		uint64 BufferDeviceAddress = 0;
 		VkAccelerationStructureKHR BufferHandle = VK_NULL_HANDLE;
 		void* BufferData;
+		bool IsMapped = false;
 
 		std::unique_ptr<BufferInfo> SendCBufferInfo()
 		{
 			std::unique_ptr<BufferInfo>  bufferInfo = std::make_unique<BufferInfo>();
 			bufferInfo->Buffer = &Buffer;
+			bufferInfo->StagingBuffer = &StagingBuffer;
 			bufferInfo->BufferMemory = &BufferMemory;
+			bufferInfo->StagingBufferMemory = &StagingBufferMemory;
 			bufferInfo->BufferSize = &BufferSize;
 			bufferInfo->BufferUsage = &BufferUsage;
 			bufferInfo->BufferProperties = &BufferProperties;
 			bufferInfo->BufferDeviceAddress = &BufferDeviceAddress;
 			bufferInfo->BufferHandle = &BufferHandle;
 			bufferInfo->BufferData = &BufferData;
+			bufferInfo->IsMapped = &IsMapped;
 			return bufferInfo;
 		}
 
@@ -49,18 +56,6 @@ class VulkanBuffer
 		{
 		}
 
-		VulkanBuffer(T& bufferData, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties)
-		{
-			BufferData = static_cast<void*>(&bufferData);
-			CreateBuffer(bufferData, usage, properties);
-		}
-
-		VulkanBuffer(List<T>& bufferData, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties)
-		{
-			BufferData = static_cast<void*>(&bufferData);
-			CreateBuffer(bufferData, usage, properties);
-		}
-
 		VulkanBuffer(void* bufferData, uint32 bufferSize, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties)
 		{
 			BufferData = bufferData;
@@ -71,71 +66,77 @@ class VulkanBuffer
 		{
 		}
 
-		VkResult CreateBuffer(T& bufferData, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties)
+		static VkResult CopyBuffer(VkBuffer* srcBuffer, VkBuffer* dstBuffer, VkDeviceSize size)
 		{
-			return Buffer_CreateBuffer(SendCBufferInfo().get(), &bufferData, sizeof(T), usage, properties);
+			return Buffer_CopyBuffer(SendCBufferInfo().get(), srcBuffer, dstBuffer, size);
 		}
 
-		VkResult CreateBuffer(List<T>& bufferData, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties)
-		{
-			return Buffer_CreateBuffer(SendCBufferInfo().get(), bufferData.data(), sizeof(T) * bufferData.size(), usage, properties);
-		}
-
-		VkResult CreateBuffer(void* bufferData, uint32 bufferSize, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties)
+		virtual VkResult CreateBuffer(void* bufferData, uint32 bufferSize, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties)
 		{
 			return Buffer_CreateBuffer(SendCBufferInfo().get(), bufferData, bufferSize, usage, properties);
 		}
 
-		void UpdateBufferData(T& bufferData)
+		virtual void UpdateBufferData(const T& bufferData)
+		{
+			if (BufferSize < sizeof(T)) 
+			{
+				RENDERER_ERROR("Buffer does not contain enough data for a single T object.");
+				return;
+			}
+			Buffer_UpdateBufferMemory(SendCBufferInfo().get(), const_cast<void*>(static_cast<const void*>(&bufferData)), sizeof(T));
+		}
+
+		virtual void UpdateBufferData(const List<T>& bufferData)
+		{
+			const VkDeviceSize newBufferSize = sizeof(T) * bufferData.size();
+			if (BufferSize != newBufferSize) 
+			{
+				if (UpdateBufferSize(newBufferSize) != VK_SUCCESS) 
+				{
+					RENDERER_ERROR("Failed to update buffer size.");
+					return;
+				}
+			}
+
+			if (!IsMapped) 
+			{
+				RENDERER_ERROR("Buffer is not mapped! Cannot update data.");
+				return;
+			}
+
+			Buffer_UpdateBufferMemory(SendCBufferInfo().get(), const_cast<void*>(static_cast<const void*>(bufferData.data())), newBufferSize);
+		}
+
+		virtual void UpdateBufferData(void* bufferData)
 		{
 			if (BufferSize < sizeof(T))
 			{
 				RENDERER_ERROR("Buffer does not contain enough data for a single T object.");
 				return;
 			}
-
-			Buffer_UpdateBufferMemory(BufferData, static_cast<void*>(&bufferData), sizeof(T));
+			Buffer_UpdateBufferMemory(SendCBufferInfo().get(), bufferData, sizeof(T));
 		}
 
-		void UpdateBufferData(List<T>& bufferData)
+		std::vector<T> CheckBufferContents() 
 		{
-			const VkDeviceSize newBufferSize = sizeof(T) * bufferData.size();
-			if (BufferSize != newBufferSize)
-			{
-				UpdateBufferSize(newBufferSize);
-			}
-			Buffer_UpdateBufferMemory(BufferData, bufferData.data(), BufferSize);
-		}
+			std::vector<T> DataList; 
+			size_t dataListSize = BufferSize / sizeof(T);
 
-		T ViewBufferData()
-		{
-			if (BufferSize < sizeof(T)) 
-			{
-				RENDERER_ERROR("Buffer does not contain enough data for a single T object.");
-			}
-			return *static_cast<T*>(BufferData);
-		}
-
-		List<T> ViewListBufferData()
-		{
-			if (BufferData == nullptr ||
-				BufferSize <= 0)
-			{
-				RENDERER_ERROR("Nothing in the buffer.");
-				return List<T>();
+			void* data = Buffer_MapBufferMemory(SendCBufferInfo().get());
+			if (data == nullptr) {
+				std::cerr << "Failed to map buffer memory\n";
+				return DataList; 
 			}
 
-			const uint32 elementCount = (uint32)BufferSize / sizeof(T);
-			if (elementCount * sizeof(T) != BufferSize)
+			char* newPtr = static_cast<char*>(data);
+			for (size_t x = 0; x < dataListSize; ++x)
 			{
-				RENDERER_ERROR("Error with buffer size.");
-				return List<T>();
+				DataList.emplace_back(*reinterpret_cast<T*>(newPtr));
+				newPtr += sizeof(T);
 			}
+			Buffer_UnmapBufferMemory(SendCBufferInfo().get());
 
-			List<T> dataArray(elementCount);
-			std::memcpy(dataArray.data(), BufferData, BufferSize);
-
-			return dataArray;
+			return DataList;
 		}
 
 		void DestroyBuffer()
