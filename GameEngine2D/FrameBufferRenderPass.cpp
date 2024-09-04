@@ -168,22 +168,6 @@ void FrameBufferRenderPass::BuildRenderPipeline(std::shared_ptr<Texture> texture
         Renderer_UpdateDescriptorSet(descriptorSets.data(), static_cast<uint32_t>(descriptorSets.size()));
     }
 
-    /*  std::vector<VkVertexInputBindingDescription> bindingDescriptions
-      {
-          Vertex2D::getBindingDescriptions()
-      };
-      std::vector<VkVertexInputAttributeDescription> attributeDescriptions
-      {
-          Vertex2D::getAttributeDescriptions()
-      };
-
-      VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
-      vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-      vertexInputInfo.vertexBindingDescriptionCount = static_cast<uint32>(bindingDescriptions.size());
-      vertexInputInfo.pVertexBindingDescriptions = bindingDescriptions.data();
-      vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32>(attributeDescriptions.size());
-      vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();*/
-
     VkPipelineVertexInputStateCreateInfo vertexInputInfo
     {
         .sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO
@@ -291,14 +275,6 @@ void FrameBufferRenderPass::BuildRenderPipeline(std::shared_ptr<Texture> texture
         .pSetLayouts = &DescriptorSetLayout
     };
     VULKAN_RESULT(Renderer_CreatePipelineLayout(&ShaderPipelineLayout, &pipelineLayoutInfo));
-
-    //pipelineLayoutInfo.pushConstantRangeCount = 1;
-
-    //VkPushConstantRange pushConstantRange{};
-    //pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
-    //pushConstantRange.offset = 0;
-    //pushConstantRange.size = buildPipelineInfo.RenderPassDescription.ConstBufferSize;
-    //pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
 
     std::vector<VkPipelineShaderStageCreateInfo> PipelineShaderStageList
     {

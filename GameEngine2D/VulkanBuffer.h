@@ -51,6 +51,7 @@ class VulkanBuffer
 
 	public:
 		VkBuffer Buffer = VK_NULL_HANDLE;
+		VkDescriptorBufferInfo DescriptorBufferInfo;
 
 		VulkanBuffer()
 		{
@@ -137,6 +138,17 @@ class VulkanBuffer
 			Buffer_UnmapBufferMemory(SendCBufferInfo().get());
 
 			return DataList;
+		}
+
+		VkDescriptorBufferInfo* GetDescriptorbuffer()
+		{
+			DescriptorBufferInfo = VkDescriptorBufferInfo
+			{
+				.buffer = Buffer,
+				.offset = 0,
+				.range = VK_WHOLE_SIZE
+			};
+			return &DescriptorBufferInfo;
 		}
 
 		void DestroyBuffer()

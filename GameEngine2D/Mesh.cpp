@@ -34,20 +34,17 @@ void Mesh::BufferUpdate(VkCommandBuffer& commandBuffer)
 	MeshProperties.MaterialIndex++;
 	MeshProperties.MeshTransform = MeshTransform;
 	PropertiesBuffer.UpdateBuffer(commandBuffer, static_cast<void*>(&MeshProperties));
-
-	auto b = PropertiesBuffer.CheckBufferContents();
 }
 
-void Mesh::Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& shaderPipelineLayout, VkDescriptorSet& descriptorSet)
+void Mesh::Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& shaderPipelineLayout, VkDescriptorSet& descriptorSet, SceneDataBuffer& sceneProperties)
 {
-	
 	VkDeviceSize offsets[] = { 0 };
+	vkCmdPushConstants(commandBuffer, shaderPipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SceneDataBuffer), &sceneProperties);
 	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
-	vkCmdPushConstants(commandBuffer, shaderPipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SceneProperties), &SceneProperties);
+	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, shaderPipelineLayout, 0, 1, &descriptorSet, 0, nullptr);
 	vkCmdBindVertexBuffers(commandBuffer, 0, 1, &MeshVertexBuffer.Buffer, offsets);
 	vkCmdBindIndexBuffer(commandBuffer, MeshIndexBuffer.Buffer, 0, VK_INDEX_TYPE_UINT32);
-	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, shaderPipelineLayout, 0, 1, &descriptorSet, 0, nullptr);
-	vkCmdDrawIndexed(commandBuffer, IndexCount, 1, 0, 0, 0);
+	vkCmdDrawIndexed(commandBuffer, 6, 1, 0, 0, 0);
 }
 
 void Mesh::Destroy()

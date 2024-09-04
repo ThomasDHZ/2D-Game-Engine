@@ -1,8 +1,10 @@
 #pragma once
-#include "VulkanRenderer.h"
+#include <vulkan/vulkan.h> 
+#include <stdint.h>      
+#include <stdbool.h>  
+#include "Macro.h"
 
-struct BufferInfo
-{
+typedef struct BufferInfo {
     VkBuffer* Buffer;
     VkBuffer* StagingBuffer;
     VkDeviceMemory* BufferMemory;
@@ -10,21 +12,20 @@ struct BufferInfo
     VkDeviceSize* BufferSize;
     VkBufferUsageFlags* BufferUsage;
     VkMemoryPropertyFlags* BufferProperties;
-    uint64* BufferDeviceAddress;
+    uint64_t* BufferDeviceAddress; 
     VkAccelerationStructureKHR* BufferHandle;
     void** BufferData;
     bool* IsMapped;
-};
+} BufferInfo;
 
-VkResult Buffer_CreateBuffer(struct BufferInfo* bufferInfo, void* BufferData, VkDeviceSize bufferSize, VkBufferUsageFlags bufferUsage, VkMemoryPropertyFlags properties);
-VkResult Buffer_CreateStagingBuffer(struct BufferInfo* bufferInfo, void* bufferData, VkDeviceSize bufferSize, VkBufferUsageFlags bufferUsage, VkMemoryPropertyFlags properties);
-VkResult Buffer_CopyBuffer(struct BufferInfo* bufferInfo, VkBuffer* srcBuffer, VkBuffer* dstBuffer, VkDeviceSize size);
-VkResult Buffer_CopyStagingBuffer(struct BufferInfo* bufferInfo, VkCommandBuffer* commandBuffer, VkBuffer* srcBuffer, VkBuffer* dstBuffer, VkDeviceSize size);
-VkResult Buffer_UpdateBufferSize(struct BufferInfo* bufferInfo, VkDeviceSize bufferSize);
-VkResult Buffer_UnmapBufferMemory(struct BufferInfo* bufferInfo);
-VkResult Buffer_UpdateBufferMemory(struct BufferInfo* bufferInfo, void* DataToCopy, VkDeviceSize BufferSize);
-VkResult Buffer_UpdateStagingBufferMemory(struct BufferInfo* bufferInfo, void* DataToCopy, VkDeviceSize BufferSize);
-
-void* Buffer_MapBufferMemory(struct BufferInfo* bufferInfo);
-void* Buffer_CheckBufferContents(struct BufferInfo* bufferInfo);
-void Buffer_DestroyBuffer(struct BufferInfo* bufferInfo);
+DLL_EXPORT VkResult Buffer_CreateBuffer(BufferInfo* bufferInfo, void* bufferData, VkDeviceSize bufferSize, VkBufferUsageFlags bufferUsage, VkMemoryPropertyFlags properties);
+DLL_EXPORT VkResult Buffer_CreateStagingBuffer(BufferInfo* bufferInfo, void* bufferData, VkDeviceSize bufferSize, VkBufferUsageFlags bufferUsage, VkMemoryPropertyFlags properties);
+DLL_EXPORT VkResult Buffer_CopyBuffer(BufferInfo* bufferInfo, VkBuffer* srcBuffer, VkBuffer* dstBuffer, VkDeviceSize size);
+DLL_EXPORT VkResult Buffer_CopyStagingBuffer(BufferInfo* bufferInfo, VkCommandBuffer* commandBuffer, VkBuffer* srcBuffer, VkBuffer* dstBuffer, VkDeviceSize size);
+DLL_EXPORT VkResult Buffer_UpdateBufferSize(BufferInfo* bufferInfo, VkDeviceSize bufferSize);
+DLL_EXPORT VkResult Buffer_UnmapBufferMemory(BufferInfo* bufferInfo);
+DLL_EXPORT VkResult Buffer_UpdateBufferMemory(BufferInfo* bufferInfo, void* dataToCopy, VkDeviceSize bufferSize);
+DLL_EXPORT VkResult Buffer_UpdateStagingBufferMemory(BufferInfo* bufferInfo, void* dataToCopy, VkDeviceSize bufferSize);
+DLL_EXPORT void* Buffer_MapBufferMemory(BufferInfo* bufferInfo);
+DLL_EXPORT void* Buffer_CheckBufferContents(BufferInfo* bufferInfo);
+DLL_EXPORT void Buffer_DestroyBuffer(BufferInfo* bufferInfo);

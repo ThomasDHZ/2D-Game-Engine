@@ -3,7 +3,7 @@
 
 static WindowState state = { 0 };
 
-void GameEngine_CreateGraphicsWindow(const char* WindowName, uint32 width, uint32 height)
+  void GameEngine_CreateGraphicsWindow(const char* WindowName, uint32 width, uint32 height)
 {
     if (SDL_Init(SDL_INIT_VIDEO) < 0)
     {
@@ -22,7 +22,7 @@ void GameEngine_CreateGraphicsWindow(const char* WindowName, uint32 width, uint3
     global.Window.ExitWindow = false;
 }
 
-void GameEngine_PollEventHandler(SDL_Event* event)
+  void GameEngine_PollEventHandler(SDL_Event* event)
 {
     switch (global.Window.Event.type)
     {
@@ -43,7 +43,7 @@ void GameEngine_PollEventHandler(SDL_Event* event)
     }
 }
 
-void GameEngine_DestroyWindow(void)
+  void GameEngine_DestroyWindow(void)
 {
     SDL_DestroyWindow(global.Window.SDLWindow);
     SDL_Quit();

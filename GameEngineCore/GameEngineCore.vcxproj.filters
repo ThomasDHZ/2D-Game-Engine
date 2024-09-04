@@ -66,6 +66,12 @@
     <ClCompile Include="CTimer.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="DLLMain.h">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DLLMain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h">
@@ -129,6 +135,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CTimer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vulkanwindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

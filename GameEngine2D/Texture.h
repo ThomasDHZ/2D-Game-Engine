@@ -35,12 +35,14 @@ class Texture
 		virtual void CreateTextureView();
 		virtual void CreateTextureSampler();
 
+
 	public:
 		VkDescriptorSet ImGuiDescriptorSet;
 		VkImage Image;
 		VkDeviceMemory Memory;
 		VkImageView View;
 		VkSampler Sampler;
+		VkDescriptorImageInfo textureBuffer;
 
 		Texture();
 		Texture(const std::string& filePath, VkFormat textureByteFormat, TextureTypeEnum TextureType);
@@ -48,9 +50,9 @@ class Texture
 		virtual void UpdateTextureSize(vec2 TextureResolution);
 		virtual void Destroy();
 		void ImGuiShowTexture(const ImVec2& TextureDisplaySize);
+		VkDescriptorImageInfo* GetTextureBuffer();
 
 		const VkFormat GetTextureByteFormat() { return TextureByteFormat; }
 		const VkSampleCountFlagBits GetSampleCount() { return SampleCount; }
-
 };
 

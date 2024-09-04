@@ -6,12 +6,12 @@
 #include <SDL2/SDL_vulkan.h>
 #pragma warning(pop)
 
-void time_init(float frame_rate) {
+ void time_init(float frame_rate) {
 	global.time.frame_rate = frame_rate;
 	global.time.frame_delay = 1000.f / frame_rate;
 }
 
-void time_update(void) {
+ void time_update(void) {
 	global.time.now = (float)SDL_GetTicks();
 	global.time.delta = (global.time.now - global.time.last) / 1000.f;
 	global.time.last = global.time.now;
@@ -24,7 +24,7 @@ void time_update(void) {
 	}
 }
 
-void time_update_late(void) {
+ void time_update_late(void) {
 	global.time.frame_time = (float)SDL_GetTicks() - global.time.now;
 
 	if (global.time.frame_delay > global.time.frame_time) {

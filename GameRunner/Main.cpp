@@ -3,6 +3,8 @@ extern "C"
 	#include <Global.h>
 	#include <VulkanRenderer.h>
 	#include <FrameTime.h>
+#include <Window.h>
+
 }
 #include <ImGui/imgui.h>
 #include <ImGui/imgui_impl_vulkan.h>

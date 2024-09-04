@@ -16,4 +16,4 @@ typedef struct global {
     Time_State      time;
 } Global;
 
-extern Global global;
+DLL_EXPORT Global global;

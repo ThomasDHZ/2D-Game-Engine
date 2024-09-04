@@ -61,9 +61,10 @@ struct TextureInfo
     VkSampleCountFlagBits* SampleCount;
 };
 
-void Texture_CreateTextureImage(struct TextureInfo* textureInfo);
-void Texture_TransitionImageLayout(struct TextureInfo* textureInfo, VkImageLayout imageLayout);
-void Texture_CopyBufferToTexture(struct TextureInfo* textureInfo, VkBuffer* buffer);
-void Texture_GenerateMipmaps(struct TextureInfo* textureInfo);
-VkResult Texture_CreateTextureView(struct TextureInfo* textureInfo, VkImageViewCreateInfo* imageViewCreateInfo);
-VkResult Texture_CreateTextureSampler(struct TextureInfo* textureInfo, VkSamplerCreateInfo* samplerCreateInfo);
+DLL_EXPORT void Texture_CreateTextureImage(struct TextureInfo* textureInfo);
+DLL_EXPORT void Texture_QuickTransitionImageLayout(struct TextureInfo* textureInfo, VkImageLayout imageLayout);
+DLL_EXPORT void Texture_CommandBufferTransitionImageLayout(VkCommandBuffer* commandBuffer, struct TextureInfo* textureInfo, VkImageLayout newImageLayout);
+DLL_EXPORT void Texture_CopyBufferToTexture(struct TextureInfo* textureInfo, VkBuffer* buffer);
+DLL_EXPORT void Texture_GenerateMipmaps(struct TextureInfo* textureInfo);
+DLL_EXPORT VkResult Texture_CreateTextureView(struct TextureInfo* textureInfo, VkImageViewCreateInfo* imageViewCreateInfo);
+DLL_EXPORT VkResult Texture_CreateTextureSampler(struct TextureInfo* textureInfo, VkSamplerCreateInfo* samplerCreateInfo);

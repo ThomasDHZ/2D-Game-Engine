@@ -20,14 +20,14 @@ void RenderPass2D::BuildRenderPass(std::shared_ptr<Mesh2D> mesh)
     {
         VkAttachmentDescription
         {
-            .format = VK_FORMAT_B8G8R8A8_UNORM,
+            .format = RenderedTexture->GetTextureByteFormat(),
             .samples = VK_SAMPLE_COUNT_1_BIT,
             .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
             .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
             .stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
             .stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
             .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-            .finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR
+            .finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
         }
     };
 
@@ -124,20 +124,20 @@ void RenderPass2D::BuildRenderPipeline(std::shared_ptr<Mesh2D> mesh)
     std::vector<VkDescriptorSetLayoutBinding> LayoutBindingList =
     {
         VkDescriptorSetLayoutBinding
-        { 
-            0, 
-            VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 
-            1, 
+        {
+            0,
+            VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
+            1,
             VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
-            nullptr 
+            nullptr
         },
         VkDescriptorSetLayoutBinding
-        { 
-            1, 
-            VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 
-            1, 
-            VK_SHADER_STAGE_FRAGMENT_BIT, 
-            nullptr 
+        {
+            1,
+            VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+            1,
+            VK_SHADER_STAGE_FRAGMENT_BIT,
+            nullptr
         },
     };
 
@@ -158,90 +158,31 @@ void RenderPass2D::BuildRenderPipeline(std::shared_ptr<Mesh2D> mesh)
     };
     VULKAN_RESULT(Renderer_AllocateDescriptorSets(&DescriptorSet, &allocInfo));
 
-    std::vector<VkDescriptorImageInfo> ColorDescriptorImage
-    {
-        VkDescriptorImageInfo
-        {
-            .sampler = RenderedTexture->Sampler,
-            .imageView = RenderedTexture->View,
-            .imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
-        }
-    };
-
-    std::vector<VkDescriptorBufferInfo> bufferDescriptorInfo
-    {
-        VkDescriptorBufferInfo
-        {
-            .buffer = mesh->GetMeshPropertiesBuffer()->Buffer,
-            .offset = 0,
-            .range = VK_WHOLE_SIZE
-        }
-    };
-
     for (size_t x = 0; x < global.Renderer.SwapChain.SwapChainImageCount; x++)
     {
         std::vector<VkWriteDescriptorSet> descriptorSets
         {
-            VkWriteDescriptorSet
-            {
-                .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-                .dstSet = DescriptorSet,
-                .dstBinding = 0,
-                .dstArrayElement = 0,
-                .descriptorCount = static_cast<uint32_t>(bufferDescriptorInfo.size()),
-                .descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
-                .pBufferInfo = bufferDescriptorInfo.data(),
-            },
-            VkWriteDescriptorSet
-            {
-                .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-                .dstSet = DescriptorSet,
-                .dstBinding = 1,
-                .dstArrayElement = 0,
-                .descriptorCount = 1,
-                .descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-                .pImageInfo = ColorDescriptorImage.data(),
-            }
+            CreateStorageDescriptorSet(mesh, 0),
+            CreateTextureDescriptorSet(RenderedTexture, 1)
         };
         Renderer_UpdateDescriptorSet(descriptorSets.data(), static_cast<uint32_t>(descriptorSets.size()));
     }
 
-    std::vector<VkVertexInputBindingDescription>  bindingDescriptionList{};
-    VkVertexInputBindingDescription bindingDescription{};
+    std::vector<VkVertexInputBindingDescription> bindingDescriptionList
+    {
+        Vertex2D::getBindingDescriptions()
+    };
+    std::vector<VkVertexInputAttributeDescription> AttributeDescriptions
+    {
+        Vertex2D::getAttributeDescriptions()
+    };
 
-    bindingDescription.binding = 0;
-    bindingDescription.stride = sizeof(Vertex2D);
-    bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-    bindingDescriptionList.emplace_back(bindingDescription);
-
-      std::vector<VkVertexInputAttributeDescription> AttributeDescriptions = {};
-
-      VkVertexInputAttributeDescription AttributeDescription;
-
-      AttributeDescription.binding = 0;
-      AttributeDescription.location = 0;
-      AttributeDescription.format = VK_FORMAT_R32G32_SFLOAT;
-      AttributeDescription.offset = offsetof(Vertex2D, Position);
-      AttributeDescriptions.emplace_back(AttributeDescription);
-
-      AttributeDescription.binding = 0;
-      AttributeDescription.location = 1;
-      AttributeDescription.format = VK_FORMAT_R32G32_SFLOAT;
-      AttributeDescription.offset = offsetof(Vertex2D, UV);
-      AttributeDescriptions.emplace_back(AttributeDescription);
-
-      AttributeDescription.binding = 0;
-      AttributeDescription.location = 2;
-      AttributeDescription.format = VK_FORMAT_R32G32B32A32_SFLOAT;
-      AttributeDescription.offset = offsetof(Vertex2D, Color);
-      AttributeDescriptions.emplace_back(AttributeDescription);
-
-      VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
-      vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-      vertexInputInfo.vertexBindingDescriptionCount = static_cast<uint32>(bindingDescriptionList.size());
-      vertexInputInfo.pVertexBindingDescriptions = bindingDescriptionList.data();
-      vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32>(AttributeDescriptions.size());
-      vertexInputInfo.pVertexAttributeDescriptions = AttributeDescriptions.data();
+    VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
+    vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+    vertexInputInfo.vertexBindingDescriptionCount = static_cast<uint32>(bindingDescriptionList.size());
+    vertexInputInfo.pVertexBindingDescriptions = bindingDescriptionList.data();
+    vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32>(AttributeDescriptions.size());
+    vertexInputInfo.pVertexAttributeDescriptions = AttributeDescriptions.data();
 
     VkPipelineInputAssemblyStateCreateInfo inputAssembly =
     {
@@ -297,9 +238,9 @@ void RenderPass2D::BuildRenderPipeline(std::shared_ptr<Mesh2D> mesh)
             .dstAlphaBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,
             .alphaBlendOp = VK_BLEND_OP_ADD,
             .colorWriteMask = VK_COLOR_COMPONENT_R_BIT |
-                VK_COLOR_COMPONENT_G_BIT |
-                VK_COLOR_COMPONENT_B_BIT |
-                VK_COLOR_COMPONENT_A_BIT
+                              VK_COLOR_COMPONENT_G_BIT |
+                              VK_COLOR_COMPONENT_B_BIT |
+                              VK_COLOR_COMPONENT_A_BIT
         }
     };
 
@@ -342,7 +283,7 @@ void RenderPass2D::BuildRenderPipeline(std::shared_ptr<Mesh2D> mesh)
     {
         .stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
         .offset = 0,
-        .size = sizeof(SceneProperties)
+        .size = sizeof(SceneDataBuffer)
     };
 
     VkPipelineLayoutCreateInfo pipelineLayoutInfo
@@ -397,42 +338,17 @@ void RenderPass2D::UpdateRenderPass(std::shared_ptr<Mesh2D> mesh)
     Renderer_DestroyPipelineCache(&PipelineCache);
     Renderer_DestroyDescriptorSetLayout(&DescriptorSetLayout);
     Renderer_DestroyDescriptorPool(&DescriptorPool);
+
     RenderPassResolution = glm::ivec2((int)global.Renderer.SwapChain.SwapChainResolution.width, (int)global.Renderer.SwapChain.SwapChainResolution.height);
     SampleCount = VK_SAMPLE_COUNT_1_BIT;
     BuildRenderPass(mesh);
 }
 
-VkCommandBuffer RenderPass2D::Draw(std::shared_ptr<Mesh2D> mesh)
+VkCommandBuffer RenderPass2D::Draw(std::shared_ptr<Mesh2D> mesh, SceneDataBuffer& sceneProperties)
 {
     std::vector<VkClearValue> clearValues
     {
         VkClearValue{.color = { {0.0f, 0.0f, 0.0f, 1.0f} } }
-    };
-
-    std::vector<VkViewport> viewport
-    {
-        VkViewport
-        {
-            .x = 0.0f,
-            .y = 0.0f,
-            .width = (float)global.Renderer.SwapChain.SwapChainResolution.width,
-            .height = (float)global.Renderer.SwapChain.SwapChainResolution.height,
-            .minDepth = 0.0f,
-            .maxDepth = 1.0f
-        }
-    };
-
-    std::vector<VkRect2D> rect2D
-    {
-        VkRect2D
-        {
-            .offset = { 0, 0 },
-            .extent =
-            {
-                static_cast<uint32>(global.Renderer.SwapChain.SwapChainResolution.width),
-                static_cast<uint32>(global.Renderer.SwapChain.SwapChainResolution.height)
-            }
-        }
     };
 
     VkRenderPassBeginInfo renderPassInfo
@@ -459,17 +375,9 @@ VkCommandBuffer RenderPass2D::Draw(std::shared_ptr<Mesh2D> mesh)
         .flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT
     };
 
-    VkDeviceSize offsets[] = { 0 };
     VULKAN_RESULT(vkBeginCommandBuffer(CommandBufferList[global.Renderer.CommandIndex], &CommandBufferBeginInfo));
     vkCmdBeginRenderPass(CommandBufferList[global.Renderer.CommandIndex], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-    vkCmdSetViewport(CommandBufferList[global.Renderer.CommandIndex], 0, static_cast<uint32>(viewport.size()), viewport.data());
-    vkCmdSetScissor(CommandBufferList[global.Renderer.CommandIndex], 0, static_cast<uint32>(rect2D.size()), rect2D.data());
-    vkCmdPushConstants(CommandBufferList[global.Renderer.CommandIndex], ShaderPipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SceneProperties), &SceneProperties);
-    vkCmdBindPipeline(CommandBufferList[global.Renderer.CommandIndex], VK_PIPELINE_BIND_POINT_GRAPHICS, ShaderPipeline);
-    vkCmdBindDescriptorSets(CommandBufferList[global.Renderer.CommandIndex], VK_PIPELINE_BIND_POINT_GRAPHICS, ShaderPipelineLayout, 0, 1, &DescriptorSet, 0, nullptr);
-	vkCmdBindVertexBuffers(CommandBufferList[global.Renderer.CommandIndex], 0, 1, &mesh->MeshVertexBuffer.Buffer, offsets);
-	vkCmdBindIndexBuffer(CommandBufferList[global.Renderer.CommandIndex], mesh->MeshIndexBuffer.Buffer, 0, VK_INDEX_TYPE_UINT32);
-	vkCmdDrawIndexed(CommandBufferList[global.Renderer.CommandIndex], 6, 1, 0, 0, 0);
+    mesh->Draw(CommandBufferList[global.Renderer.CommandIndex], ShaderPipeline, ShaderPipelineLayout, DescriptorSet, sceneProperties);
     vkCmdEndRenderPass(CommandBufferList[global.Renderer.CommandIndex]);
     VULKAN_RESULT(Renderer_EndCommandBuffer(&CommandBufferList[global.Renderer.CommandIndex]));
     return CommandBufferList[global.Renderer.CommandIndex];

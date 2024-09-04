@@ -1,5 +1,6 @@
 #pragma once
 #include "CTypedef.h"
+#include "Macro.h"
 
 typedef struct time_state {
 	float delta;
@@ -14,6 +15,6 @@ typedef struct time_state {
 	uint32 frame_count;
 } Time_State;
 
-void time_init(float frame_rate);
-void time_update(void);
-void time_update_late(void);
+DLL_EXPORT void time_init(float frame_rate);
+DLL_EXPORT void time_update(void);
+DLL_EXPORT void time_update_late(void);

@@ -8,6 +8,7 @@
 #include <SDL2/SDL_vulkan.h>
 #pragma warning(pop)
 #include "CTypedef.h"
+#include "Macro.h"
 
 typedef struct windowState
 {
@@ -19,6 +20,6 @@ typedef struct windowState
     bool ExitWindow;
 } WindowState;
 
-void GameEngine_CreateGraphicsWindow(const char* WindowName, uint32 width, uint32 height);
-void GameEngine_PollEventHandler(SDL_Event* event);
-void GameEngine_DestroyWindow(void);
+DLL_EXPORT void GameEngine_CreateGraphicsWindow(const char* WindowName, uint32 width, uint32 height);
+DLL_EXPORT void GameEngine_PollEventHandler(SDL_Event* event);
+DLL_EXPORT void GameEngine_DestroyWindow(void);

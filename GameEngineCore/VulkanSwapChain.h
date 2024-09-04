@@ -2,6 +2,7 @@
 #include <vulkan/vulkan.h>
 #include <SDL.h>
 #include "CTypedef.h"
+#include "Macro.h"
 
 typedef struct swapChainState
 {
@@ -16,8 +17,8 @@ typedef struct swapChainState
 	VkSwapchainKHR Swapchain;
 }SwapChainState;
 
-VkResult Vulkan_SetUpSwapChain();
-VkResult Vulkan_RebuildSwapChain();
-void SwapChain_GetQueueFamilies(VkPhysicalDevice physicalDevice, uint32* graphicsFamily, uint32* presentFamily);
-void Vulkan_DestroyImageView();
-void Vulkan_DestroySwapChain();
+DLL_EXPORT VkResult Vulkan_SetUpSwapChain();
+DLL_EXPORT VkResult Vulkan_RebuildSwapChain();
+DLL_EXPORT void SwapChain_GetQueueFamilies(VkPhysicalDevice physicalDevice, uint32* graphicsFamily, uint32* presentFamily);
+DLL_EXPORT void Vulkan_DestroyImageView();
+DLL_EXPORT void Vulkan_DestroySwapChain();

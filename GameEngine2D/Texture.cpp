@@ -60,13 +60,23 @@ Texture::~Texture()
 
 }
 
+VkDescriptorImageInfo* Texture::GetTextureBuffer()
+{
+	textureBuffer = VkDescriptorImageInfo
+	{
+		.sampler = Sampler,
+		.imageView = View,
+		.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
+	};
+	return &textureBuffer;
+}
+
 void Texture::UpdateTextureSize(glm::vec2 TextureResolution)
 {
 	Renderer_DestroyImageView(&View);
 	Renderer_DestroySampler(&Sampler);
 	Renderer_DestroyImage(&Image);
 	Renderer_FreeMemory(&Memory);
-
 	ImGuiDescriptorSet = ImGui_ImplVulkan_AddTexture(Sampler, View, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 }
 
@@ -89,10 +99,11 @@ void Texture::CreateImageTexture(const std::string& FilePath)
 	VulkanBuffer<unsigned char*> buffer(data, Width * Height * colorChannels, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
 	Texture_CreateTextureImage(SendCTextureInfo().get());
-	Texture_TransitionImageLayout(SendCTextureInfo().get(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+	Texture_QuickTransitionImageLayout(SendCTextureInfo().get(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 	Texture_CopyBufferToTexture(SendCTextureInfo().get(), &buffer.Buffer);
 	Texture_GenerateMipmaps(SendCTextureInfo().get());
 	buffer.DestroyBuffer();
+
 	stbi_image_free(data);
 }
 
@@ -113,11 +124,7 @@ void Texture::CreateTextureView()
 			.layerCount = 1,
 		},
 	};
-	VkResult result = Texture_CreateTextureView(SendCTextureInfo().get(), &TextureImageViewInfo);
-	if (result != VkResult::VK_SUCCESS)
-	{
-
-	}
+	VULKAN_RESULT(Texture_CreateTextureView(SendCTextureInfo().get(), &TextureImageViewInfo));
 }
 
 void Texture::CreateTextureSampler()
@@ -141,11 +148,7 @@ void Texture::CreateTextureSampler()
 		.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK,
 		.unnormalizedCoordinates = VK_FALSE,
 	};
-	VkResult result = Texture_CreateTextureSampler(SendCTextureInfo().get(), &TextureImageSamplerInfo);
-	if (result != VkResult::VK_SUCCESS)
-	{
-
-	}
+	VULKAN_RESULT(Texture_CreateTextureSampler(SendCTextureInfo().get(), &TextureImageSamplerInfo));
 }
 
 std::unique_ptr<TextureInfo> Texture::SendCTextureInfo()

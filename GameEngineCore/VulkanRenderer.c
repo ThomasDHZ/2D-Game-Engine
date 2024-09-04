@@ -1,6 +1,7 @@
 #include "VulkanRenderer.h"
 #include "Global.h"
 #include "VulkanSwapChain.h"
+#include "vulkanwindow.h"
 
 static const char* DeviceExtensionList[] = {
     VK_KHR_SWAPCHAIN_EXTENSION_NAME,
@@ -251,6 +252,14 @@ static void GetRendererFeatures(VkPhysicalDeviceVulkan11Features* physicalDevice
         physicalDeviceVulkan11Features->pNext = &deviceFeatures2;
 
 }
+
+VkInstance Renderer_CreateVulkanInstance(VkInstanceCreateInfo instanceInfo)
+{
+    VkInstance Instance = VK_NULL_HANDLE;
+    vkCreateInstance(&instanceInfo, NULL, &Instance);
+    return Instance;
+}
+
 
 VkResult Renderer_RendererSetUp()
 {
@@ -977,4 +986,9 @@ void Renderer_DestroyPipelineCache(VkPipelineCache* pipelineCache)
         vkDestroyPipelineCache(global.Renderer.Device, *pipelineCache, NULL);
         *pipelineCache = VK_NULL_HANDLE;
     }
+}
+
+int SimpleTest()
+{
+    return 42;
 }

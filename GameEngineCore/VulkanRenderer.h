@@ -1,4 +1,5 @@
 #pragma once
+#include "DLLMain.h"
 #include <windows.h>
 #pragma warning(push)
 #pragma warning(disable : 26819) 
@@ -12,6 +13,12 @@
 #include "VulkanRendererStruct.h"
 #include "VulkanSwapChain.h"
 #include "VulkanError.h"
+
+#ifdef Renderer_EXPORTS
+#define DLL_EXPORT __declspec(dllexport)
+#else
+#define DLL_EXPORT __declspec(dllimport)
+#endif
 
 static const int MAX_FRAMES_IN_FLIGHT = 3;
 
@@ -34,47 +41,51 @@ typedef struct rendererState
 	 bool RebuildRendererFlag;
 }RendererState;
 
-VkResult Renderer_RendererSetUp();
-VkResult Renderer_RebuildSwapChain();
-VkResult Renderer_CreateCommandBuffers(VkCommandBuffer* pCommandBufferList);
-VkResult Renderer_CreateFrameBuffer(VkFramebuffer* pFrameBuffer, VkFramebufferCreateInfo* frameBufferCreateInfo);
-VkResult Renderer_CreateRenderPass(Renderer_RenderPassCreateInfoStruct* pRenderPassCreateInfo);
-VkResult Renderer_CreateDescriptorPool(VkDescriptorPool* descriptorPool, VkDescriptorPoolCreateInfo* descriptorPoolCreateInfo);
-VkResult Renderer_CreateDescriptorSetLayout(VkDescriptorSetLayout* descriptorSetLayout, VkDescriptorSetLayoutCreateInfo* descriptorSetLayoutCreateInfo);
-VkResult Renderer_CreatePipelineLayout(VkPipelineLayout* pipelineLayout, VkPipelineLayoutCreateInfo* pipelineLayoutCreateInfo);
-VkResult Renderer_AllocateDescriptorSets(VkDescriptorSet* descriptorSet, VkDescriptorSetAllocateInfo* descriptorSetAllocateInfo);
-VkResult Renderer_AllocateCommandBuffers(VkCommandBuffer* commandBuffer, VkCommandBufferAllocateInfo* ImGuiCommandBuffers);
-VkResult Renderer_CreateGraphicsPipelines(VkPipeline* graphicPipeline, VkGraphicsPipelineCreateInfo* createGraphicPipelines, uint32 createGraphicPipelinesCount);
-VkResult Renderer_CreateCommandPool(VkCommandPool* commandPool, VkCommandPoolCreateInfo* commandPoolInfo);
-VkResult Renderer_StartFrame();
-VkResult Renderer_EndFrame(VkCommandBuffer* pCommandBufferSubmitList, uint32 commandBufferCount);
-VkResult Renderer_BeginCommandBuffer( VkCommandBuffer* pCommandBuffer, VkCommandBufferBeginInfo* commandBufferBeginInfo);
-VkResult Renderer_EndCommandBuffer(VkCommandBuffer* pCommandBuffer);
-VkResult Renderer_SubmitDraw(VkCommandBuffer* pCommandBufferSubmitList);
 
-uint32 Renderer_GetMemoryType(uint32 typeFilter, VkMemoryPropertyFlags properties);
-VkCommandBuffer Renderer_BeginSingleUseCommandBuffer();
-VkResult Renderer_EndSingleUseCommandBuffer(VkCommandBuffer commandBuffer);
+DLL_EXPORT VkInstance Renderer_CreateVulkanInstance(VkInstanceCreateInfo instanceInfo);
+DLL_EXPORT VkResult Renderer_RendererSetUp();
+DLL_EXPORT VkResult Renderer_RebuildSwapChain();
+DLL_EXPORT VkResult Renderer_CreateCommandBuffers(VkCommandBuffer* pCommandBufferList);
+DLL_EXPORT VkResult Renderer_CreateFrameBuffer(VkFramebuffer* pFrameBuffer, VkFramebufferCreateInfo* frameBufferCreateInfo);
+DLL_EXPORT VkResult Renderer_CreateRenderPass(Renderer_RenderPassCreateInfoStruct* pRenderPassCreateInfo);
+DLL_EXPORT VkResult Renderer_CreateDescriptorPool(VkDescriptorPool* descriptorPool, VkDescriptorPoolCreateInfo* descriptorPoolCreateInfo);
+DLL_EXPORT VkResult Renderer_CreateDescriptorSetLayout(VkDescriptorSetLayout* descriptorSetLayout, VkDescriptorSetLayoutCreateInfo* descriptorSetLayoutCreateInfo);
+DLL_EXPORT VkResult Renderer_CreatePipelineLayout(VkPipelineLayout* pipelineLayout, VkPipelineLayoutCreateInfo* pipelineLayoutCreateInfo);
+DLL_EXPORT VkResult Renderer_AllocateDescriptorSets(VkDescriptorSet* descriptorSet, VkDescriptorSetAllocateInfo* descriptorSetAllocateInfo);
+DLL_EXPORT VkResult Renderer_AllocateCommandBuffers(VkCommandBuffer* commandBuffer, VkCommandBufferAllocateInfo* ImGuiCommandBuffers);
+DLL_EXPORT VkResult Renderer_CreateGraphicsPipelines(VkPipeline* graphicPipeline, VkGraphicsPipelineCreateInfo* createGraphicPipelines, uint32 createGraphicPipelinesCount);
+DLL_EXPORT VkResult Renderer_CreateCommandPool(VkCommandPool* commandPool, VkCommandPoolCreateInfo* commandPoolInfo);
+DLL_EXPORT VkResult Renderer_StartFrame();
+DLL_EXPORT VkResult Renderer_EndFrame(VkCommandBuffer* pCommandBufferSubmitList, uint32 commandBufferCount);
+DLL_EXPORT VkResult Renderer_BeginCommandBuffer( VkCommandBuffer* pCommandBuffer, VkCommandBufferBeginInfo* commandBufferBeginInfo);
+DLL_EXPORT VkResult Renderer_EndCommandBuffer(VkCommandBuffer* pCommandBuffer);
+DLL_EXPORT VkResult Renderer_SubmitDraw(VkCommandBuffer* pCommandBufferSubmitList);
 
-void Renderer_UpdateDescriptorSet(VkWriteDescriptorSet* writeDescriptorSet, uint32 count);
-void Renderer_DestroyRenderer();
-void Renderer_DestroyFences();
-void Renderer_DestroyCommandPool();
-void Renderer_DestroyDevice();
-void Renderer_DestroySurface();
-void Renderer_DestroyDebugger();
-void Renderer_DestroyInstance();
-void Renderer_DestroyRenderPass(VkRenderPass* renderPass);
-void Renderer_DestroyFrameBuffers(VkFramebuffer* frameBufferList);
-void Renderer_DestroyDescriptorPool(VkDescriptorPool* descriptorPool);
-void Renderer_DestroyDescriptorSetLayout(VkDescriptorSetLayout* descriptorSetLayout);
-void Renderer_DestroyCommandBuffers(VkCommandPool* commandPool, VkCommandBuffer* commandBufferList);
-void Renderer_DestroyCommnadPool(VkCommandPool* commandPool);
-void Renderer_DestroyBuffer(VkBuffer* buffer);
-void Renderer_DestroyImageView(VkImageView* imageView);
-void Renderer_DestroyImage(VkImage* image);
-void Renderer_DestroySampler(VkSampler* sampler);
-void Renderer_DestroyPipeline(VkPipeline* pipeline);
-void Renderer_DestroyPipelineLayout(VkPipelineLayout* pipelineLayout);
-void Renderer_DestroyPipelineCache(VkPipelineCache* pipelineCache);
-void Renderer_FreeMemory(VkDeviceMemory* memory);
+DLL_EXPORT uint32 Renderer_GetMemoryType(uint32 typeFilter, VkMemoryPropertyFlags properties);
+DLL_EXPORT VkCommandBuffer Renderer_BeginSingleUseCommandBuffer();
+DLL_EXPORT VkResult Renderer_EndSingleUseCommandBuffer(VkCommandBuffer commandBuffer);
+
+DLL_EXPORT void Renderer_UpdateDescriptorSet(VkWriteDescriptorSet* writeDescriptorSet, uint32 count);
+DLL_EXPORT void Renderer_DestroyRenderer();
+DLL_EXPORT void Renderer_DestroyFences();
+DLL_EXPORT void Renderer_DestroyCommandPool();
+DLL_EXPORT void Renderer_DestroyDevice();
+DLL_EXPORT void Renderer_DestroySurface();
+DLL_EXPORT void Renderer_DestroyDebugger();
+DLL_EXPORT void Renderer_DestroyInstance();
+DLL_EXPORT void Renderer_DestroyRenderPass(VkRenderPass* renderPass);
+DLL_EXPORT void Renderer_DestroyFrameBuffers(VkFramebuffer* frameBufferList);
+DLL_EXPORT void Renderer_DestroyDescriptorPool(VkDescriptorPool* descriptorPool);
+DLL_EXPORT void Renderer_DestroyDescriptorSetLayout(VkDescriptorSetLayout* descriptorSetLayout);
+DLL_EXPORT void Renderer_DestroyCommandBuffers(VkCommandPool* commandPool, VkCommandBuffer* commandBufferList);
+DLL_EXPORT void Renderer_DestroyCommnadPool(VkCommandPool* commandPool);
+DLL_EXPORT void Renderer_DestroyBuffer(VkBuffer* buffer);
+DLL_EXPORT void Renderer_DestroyImageView(VkImageView* imageView);
+DLL_EXPORT void Renderer_DestroyImage(VkImage* image);
+DLL_EXPORT void Renderer_DestroySampler(VkSampler* sampler);
+DLL_EXPORT void Renderer_DestroyPipeline(VkPipeline* pipeline);
+DLL_EXPORT void Renderer_DestroyPipelineLayout(VkPipelineLayout* pipelineLayout);
+DLL_EXPORT void Renderer_DestroyPipelineCache(VkPipelineCache* pipelineCache);
+DLL_EXPORT void Renderer_FreeMemory(VkDeviceMemory* memory);
+
+extern __declspec(dllexport) int SimpleTest();

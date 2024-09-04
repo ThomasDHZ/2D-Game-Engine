@@ -40,7 +40,7 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
@@ -117,6 +117,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2test.lib;vulkan-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -142,6 +143,8 @@
     <ClCompile Include="CList.c" />
     <ClCompile Include="CShaderCompiler.c" />
     <ClCompile Include="CTimer.c" />
+    <ClCompile Include="DLLMain.cpp" />
+    <ClCompile Include="DLLMain.h" />
     <ClCompile Include="GameController.c" />
     <ClCompile Include="Global.c" />
     <ClCompile Include="GraphicsDevice.c" />
@@ -180,6 +183,7 @@
     <ClInclude Include="VulkanRenderer.h" />
     <ClInclude Include="VulkanRendererStruct.h" />
     <ClInclude Include="VulkanSwapChain.h" />
+    <ClInclude Include="vulkanwindow.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

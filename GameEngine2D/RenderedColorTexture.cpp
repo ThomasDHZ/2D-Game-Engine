@@ -11,7 +11,7 @@ RenderedColorTexture::RenderedColorTexture(glm::ivec2& textureResolution, VkForm
     TextureUsage = TextureUsageEnum::kUse_2DRenderedTexture;
     TextureType = TextureTypeEnum::kType_RenderedColorTexture;
     TextureByteFormat = format;
-
+    
     Texture_CreateTextureImage(SendCTextureInfo().get());
     CreateTextureView();
     CreateTextureSampler();

@@ -29,6 +29,7 @@
     <ClCompile Include="..\External\ImGui\imgui_impl_vulkan.cpp" />
     <ClCompile Include="..\External\ImGui\imgui_tables.cpp" />
     <ClCompile Include="..\External\ImGui\imgui_widgets.cpp" />
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="FrameBufferRenderPass.cpp" />
     <ClCompile Include="LogDriver.cpp" />
     <ClCompile Include="InterfaceRenderPass.cpp" />
@@ -42,6 +43,7 @@
     <ClCompile Include="Mesh2D.cpp" />
     <ClCompile Include="MSVCDebugDriver.cpp" />
     <ClCompile Include="MSVCDriver.cpp" />
+    <ClCompile Include="OrthographicCamera.cpp" />
     <ClCompile Include="RenderedColorTexture.cpp" />
     <ClCompile Include="RenderPass.cpp" />
     <ClCompile Include="ShaderCompiler.cpp" />
@@ -61,6 +63,7 @@
     <ClInclude Include="..\External\ImGui\imstb_rectpack.h" />
     <ClInclude Include="..\External\ImGui\imstb_textedit.h" />
     <ClInclude Include="..\External\ImGui\imstb_truetype.h" />
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="FrameBufferRenderPass.h" />
     <ClInclude Include="LogDriver.h" />
     <ClInclude Include="InterfaceRenderPass.h" />
@@ -73,6 +76,7 @@
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Mesh2D.h" />
     <ClInclude Include="MSVCDriver.h" />
+    <ClInclude Include="OrthographicCamera.h" />
     <ClInclude Include="RenderedColorTexture.h" />
     <ClInclude Include="RenderPass.h" />
     <ClInclude Include="SceneDataBuffer.h" />

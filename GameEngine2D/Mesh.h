@@ -11,6 +11,7 @@ extern "C"
 #include "Vertex.h"
 #include "Material.h"
 #include "Timer.h"
+#include "SceneDataBuffer.h"
 
 struct MeshProperitiesStruct
 {
@@ -26,7 +27,10 @@ typedef VulkanDynamicBuffer<MeshProperitiesStruct> MeshPropertiesBuffer;
 class Mesh
 {
 	private:
-		const VkBufferUsageFlags MeshBufferUsageSettings = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
+		const VkBufferUsageFlags MeshBufferUsageSettings = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | 
+														   VK_BUFFER_USAGE_INDEX_BUFFER_BIT | 
+														   VK_BUFFER_USAGE_STORAGE_BUFFER_BIT |
+														   VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 
 		const VkMemoryPropertyFlags MeshBufferPropertySettings = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
 												                 VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
@@ -48,7 +52,6 @@ public:
 		IndexBuffer MeshIndexBuffer;
 		MeshPropertiesBuffer PropertiesBuffer;
 
-
 		template<class T>
 		void MeshStartUp(List<T>& vertexList, List<uint32>& indexList)
 		{
@@ -64,7 +67,7 @@ public:
 		virtual ~Mesh();
 		virtual void Update(Timer& timer);
 		virtual void BufferUpdate(VkCommandBuffer& commandBuffer);
-		virtual void Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& shaderPipelineLayout, VkDescriptorSet& descriptorSet);
+		virtual void Draw(VkCommandBuffer& commandBuffer, VkPipeline& pipeline, VkPipelineLayout& shaderPipelineLayout, VkDescriptorSet& descriptorSet, SceneDataBuffer& sceneProperties);
 		virtual void Destroy();
 
 		MeshPropertiesBuffer* GetMeshPropertiesBuffer() { return &PropertiesBuffer; }
