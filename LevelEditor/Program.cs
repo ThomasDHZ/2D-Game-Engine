@@ -1,44 +1,22 @@
 ﻿using System;
-using System.Runtime.InteropServices;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows.Forms;
 
-public enum VkResult
+namespace LevelEditor
 {
-    VK_SUCCESS = 0,
-    // Add other Vulkan result codes as needed
-}
-
-class Program
-{
-
-    // Import the function from your DLL
-    [DllImport("GameEngineCore.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern int SimpleTest();
-    [DllImport("GameEngineCore.dll", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Unicode)]
-    public static extern IntPtr CreateVulkanWindow(IntPtr hInstance, int width, int height, [MarshalAs(UnmanagedType.LPWStr)] string title);
-
-    static void Main(string[] args)
+    internal static class Program
     {
-        int result = SimpleTest();
-        IntPtr hInstance = IntPtr.Zero; // Replace this with the actual instance
-        int width = 800;   // Example window width
-        int height = 600;  // Example window height
-        string title = "My Vulkan Window"; // Example window title
-
-        // Call the function
-        IntPtr windowHandle = CreateVulkanWindow(hInstance, width, height, title);
-
-        // Check the returned window handle
-        if (windowHandle == IntPtr.Zero)
+        /// <summary>
+        /// The main entry point for the application.
+        /// </summary>
+        [STAThread]
+        static void Main()
         {
-            Console.WriteLine("Failed to create Vulkan window.");
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run(new Form1());
         }
-        else
-        {
-            Console.WriteLine("Vulkan window created successfully!");
-            // Here you can proceed with your application logic
-        }
-
-        // Prevent the console from closing immediately
-        Console.ReadLine();
     }
 }
