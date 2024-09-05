@@ -9,75 +9,30 @@ using LevelEditor;
 
 namespace LevelEditor
 {
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct VkInstance { private IntPtr handle; }
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct VkPhysicalDevice { private IntPtr handle; }
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct VkDevice { private IntPtr handle; }
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct VkQueue { private IntPtr handle; }
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct VkSemaphore { private IntPtr handle; }
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct VkCommandBuffer { private IntPtr handle; }
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct VkFence { private IntPtr handle; }
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct VkDeviceMemory { private IntPtr handle; }
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct VkEvent { private IntPtr handle; }
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct VkQueryPool { private IntPtr handle; }
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct VkBufferView { private IntPtr handle; }
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct VkImageView { private IntPtr handle; }
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct VkShaderModule { private IntPtr handle; }
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct VkPipelineCache { private IntPtr handle; }
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct VkPipelineLayout { private IntPtr handle; }
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct VkPipeline { private IntPtr handle; }
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct VkRenderPass { private IntPtr handle; }
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct VkDescriptorSetLayout { private IntPtr handle; }
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct VkSampler { private IntPtr handle; }
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct VkDescriptorSet { private IntPtr handle; }
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct VkDescriptorPool { private IntPtr handle; }
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct VkFramebuffer { private IntPtr handle; }
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct VkCommandPool { private IntPtr handle; }
+    [StructLayout(LayoutKind.Sequential)] public struct VkInstance { public IntPtr handle; }
+    [StructLayout(LayoutKind.Sequential)] public struct VkDebugUtilsMessengerEXT { public IntPtr handle; }
+    [StructLayout(LayoutKind.Sequential)] public struct VkPhysicalDevice { public IntPtr handle; }
+    [StructLayout(LayoutKind.Sequential)] public struct VkDevice { public IntPtr handle; }
+    [StructLayout(LayoutKind.Sequential)] public struct VkQueue { public IntPtr handle; }
+    [StructLayout(LayoutKind.Sequential)] public struct VkSemaphore { public IntPtr handle; }
+    [StructLayout(LayoutKind.Sequential)] public struct VkCommandBuffer { public IntPtr handle; }
+    [StructLayout(LayoutKind.Sequential)] public struct VkFence { public IntPtr handle; }
+    [StructLayout(LayoutKind.Sequential)] public struct VkDeviceMemory { public IntPtr handle; }
+    [StructLayout(LayoutKind.Sequential)] public struct VkEvent { public IntPtr handle; }
+    [StructLayout(LayoutKind.Sequential)] public struct VkQueryPool { public IntPtr handle; }
+    [StructLayout(LayoutKind.Sequential)] public struct VkBufferView { public IntPtr handle; }
+    [StructLayout(LayoutKind.Sequential)] public struct VkImageView { public IntPtr handle; }
+    [StructLayout(LayoutKind.Sequential)] public struct VkShaderModule { public IntPtr handle; }
+    [StructLayout(LayoutKind.Sequential)] public struct VkPipelineCache { public IntPtr handle; }
+    [StructLayout(LayoutKind.Sequential)] public struct VkPipelineLayout { public IntPtr handle; }
+    [StructLayout(LayoutKind.Sequential)] public struct VkPipeline { public IntPtr handle; }
+    [StructLayout(LayoutKind.Sequential)] public struct VkRenderPass { public IntPtr handle; }
+    [StructLayout(LayoutKind.Sequential)] public struct VkDescriptorSetLayout { public IntPtr handle; }
+    [StructLayout(LayoutKind.Sequential)] public struct VkSampler { public IntPtr handle; }
+    [StructLayout(LayoutKind.Sequential)] public struct VkDescriptorSet { public IntPtr handle; }
+    [StructLayout(LayoutKind.Sequential)] public struct VkDescriptorPool { public IntPtr handle; }
+    [StructLayout(LayoutKind.Sequential)] public struct VkFramebuffer { public IntPtr handle; }
+    [StructLayout(LayoutKind.Sequential)] public struct VkCommandPool { public IntPtr handle; }
 
     // Vulkan Structs
     [StructLayout(LayoutKind.Sequential)]
@@ -120,29 +75,29 @@ namespace LevelEditor
     [StructLayout(LayoutKind.Sequential)]
     public struct VkBaseInStructure
     {
-        public VkStructureType SType;
-        public IntPtr PNext; // Pointer for extension structures
+        public VkStructureType sType;
+        public IntPtr pNext; // Pointer for extension structures
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkBaseOutStructure
     {
-        public VkStructureType SType;
-        public IntPtr PNext; // Pointer for extension structures
+        public VkStructureType sType;
+        public IntPtr pNext; // Pointer for extension structures
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkBufferMemoryBarrier
     {
-        public VkStructureType SType;
-        public IntPtr PNext;
-        public VkAccessFlags SrcAccessMask;
-        public VkAccessFlags DstAccessMask;
-        public uint SrcQueueFamilyIndex;
-        public uint DstQueueFamilyIndex;
-        public VkBuffer Buffer;
-        public VkDeviceSize Offset;
-        public VkDeviceSize Size;
+        public VkStructureType sType;
+        public IntPtr pNext;
+        public VkAccessFlags srcAccessMask;
+        public VkAccessFlags dstAccessMask;
+        public uint srcQueueFamilyIndex;
+        public uint dstQueueFamilyIndex;
+        public VkBuffer buffer;
+        public VkDeviceSize offset;
+        public VkDeviceSize size;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -156,1178 +111,1178 @@ namespace LevelEditor
     [StructLayout(LayoutKind.Sequential)]
     public struct VkDrawIndexedIndirectCommand
     {
-        public uint IndexCount;
-        public uint InstanceCount;
-        public uint FirstIndex;
-        public int VertexOffset;
-        public uint FirstInstance;
+        public uint indexCount;
+        public uint instanceCount;
+        public uint firstIndex;
+        public int vertexOffset;
+        public uint firstInstance;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkDrawIndirectCommand
     {
-        public uint VertexCount;
-        public uint InstanceCount;
-        public uint FirstVertex;
-        public uint FirstInstance;
+        public uint vertexCount;
+        public uint instanceCount;
+        public uint firstVertex;
+        public uint firstInstance;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkImageSubresourceRange
     {
-        public VkImageAspectFlags AspectMask;
-        public uint BaseMipLevel;
-        public uint LevelCount;
-        public uint BaseArrayLayer;
-        public uint LayerCount;
+        public VkImageAspectFlags aspectMask;
+        public uint baseMipLevel;
+        public uint levelCount;
+        public uint baseArrayLayer;
+        public uint layerCount;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkImageMemoryBarrier
     {
-        public VkStructureType SType;
-        public IntPtr PNext;
-        public VkAccessFlags SrcAccessMask;
-        public VkAccessFlags DstAccessMask;
-        public VkImageLayout OldLayout;
-        public VkImageLayout NewLayout;
-        public uint SrcQueueFamilyIndex;
-        public uint DstQueueFamilyIndex;
-        public VkImage Image;
-        public VkImageSubresourceRange SubresourceRange;
+        public VkStructureType sType;
+        public IntPtr pNext;
+        public VkAccessFlags srcAccessMask;
+        public VkAccessFlags dstAccessMask;
+        public VkImageLayout oldLayout;
+        public VkImageLayout newLayout;
+        public uint srcQueueFamilyIndex;
+        public uint dstQueueFamilyIndex;
+        public VkImage image;
+        public VkImageSubresourceRange subresourceRange;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkMemoryBarrier
     {
-        public VkStructureType SType;
-        public IntPtr PNext;
-        public VkAccessFlags SrcAccessMask;
-        public VkAccessFlags DstAccessMask;
+        public VkStructureType sType;
+        public IntPtr pNext;
+        public VkAccessFlags srcAccessMask;
+        public VkAccessFlags dstAccessMask;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkPipelineCacheHeaderVersionOne
     {
-        public uint HeaderSize;
-        public VkPipelineCacheHeaderVersion HeaderVersion;
+        public uint headerSize;
+        public VkPipelineCacheHeaderVersion headerVersion;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = VulkanConsts.VK_UUID_SIZE)]
-        public byte[] PipelineCacheUUID;
+        public byte[] pipelineCacheUUID;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkAllocationCallbacks
     {
-        public IntPtr PUserData;
-        public IntPtr PfnAllocation;
-        public IntPtr PfnReallocation;
-        public IntPtr PfnFree;
-        public IntPtr PfnInternalAllocation;
-        public IntPtr PfnInternalFree;
+        public IntPtr pUserData;
+        public IntPtr pfnAllocation;
+        public IntPtr pfnReallocation;
+        public IntPtr pfnFree;
+        public IntPtr pfnInternalAllocation;
+        public IntPtr pfnInternalFree;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkApplicationInfo
     {
-        public VkStructureType SType;
-        public IntPtr PNext;
+        public VkStructureType sType;
+        public IntPtr pNext;
         [MarshalAs(UnmanagedType.LPUTF8Str)]
-        public string PApplicationName;
-        public uint ApplicationVersion;
+        public string pApplicationName;
+        public uint applicationVersion;
         [MarshalAs(UnmanagedType.LPUTF8Str)]
-        public string PEngineName;
-        public uint EngineVersion;
-        public uint ApiVersion;
+        public string pEngineName;
+        public uint engineVersion;
+        public uint apiVersion;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkFormatProperties
     {
-        public VkFormatFeatureFlags LinearTilingFeatures;
-        public VkFormatFeatureFlags OptimalTilingFeatures;
-        public VkFormatFeatureFlags BufferFeatures;
+        public VkFormatFeatureFlags linearTilingFeatures;
+        public VkFormatFeatureFlags optimalTilingFeatures;
+        public VkFormatFeatureFlags bufferFeatures;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkImageFormatProperties
     {
-        public VkExtent3D MaxExtent;
-        public uint MaxMipLevels;
-        public uint MaxArrayLayers;
-        public VkSampleCountFlags SampleCounts;
-        public VkDeviceSize MaxResourceSize;
+        public VkExtent3D maxExtent;
+        public uint maxMipLevels;
+        public uint maxArrayLayers;
+        public VkSampleCountFlags sampleCounts;
+        public VkDeviceSize maxResourceSize;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkInstanceCreateInfo
     {
-        public VkStructureType SType;
-        public IntPtr PNext;
-        public VkInstanceCreateFlags Flags;
+        public VkStructureType sType;
+        public IntPtr pNext;
+        public VkInstanceCreateFlags flags;
         public IntPtr pApplicationInfo; // Pointer to VkApplicationInfo
-        public uint EnabledLayerCount;
+        public uint enabledLayerCount;
         public IntPtr pEnabledLayerNames; // Pointer to array of layer names
-        public uint EnabledExtensionCount;
+        public uint enabledExtensionCount;
         public IntPtr pEnabledExtensionNames; // Pointer to array of extension names
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkMemoryHeap
     {
-        public VkDeviceSize Size;
-        public VkMemoryHeapFlags Flags;
+        public VkDeviceSize size;
+        public VkMemoryHeapFlags flags;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkMemoryType
     {
-        public VkMemoryPropertyFlags PropertyFlags;
-        public uint HeapIndex;
+        public VkMemoryPropertyFlags propertyFlags;
+        public uint heapIndex;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkPhysicalDeviceFeatures
     {
-        public VkBool32 RobustBufferAccess;
-        public VkBool32 FullDrawIndexUint32;
-        public VkBool32 ImageCubeArray;
-        public VkBool32 IndependentBlend;
-        public VkBool32 GeometryShader;
-        public VkBool32 TessellationShader;
-        public VkBool32 SampleRateShading;
-        public VkBool32 DualSrcBlend;
-        public VkBool32 LogicOp;
-        public VkBool32 MultiDrawIndirect;
-        public VkBool32 DrawIndirectFirstInstance;
-        public VkBool32 DepthClamp;
-        public VkBool32 DepthBiasClamp;
-        public VkBool32 FillModeNonSolid;
-        public VkBool32 DepthBounds;
-        public VkBool32 WideLines;
-        public VkBool32 LargePoints;
-        public VkBool32 AlphaToOne;
-        public VkBool32 MultiViewport;
-        public VkBool32 SamplerAnisotropy;
-        public VkBool32 TextureCompressionETC2;
-        public VkBool32 TextureCompressionASTC_LDR;
-        public VkBool32 TextureCompressionBC;
-        public VkBool32 OcclusionQueryPrecise;
-        public VkBool32 PipelineStatisticsQuery;
-        public VkBool32 VertexPipelineStoresAndAtomics;
-        public VkBool32 FragmentStoresAndAtomics;
-        public VkBool32 ShaderTessellationAndGeometryPointSize;
-        public VkBool32 ShaderImageGatherExtended;
-        public VkBool32 ShaderStorageImageExtendedFormats;
-        public VkBool32 ShaderStorageImageMultisample;
-        public VkBool32 ShaderStorageImageReadWithoutFormat;
-        public VkBool32 ShaderStorageImageWriteWithoutFormat;
-        public VkBool32 ShaderUniformBufferArrayDynamicIndexing;
-        public VkBool32 ShaderSampledImageArrayDynamicIndexing;
-        public VkBool32 ShaderStorageBufferArrayDynamicIndexing;
-        public VkBool32 ShaderStorageImageArrayDynamicIndexing;
-        public VkBool32 ShaderClipDistance;
-        public VkBool32 ShaderCullDistance;
-        public VkBool32 ShaderFloat64;
-        public VkBool32 ShaderInt64;
-        public VkBool32 ShaderInt16;
-        public VkBool32 ShaderResourceResidency;
-        public VkBool32 ShaderResourceMinLod;
-        public VkBool32 SparseBinding;
-        public VkBool32 SparseResidencyBuffer;
-        public VkBool32 SparseResidencyImage2D;
-        public VkBool32 SparseResidencyImage3D;
-        public VkBool32 SparseResidency2Samples;
-        public VkBool32 SparseResidency4Samples;
-        public VkBool32 SparseResidency8Samples;
-        public VkBool32 SparseResidency16Samples;
-        public VkBool32 SparseResidencyAliased;
-        public VkBool32 VariableMultisampleRate;
-        public VkBool32 InheritedQueries;
+        public VkBool32 robustBufferAccess;
+        public VkBool32 fullDrawIndexUint32;
+        public VkBool32 imageCubeArray;
+        public VkBool32 independentBlend;
+        public VkBool32 geometryShader;
+        public VkBool32 tessellationShader;
+        public VkBool32 sampleRateShading;
+        public VkBool32 dualSrcBlend;
+        public VkBool32 logicOp;
+        public VkBool32 multiDrawIndirect;
+        public VkBool32 drawIndirectFirstInstance;
+        public VkBool32 depthClamp;
+        public VkBool32 depthBiasClamp;
+        public VkBool32 fillModeNonSolid;
+        public VkBool32 depthBounds;
+        public VkBool32 wideLines;
+        public VkBool32 largePoints;
+        public VkBool32 alphaToOne;
+        public VkBool32 multiViewport;
+        public VkBool32 samplerAnisotropy;
+        public VkBool32 textureCompressionETC2;
+        public VkBool32 textureCompressionASTC_LDR;
+        public VkBool32 textureCompressionBC;
+        public VkBool32 occlusionQueryPrecise;
+        public VkBool32 pipelineStatisticsQuery;
+        public VkBool32 vertexPipelineStoresAndAtomics;
+        public VkBool32 fragmentStoresAndAtomics;
+        public VkBool32 shaderTessellationAndGeometryPointSize;
+        public VkBool32 shaderImageGatherExtended;
+        public VkBool32 shaderStorageImageExtendedFormats;
+        public VkBool32 shaderStorageImageMultisample;
+        public VkBool32 shaderStorageImageReadWithoutFormat;
+        public VkBool32 shaderStorageImageWriteWithoutFormat;
+        public VkBool32 shaderUniformBufferArrayDynamicIndexing;
+        public VkBool32 shaderSampledImageArrayDynamicIndexing;
+        public VkBool32 shaderStorageBufferArrayDynamicIndexing;
+        public VkBool32 shaderStorageImageArrayDynamicIndexing;
+        public VkBool32 shaderClipDistance;
+        public VkBool32 shaderCullDistance;
+        public VkBool32 shaderFloat64;
+        public VkBool32 shaderInt64;
+        public VkBool32 shaderInt16;
+        public VkBool32 shaderResourceResidency;
+        public VkBool32 shaderResourceMinLod;
+        public VkBool32 sparseBinding;
+        public VkBool32 sparseResidencyBuffer;
+        public VkBool32 sparseResidencyImage2D;
+        public VkBool32 sparseResidencyImage3D;
+        public VkBool32 sparseResidency2Samples;
+        public VkBool32 sparseResidency4Samples;
+        public VkBool32 sparseResidency8Samples;
+        public VkBool32 sparseResidency16Samples;
+        public VkBool32 sparseResidencyAliased;
+        public VkBool32 variableMultisampleRate;
+        public VkBool32 inheritedQueries;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkPhysicalDeviceLimits
     {
-        public uint MaxImageDimension1D;
-        public uint MaxImageDimension2D;
-        public uint MaxImageDimension3D;
-        public uint MaxImageDimensionCube;
-        public uint MaxImageArrayLayers;
-        public uint MaxTexelBufferElements;
-        public uint MaxUniformBufferRange;
-        public uint MaxStorageBufferRange;
-        public uint MaxPushConstantsSize;
-        public uint MaxMemoryAllocationCount;
-        public uint MaxSamplerAllocationCount;
-        public VkDeviceSize BufferImageGranularity;
-        public VkDeviceSize SparseAddressSpaceSize;
-        public uint MaxBoundDescriptorSets;
-        public uint MaxPerStageDescriptorSamplers;
-        public uint MaxPerStageDescriptorUniformBuffers;
-        public uint MaxPerStageDescriptorStorageBuffers;
-        public uint MaxPerStageDescriptorSampledImages;
-        public uint MaxPerStageDescriptorStorageImages;
-        public uint MaxPerStageDescriptorInputAttachments;
-        public uint MaxPerStageResources;
-        public uint MaxDescriptorSetSamplers;
-        public uint MaxDescriptorSetUniformBuffers;
-        public uint MaxDescriptorSetUniformBuffersDynamic;
-        public uint MaxDescriptorSetStorageBuffers;
-        public uint MaxDescriptorSetStorageBuffersDynamic;
-        public uint MaxDescriptorSetSampledImages;
-        public uint MaxDescriptorSetStorageImages;
-        public uint MaxDescriptorSetInputAttachments;
-        public uint MaxVertexInputAttributes;
-        public uint MaxVertexInputBindings;
-        public uint MaxVertexInputAttributeOffset;
-        public uint MaxVertexInputBindingStride;
-        public uint MaxVertexOutputComponents;
-        public uint MaxTessellationGenerationLevel;
-        public uint MaxTessellationPatchSize;
-        public uint MaxTessellationControlPerVertexInputComponents;
-        public uint MaxTessellationControlPerVertexOutputComponents;
-        public uint MaxTessellationControlPerPatchOutputComponents;
-        public uint MaxTessellationControlTotalOutputComponents;
-        public uint MaxTessellationEvaluationInputComponents;
-        public uint MaxTessellationEvaluationOutputComponents;
-        public uint MaxGeometryShaderInvocations;
-        public uint MaxGeometryInputComponents;
-        public uint MaxGeometryOutputComponents;
-        public uint MaxGeometryOutputVertices;
-        public uint MaxGeometryTotalOutputComponents;
-        public uint MaxFragmentInputComponents;
-        public uint MaxFragmentOutputAttachments;
-        public uint MaxFragmentDualSrcAttachments;
-        public uint MaxFragmentCombinedOutputResources;
-        public uint MaxComputeSharedMemorySize;
+        public uint maxImageDimension1D;
+        public uint maxImageDimension2D;
+        public uint maxImageDimension3D;
+        public uint maxImageDimensionCube;
+        public uint maxImageArrayLayers;
+        public uint maxTexelBufferElements;
+        public uint maxUniformBufferRange;
+        public uint maxStorageBufferRange;
+        public uint maxPushConstantsSize;
+        public uint maxMemoryAllocationCount;
+        public uint maxSamplerAllocationCount;
+        public VkDeviceSize bufferImageGranularity;
+        public VkDeviceSize sparseAddressSpaceSize;
+        public uint maxBoundDescriptorSets;
+        public uint maxPerStageDescriptorSamplers;
+        public uint maxPerStageDescriptorUniformBuffers;
+        public uint maxPerStageDescriptorStorageBuffers;
+        public uint maxPerStageDescriptorSampledImages;
+        public uint maxPerStageDescriptorStorageImages;
+        public uint maxPerStageDescriptorInputAttachments;
+        public uint maxPerStageResources;
+        public uint maxDescriptorSetSamplers;
+        public uint maxDescriptorSetUniformBuffers;
+        public uint maxDescriptorSetUniformBuffersDynamic;
+        public uint maxDescriptorSetStorageBuffers;
+        public uint maxDescriptorSetStorageBuffersDynamic;
+        public uint maxDescriptorSetSampledImages;
+        public uint maxDescriptorSetStorageImages;
+        public uint maxDescriptorSetInputAttachments;
+        public uint maxVertexInputAttributes;
+        public uint maxVertexInputBindings;
+        public uint maxVertexInputAttributeOffset;
+        public uint maxVertexInputBindingStride;
+        public uint maxVertexOutputComponents;
+        public uint maxTessellationGenerationLevel;
+        public uint maxTessellationPatchSize;
+        public uint maxTessellationControlPerVertexInputComponents;
+        public uint maxTessellationControlPerVertexOutputComponents;
+        public uint maxTessellationControlPerPatchOutputComponents;
+        public uint maxTessellationControlTotalOutputComponents;
+        public uint maxTessellationEvaluationInputComponents;
+        public uint maxTessellationEvaluationOutputComponents;
+        public uint maxGeometryShaderInvocations;
+        public uint maxGeometryInputComponents;
+        public uint maxGeometryOutputComponents;
+        public uint maxGeometryOutputVertices;
+        public uint maxGeometryTotalOutputComponents;
+        public uint maxFragmentInputComponents;
+        public uint maxFragmentOutputAttachments;
+        public uint maxFragmentDualSrcAttachments;
+        public uint maxFragmentCombinedOutputResources;
+        public uint maxComputeSharedMemorySize;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
-        public uint[] MaxComputeWorkGroupCount;
-        public uint MaxComputeWorkGroupInvocations;
+        public uint[] maxComputeWorkGroupCount;
+        public uint maxComputeWorkGroupInvocations;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
-        public uint[] MaxComputeWorkGroupSize;
-        public uint SubPixelPrecisionBits;
-        public uint SubTexelPrecisionBits;
-        public uint MipmapPrecisionBits;
-        public uint MaxDrawIndexedIndexValue;
-        public uint MaxDrawIndirectCount;
-        public float MaxSamplerLodBias;
-        public float MaxSamplerAnisotropy;
-        public uint MaxViewports;
+        public uint[] maxComputeWorkGroupSize;
+        public uint subPixelPrecisionBits;
+        public uint subTexelPrecisionBits;
+        public uint mipmapPrecisionBits;
+        public uint maxDrawIndexedIndexValue;
+        public uint maxDrawIndirectCount;
+        public float maxSamplerLodBias;
+        public float maxSamplerAnisotropy;
+        public uint maxViewports;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
-        public uint[] MaxViewportDimensions;
+        public uint[] maxViewportDimensions;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
-        public float[] ViewportBoundsRange;
-        public uint ViewportSubPixelBits;
-        public IntPtr MinMemoryMapAlignment;
-        public VkDeviceSize MinTexelBufferOffsetAlignment;
-        public VkDeviceSize MinUniformBufferOffsetAlignment;
-        public VkDeviceSize MinStorageBufferOffsetAlignment;
-        public int MinTexelOffset;
-        public uint MaxTexelOffset;
-        public int MinTexelGatherOffset;
-        public uint MaxTexelGatherOffset;
-        public float MinInterpolationOffset;
-        public float MaxInterpolationOffset;
-        public uint SubPixelInterpolationOffsetBits;
-        public uint MaxFramebufferWidth;
-        public uint MaxFramebufferHeight;
-        public uint MaxFramebufferLayers;
-        public VkSampleCountFlags FramebufferColorSampleCounts;
-        public VkSampleCountFlags FramebufferDepthSampleCounts;
-        public VkSampleCountFlags FramebufferStencilSampleCounts;
-        public VkSampleCountFlags FramebufferNoAttachmentsSampleCounts;
-        public uint MaxColorAttachments;
-        public VkSampleCountFlags SampledImageColorSampleCounts;
-        public VkSampleCountFlags SampledImageIntegerSampleCounts;
-        public VkSampleCountFlags SampledImageDepthSampleCounts;
-        public VkSampleCountFlags SampledImageStencilSampleCounts;
-        public VkSampleCountFlags StorageImageSampleCounts;
-        public uint MaxSampleMaskWords;
-        public VkBool32 TimestampComputeAndGraphics;
-        public float TimestampPeriod;
-        public uint MaxClipDistances;
-        public uint MaxCullDistances;
-        public uint MaxCombinedClipAndCullDistances;
-        public uint DiscreteQueuePriorities;
+        public float[] viewportBoundsRange;
+        public uint viewportSubPixelBits;
+        public IntPtr minMemoryMapAlignment;
+        public VkDeviceSize minTexelBufferOffsetAlignment;
+        public VkDeviceSize minUniformBufferOffsetAlignment;
+        public VkDeviceSize minStorageBufferOffsetAlignment;
+        public int minTexelOffset;
+        public uint maxTexelOffset;
+        public int minTexelGatherOffset;
+        public uint maxTexelGatherOffset;
+        public float minInterpolationOffset;
+        public float maxInterpolationOffset;
+        public uint subPixelInterpolationOffsetBits;
+        public uint maxFramebufferWidth;
+        public uint maxFramebufferHeight;
+        public uint maxFramebufferLayers;
+        public VkSampleCountFlags framebufferColorSampleCounts;
+        public VkSampleCountFlags framebufferDepthSampleCounts;
+        public VkSampleCountFlags framebufferStencilSampleCounts;
+        public VkSampleCountFlags framebufferNoAttachmentsSampleCounts;
+        public uint maxColorAttachments;
+        public VkSampleCountFlags sampledImageColorSampleCounts;
+        public VkSampleCountFlags sampledImageIntegerSampleCounts;
+        public VkSampleCountFlags sampledImageDepthSampleCounts;
+        public VkSampleCountFlags sampledImageStencilSampleCounts;
+        public VkSampleCountFlags storageImageSampleCounts;
+        public uint maxSampleMaskWords;
+        public VkBool32 timestampComputeAndGraphics;
+        public float timestampPeriod;
+        public uint maxClipDistances;
+        public uint maxCullDistances;
+        public uint maxCombinedClipAndCullDistances;
+        public uint discreteQueuePriorities;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
-        public float[] PointSizeRange;
+        public float[] pointSizeRange;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
-        public float[] LineWidthRange;
-        public float PointSizeGranularity;
-        public float LineWidthGranularity;
-        public VkBool32 StrictLines;
-        public VkBool32 StandardSampleLocations;
-        public VkDeviceSize OptimalBufferCopyOffsetAlignment;
-        public VkDeviceSize OptimalBufferCopyRowPitchAlignment;
-        public VkDeviceSize NonCoherentAtomSize;
+        public float[] lineWidthRange;
+        public float pointSizeGranularity;
+        public float lineWidthGranularity;
+        public VkBool32 strictLines;
+        public VkBool32 standardSampleLocations;
+        public VkDeviceSize optimalBufferCopyOffsetAlignment;
+        public VkDeviceSize optimalBufferCopyRowPitchAlignment;
+        public VkDeviceSize nonCoherentAtomSize;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkPhysicalDeviceMemoryProperties
     {
-        public uint MemoryTypeCount;
+        public uint memoryTypeCount;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = VulkanConsts.VK_MAX_MEMORY_TYPES)]
-        public VkMemoryType[] MemoryTypes;
-        public uint MemoryHeapCount;
+        public VkMemoryType[] memoryTypes;
+        public uint memoryHeapCount;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = VulkanConsts.VK_MAX_MEMORY_HEAPS)]
-        public VkMemoryHeap[] MemoryHeaps;
+        public VkMemoryHeap[] memoryHeaps;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkPhysicalDeviceSparseProperties
     {
-        public VkBool32 ResidencyStandard2DBlockShape;
-        public VkBool32 ResidencyStandard2DMultisampleBlockShape;
-        public VkBool32 ResidencyStandard3DBlockShape;
-        public VkBool32 ResidencyAlignedMipSize;
-        public VkBool32 ResidencyNonResidentStrict;
+        public VkBool32 residencyStandard2DBlockShape;
+        public VkBool32 residencyStandard2DMultisampleBlockShape;
+        public VkBool32 residencyStandard3DBlockShape;
+        public VkBool32 residencyAlignedMipSize;
+        public VkBool32 residencyNonResidentStrict;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkPhysicalDeviceProperties
     {
-        public uint ApiVersion;
-        public uint DriverVersion;
-        public uint VendorID;
-        public uint DeviceID;
-        public VkPhysicalDeviceType DeviceType;
+        public uint apiVersion;
+        public uint driverVersion;
+        public uint vendorID;
+        public uint deviceID;
+        public VkPhysicalDeviceType deviceType;
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = VulkanConsts.VK_MAX_PHYSICAL_DEVICE_NAME_SIZE)]
-        public string DeviceName;
+        public string deviceName;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = VulkanConsts.VK_UUID_SIZE)]
-        public byte[] PipelineCacheUUID;
-        public VkPhysicalDeviceLimits Limits;
-        public VkPhysicalDeviceSparseProperties SparseProperties;
+        public byte[] pipelineCacheUUID;
+        public VkPhysicalDeviceLimits limits;
+        public VkPhysicalDeviceSparseProperties sparseProperties;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkQueueFamilyProperties
     {
-        public VkQueueFlags QueueFlags;
-        public uint QueueCount;
-        public uint TimestampValidBits;
-        public VkExtent3D MinImageTransferGranularity;
+        public VkQueueFlags queueFlags;
+        public uint queueCount;
+        public uint timestampValidBits;
+        public VkExtent3D minImageTransferGranularity;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkDeviceQueueCreateInfo
     {
-        public VkStructureType SType;
-        public IntPtr PNext;
-        public VkDeviceQueueCreateFlags Flags;
-        public uint QueueFamilyIndex;
-        public uint QueueCount;
-        public IntPtr PQueuePriorities; // Pointer to float array
+        public VkStructureType sType;
+        public IntPtr pNext;
+        public VkDeviceQueueCreateFlags flags;
+        public uint queueFamilyIndex;
+        public uint queueCount;
+        public IntPtr pQueuePriorities; // Pointer to float array
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkDeviceCreateInfo
     {
-        public VkStructureType SType;
-        public IntPtr PNext;
-        public VkDeviceCreateFlags Flags;
-        public uint QueueCreateInfoCount;
-        public IntPtr PQueueCreateInfos; // Pointer to VkDeviceQueueCreateInfo array
-        public uint EnabledLayerCount;
+        public VkStructureType sType;
+        public IntPtr pNext;
+        public VkDeviceCreateFlags flags;
+        public uint queueCreateInfoCount;
+        public IntPtr pQueueCreateInfos; // Pointer to VkDeviceQueueCreateInfo array
+        public uint enabledLayerCount;
         public IntPtr pEnabledLayerNames; // Pointer to array of layer names
-        public uint EnabledExtensionCount;
+        public uint enabledExtensionCount;
         public IntPtr pEnabledExtensionNames; // Pointer to array of extension names
-        public IntPtr PEnabledFeatures; // Pointer to VkPhysicalDeviceFeatures
+        public IntPtr pEnabledFeatures; // Pointer to VkPhysicalDeviceFeatures
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkExtensionProperties
     {
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = VulkanConsts.VK_MAX_EXTENSION_NAME_SIZE)]
-        public string ExtensionName;
-        public uint SpecVersion;
+        public string extensionName;
+        public uint specVersion;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkLayerProperties
     {
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = VulkanConsts.VK_MAX_EXTENSION_NAME_SIZE)]
-        public string LayerName;
-        public uint SpecVersion;
-        public uint ImplementationVersion;
+        public string layerName;
+        public uint specVersion;
+        public uint implementationVersion;
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = VulkanConsts.VK_MAX_DESCRIPTION_SIZE)]
-        public string Description;
+        public string description;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkSubmitInfo
     {
-        public VkStructureType SType;
-        public IntPtr PNext;
-        public uint WaitSemaphoreCount;
-        public IntPtr PWaitSemaphores; // Pointer to array of VkSemaphore
-        public IntPtr PWaitDstStageMask; // Pointer to array of VkPipelineStageFlags
-        public uint CommandBufferCount;
-        public IntPtr PCommandBuffers; // Pointer to array of VkCommandBuffer
-        public uint SignalSemaphoreCount;
-        public IntPtr PSignalSemaphores; // Pointer to array of VkSemaphore
+        public VkStructureType sType;
+        public IntPtr pNext;
+        public uint waitSemaphoreCount;
+        public IntPtr pWaitSemaphores; // Pointer to array of VkSemaphore
+        public IntPtr pWaitDstStageMask; // Pointer to array of VkPipelineStageFlags
+        public uint commandBufferCount;
+        public IntPtr pCommandBuffers; // Pointer to array of VkCommandBuffer
+        public uint signalSemaphoreCount;
+        public IntPtr pSignalSemaphores; // Pointer to array of VkSemaphore
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkMappedMemoryRange
     {
-        public VkStructureType SType;
-        public IntPtr PNext;
-        public VkDeviceMemory Memory;
-        public VkDeviceSize Offset;
-        public VkDeviceSize Size;
+        public VkStructureType sType;
+        public IntPtr pNext;
+        public VkDeviceMemory memory;
+        public VkDeviceSize offset;
+        public VkDeviceSize size;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkMemoryAllocateInfo
     {
-        public VkStructureType SType;
-        public IntPtr PNext;
-        public VkDeviceSize AllocationSize;
-        public uint MemoryTypeIndex;
+        public VkStructureType sType;
+        public IntPtr pNext;
+        public VkDeviceSize allocationSize;
+        public uint memoryTypeIndex;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkMemoryRequirements
     {
-        public VkDeviceSize Size;
-        public VkDeviceSize Alignment;
-        public uint MemoryTypeBits;
+        public VkDeviceSize size;
+        public VkDeviceSize alignment;
+        public uint memoryTypeBits;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkSparseMemoryBind
     {
-        public VkDeviceSize ResourceOffset;
-        public VkDeviceSize Size;
-        public VkDeviceMemory Memory;
-        public VkDeviceSize MemoryOffset;
-        public VkSparseMemoryBindFlags Flags;
+        public VkDeviceSize resourceOffset;
+        public VkDeviceSize size;
+        public VkDeviceMemory memory;
+        public VkDeviceSize memoryOffset;
+        public VkSparseMemoryBindFlags flags;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkSparseBufferMemoryBindInfo
     {
-        public VkBuffer Buffer;
-        public uint BindCount;
-        public IntPtr PBinds; // Pointer to array of VkSparseMemoryBind
+        public VkBuffer buffer;
+        public uint bindCount;
+        public IntPtr pBinds; // Pointer to array of VkSparseMemoryBind
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkSparseImageOpaqueMemoryBindInfo
     {
-        public VkImage Image;
-        public uint BindCount;
-        public IntPtr PBinds; // Pointer to array of VkSparseMemoryBind
+        public VkImage image;
+        public uint bindCount;
+        public IntPtr pBinds; // Pointer to array of VkSparseMemoryBind
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkImageSubresource
     {
-        public VkImageAspectFlags AspectMask;
-        public uint MipLevel;
-        public uint ArrayLayer;
+        public VkImageAspectFlags aspectMask;
+        public uint mipLevel;
+        public uint arrayLayer;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkSparseImageMemoryBind
     {
-        public VkImageSubresource Subresource;
-        public VkOffset3D Offset;
-        public VkExtent3D Extent;
-        public VkDeviceMemory Memory;
-        public VkDeviceSize MemoryOffset;
-        public VkSparseMemoryBindFlags Flags;
+        public VkImageSubresource subresource;
+        public VkOffset3D offset;
+        public VkExtent3D extent;
+        public VkDeviceMemory memory;
+        public VkDeviceSize memoryOffset;
+        public VkSparseMemoryBindFlags flags;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkSparseImageMemoryBindInfo
     {
-        public VkImage Image;
-        public uint BindCount;
-        public IntPtr PBinds; // Pointer to array of VkSparseImageMemoryBind
+        public VkImage image;
+        public uint bindCount;
+        public IntPtr pBinds; // Pointer to array of VkSparseImageMemoryBind
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkBindSparseInfo
     {
-        public VkStructureType SType;
-        public IntPtr PNext;
-        public uint WaitSemaphoreCount;
-        public IntPtr PWaitSemaphores; // Pointer to VkSemaphore array
-        public uint BufferBindCount;
-        public IntPtr PBufferBinds; // Pointer to VkSparseBufferMemoryBindInfo array
-        public uint ImageOpaqueBindCount;
-        public IntPtr PImageOpaqueBinds; // Pointer to VkSparseImageOpaqueMemoryBindInfo array
-        public uint ImageBindCount;
-        public IntPtr PImageBinds; // Pointer to VkSparseImageMemoryBindInfo array
-        public uint SignalSemaphoreCount;
-        public IntPtr PSignalSemaphores; // Pointer to VkSemaphore array
+        public VkStructureType sType;
+        public IntPtr pNext;
+        public uint waitSemaphoreCount;
+        public IntPtr pWaitSemaphores; // Pointer to VkSemaphore array
+        public uint bufferBindCount;
+        public IntPtr pBufferBinds; // Pointer to VkSparseBufferMemoryBindInfo array
+        public uint imageOpaqueBindCount;
+        public IntPtr pImageOpaqueBinds; // Pointer to VkSparseImageOpaqueMemoryBindInfo array
+        public uint imageBindCount;
+        public IntPtr pImageBinds; // Pointer to VkSparseImageMemoryBindInfo array
+        public uint signalSemaphoreCount;
+        public IntPtr pSignalSemaphores; // Pointer to VkSemaphore array
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkSparseImageFormatProperties
     {
-        public VkImageAspectFlags AspectMask;
-        public VkExtent3D ImageGranularity;
-        public VkSparseImageFormatFlags Flags;
+        public VkImageAspectFlags aspectMask;
+        public VkExtent3D imageGranularity;
+        public VkSparseImageFormatFlags flags;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkSparseImageMemoryRequirements
     {
-        public VkSparseImageFormatProperties FormatProperties;
-        public uint ImageMipTailFirstLod;
-        public VkDeviceSize ImageMipTailSize;
-        public VkDeviceSize ImageMipTailOffset;
-        public VkDeviceSize ImageMipTailStride;
+        public VkSparseImageFormatProperties formatProperties;
+        public uint imageMipTailFirstLod;
+        public VkDeviceSize imageMipTailSize;
+        public VkDeviceSize imageMipTailOffset;
+        public VkDeviceSize imageMipTailStride;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkFenceCreateInfo
     {
-        public VkStructureType SType;
-        public IntPtr PNext;
-        public VkFenceCreateFlags Flags;
+        public VkStructureType sType;
+        public IntPtr pNext;
+        public VkFenceCreateFlags flags;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkSemaphoreCreateInfo
     {
-        public VkStructureType SType;
-        public IntPtr PNext;
-        public VkSemaphoreCreateFlags Flags;
+        public VkStructureType sType;
+        public IntPtr pNext;
+        public VkSemaphoreCreateFlags flags;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkEventCreateInfo
     {
-        public VkStructureType SType;
-        public IntPtr PNext;
-        public VkEventCreateFlags Flags;
+        public VkStructureType sType;
+        public IntPtr pNext;
+        public VkEventCreateFlags flags;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkQueryPoolCreateInfo
     {
-        public VkStructureType SType;
-        public IntPtr PNext;
-        public VkQueryPoolCreateFlags Flags;
-        public VkQueryType QueryType;
-        public uint QueryCount;
-        public VkQueryPipelineStatisticFlags PipelineStatistics;
+        public VkStructureType sType;
+        public IntPtr pNext;
+        public VkQueryPoolCreateFlags flags;
+        public VkQueryType queryType;
+        public uint queryCount;
+        public VkQueryPipelineStatisticFlags pipelineStatistics;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkBufferCreateInfo
     {
-        public VkStructureType SType;
-        public IntPtr PNext;
-        public VkBufferCreateFlags Flags;
-        public VkDeviceSize Size;
-        public VkBufferUsageFlags Usage;
-        public VkSharingMode SharingMode;
-        public uint QueueFamilyIndexCount;
-        public IntPtr PQueueFamilyIndices; // Pointer to array of uint
+        public VkStructureType sType;
+        public IntPtr pNext;
+        public VkBufferCreateFlags flags;
+        public VkDeviceSize size;
+        public VkBufferUsageFlags usage;
+        public VkSharingMode sharingMode;
+        public uint queueFamilyIndexCount;
+        public IntPtr pQueueFamilyIndices; // Pointer to array of uint
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkBufferViewCreateInfo
     {
-        public VkStructureType SType;
-        public IntPtr PNext;
-        public VkBufferViewCreateFlags Flags;
-        public VkBuffer Buffer;
-        public VkFormat Format;
-        public VkDeviceSize Offset;
-        public VkDeviceSize Range;
+        public VkStructureType sType;
+        public IntPtr pNext;
+        public VkBufferViewCreateFlags flags;
+        public VkBuffer buffer;
+        public VkFormat format;
+        public VkDeviceSize offset;
+        public VkDeviceSize range;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkImageCreateInfo
     {
-        public VkStructureType SType;
-        public IntPtr PNext;
-        public VkImageCreateFlags Flags;
-        public VkImageType ImageType;
-        public VkFormat Format;
-        public VkExtent3D Extent;
-        public uint MipLevels;
-        public uint ArrayLayers;
-        public VkSampleCountFlagBits Samples;
-        public VkImageTiling Tiling;
-        public VkImageUsageFlags Usage;
-        public VkSharingMode SharingMode;
-        public uint QueueFamilyIndexCount;
-        public IntPtr PQueueFamilyIndices; // Pointer to array of uint
-        public VkImageLayout InitialLayout;
+        public VkStructureType sType;
+        public IntPtr pNext;
+        public VkImageCreateFlags flags;
+        public VkImageType imageType;
+        public VkFormat format;
+        public VkExtent3D extent;
+        public uint mipLevels;
+        public uint arrayLayers;
+        public VkSampleCountFlagBits samples;
+        public VkImageTiling tiling;
+        public VkImageUsageFlags usage;
+        public VkSharingMode sharingMode;
+        public uint queueFamilyIndexCount;
+        public IntPtr pQueueFamilyIndices; // Pointer to array of uint
+        public VkImageLayout initialLayout;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkSubresourceLayout
     {
-        public VkDeviceSize Offset;
-        public VkDeviceSize Size;
-        public VkDeviceSize RowPitch;
-        public VkDeviceSize ArrayPitch;
-        public VkDeviceSize DepthPitch;
+        public VkDeviceSize offset;
+        public VkDeviceSize size;
+        public VkDeviceSize rowPitch;
+        public VkDeviceSize arrayPitch;
+        public VkDeviceSize depthPitch;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkComponentMapping
     {
-        public VkComponentSwizzle R;
-        public VkComponentSwizzle G;
-        public VkComponentSwizzle B;
-        public VkComponentSwizzle A;
+        public VkComponentSwizzle r;
+        public VkComponentSwizzle g;
+        public VkComponentSwizzle b;
+        public VkComponentSwizzle a;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkImageViewCreateInfo
     {
-        public VkStructureType SType;
-        public IntPtr PNext;
-        public VkImageViewCreateFlags Flags;
-        public VkImage Image;
-        public VkImageViewType ViewType;
-        public VkFormat Format;
-        public VkComponentMapping Components;
-        public VkImageSubresourceRange SubresourceRange;
+        public VkStructureType sType;
+        public IntPtr pNext;
+        public VkImageViewCreateFlags flags;
+        public VkImage image;
+        public VkImageViewType viewType;
+        public VkFormat format;
+        public VkComponentMapping components;
+        public VkImageSubresourceRange subresourceRange;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkShaderModuleCreateInfo
     {
-        public VkStructureType SType;
-        public IntPtr PNext;
-        public VkShaderModuleCreateFlags Flags;
-        public nuint CodeSize; // size_t in C
-        public IntPtr PCode; // Pointer to uint array
+        public VkStructureType sType;
+        public IntPtr pNext;
+        public VkShaderModuleCreateFlags flags;
+        public nuint codeSize; // size_t in C
+        public IntPtr pCode; // Pointer to uint array
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkPipelineCacheCreateInfo
     {
-        public VkStructureType SType;
-        public IntPtr PNext;
-        public VkPipelineCacheCreateFlags Flags;
-        public nuint InitialDataSize; // size_t in C
-        public IntPtr PInitialData; // Pointer to void
+        public VkStructureType sType;
+        public IntPtr pNext;
+        public VkPipelineCacheCreateFlags flags;
+        public nuint initialDataSize; // size_t in C
+        public IntPtr pInitialData; // Pointer to void
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkSpecializationMapEntry
     {
-        public uint ConstantID;
-        public uint Offset;
-        public nuint Size; // size_t in C
+        public uint constantID;
+        public uint offset;
+        public nuint size; // size_t in C
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkSpecializationInfo
     {
-        public uint MapEntryCount;
-        public IntPtr PMapEntries; // Pointer to VkSpecializationMapEntry array
-        public nuint DataSize; // size_t in C
-        public IntPtr PData; // Pointer to void
+        public uint mapEntryCount;
+        public IntPtr pMapEntries; // Pointer to VkSpecializationMapEntry array
+        public nuint dataSize; // size_t in C
+        public IntPtr pData; // Pointer to void
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkPipelineShaderStageCreateInfo
     {
-        public VkStructureType SType;
-        public IntPtr PNext;
-        public VkPipelineShaderStageCreateFlags Flags;
-        public VkShaderStageFlagBits Stage;
-        public VkShaderModule Module;
+        public VkStructureType sType;
+        public IntPtr pNext;
+        public VkPipelineShaderStageCreateFlags flags;
+        public VkShaderStageFlagBits stage;
+        public VkShaderModule module;
         [MarshalAs(UnmanagedType.LPUTF8Str)]
-        public string PName;
-        public IntPtr PSpecializationInfo; // Pointer to VkSpecializationInfo
+        public string pName;
+        public IntPtr pSpecializationInfo; // Pointer to VkSpecializationInfo
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkComputePipelineCreateInfo
     {
-        public VkStructureType SType;
-        public IntPtr PNext;
-        public VkPipelineCreateFlags Flags;
-        public VkPipelineShaderStageCreateInfo Stage;
-        public VkPipelineLayout Layout;
-        public VkPipeline BasePipelineHandle;
-        public int BasePipelineIndex;
+        public VkStructureType sType;
+        public IntPtr pNext;
+        public VkPipelineCreateFlags flags;
+        public VkPipelineShaderStageCreateInfo stage;
+        public VkPipelineLayout layout;
+        public VkPipeline basePipelineHandle;
+        public int basePipelineIndex;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkVertexInputBindingDescription
     {
-        public uint Binding;
-        public uint Stride;
-        public VkVertexInputRate InputRate;
+        public uint binding;
+        public uint stride;
+        public VkVertexInputRate inputRate;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkVertexInputAttributeDescription
     {
-        public uint Location;
-        public uint Binding;
-        public VkFormat Format;
-        public uint Offset;
+        public uint location;
+        public uint binding;
+        public VkFormat format;
+        public uint offset;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkPipelineVertexInputStateCreateInfo
     {
-        public VkStructureType SType;
-        public IntPtr PNext;
-        public VkPipelineVertexInputStateCreateFlags Flags;
-        public uint VertexBindingDescriptionCount;
-        public IntPtr PVertexBindingDescriptions; // Pointer to array of VkVertexInputBindingDescription
-        public uint VertexAttributeDescriptionCount;
-        public IntPtr PVertexAttributeDescriptions; // Pointer to array of VkVertexInputAttributeDescription
+        public VkStructureType sType;
+        public IntPtr pNext;
+        public VkPipelineVertexInputStateCreateFlags flags;
+        public uint vertexBindingDescriptionCount;
+        public IntPtr pVertexBindingDescriptions; // Pointer to array of VkVertexInputBindingDescription
+        public uint vertexAttributeDescriptionCount;
+        public IntPtr pVertexAttributeDescriptions; // Pointer to array of VkVertexInputAttributeDescription
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkPipelineInputAssemblyStateCreateInfo
     {
-        public VkStructureType SType;
-        public IntPtr PNext;
-        public VkPipelineInputAssemblyStateCreateFlags Flags;
-        public VkPrimitiveTopology Topology;
-        public VkBool32 PrimitiveRestartEnable;
+        public VkStructureType sType;
+        public IntPtr pNext;
+        public VkPipelineInputAssemblyStateCreateFlags flags;
+        public VkPrimitiveTopology topology;
+        public VkBool32 primitiveRestartEnable;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkPipelineTessellationStateCreateInfo
     {
-        public VkStructureType SType;
-        public IntPtr PNext;
-        public VkPipelineTessellationStateCreateFlags Flags;
-        public uint PatchControlPoints;
+        public VkStructureType sType;
+        public IntPtr pNext;
+        public VkPipelineTessellationStateCreateFlags flags;
+        public uint patchControlPoints;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkViewport
     {
-        public float X;
-        public float Y;
-        public float Width;
-        public float Height;
-        public float MinDepth;
-        public float MaxDepth;
+        public float x;
+        public float y;
+        public float width;
+        public float height;
+        public float minDepth;
+        public float maxDepth;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkPipelineViewportStateCreateInfo
     {
-        public VkStructureType SType;
-        public IntPtr PNext;
-        public VkPipelineViewportStateCreateFlags Flags;
-        public uint ViewportCount;
-        public IntPtr PViewports; // Pointer to VkViewport array
-        public uint ScissorCount;
-        public IntPtr PScissors; // Pointer to VkRect2D array
+        public VkStructureType sType;
+        public IntPtr pNext;
+        public VkPipelineViewportStateCreateFlags flags;
+        public uint viewportCount;
+        public IntPtr pViewports; // Pointer to VkViewport array
+        public uint scissorCount;
+        public IntPtr pScissors; // Pointer to VkRect2D array
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkPipelineRasterizationStateCreateInfo
     {
-        public VkStructureType SType;
-        public IntPtr PNext;
-        public VkPipelineRasterizationStateCreateFlags Flags;
-        public VkBool32 DepthClampEnable;
-        public VkBool32 RasterizerDiscardEnable;
-        public VkPolygonMode PolygonMode;
-        public VkCullModeFlags CullMode;
-        public VkFrontFace FrontFace;
-        public VkBool32 DepthBiasEnable;
-        public float DepthBiasConstantFactor;
-        public float DepthBiasClamp;
-        public float DepthBiasSlopeFactor;
-        public float LineWidth;
+        public VkStructureType sType;
+        public IntPtr pNext;
+        public VkPipelineRasterizationStateCreateFlags flags;
+        public VkBool32 depthClampEnable;
+        public VkBool32 rasterizerDiscardEnable;
+        public VkPolygonMode polygonMode;
+        public VkCullModeFlags cullMode;
+        public VkFrontFace frontFace;
+        public VkBool32 depthBiasEnable;
+        public float depthBiasConstantFactor;
+        public float depthBiasClamp;
+        public float depthBiasSlopeFactor;
+        public float lineWidth;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkPipelineMultisampleStateCreateInfo
     {
-        public VkStructureType SType;
-        public IntPtr PNext;
-        public VkPipelineMultisampleStateCreateFlags Flags;
-        public VkSampleCountFlagBits RasterizationSamples;
-        public VkBool32 SampleShadingEnable;
-        public float MinSampleShading;
-        public IntPtr PSampleMask; // Pointer to VkSampleMask array
-        public VkBool32 AlphaToCoverageEnable;
-        public VkBool32 AlphaToOneEnable;
+        public VkStructureType sType;
+        public IntPtr pNext;
+        public VkPipelineMultisampleStateCreateFlags flags;
+        public VkSampleCountFlagBits rasterizationSamples;
+        public VkBool32 sampleShadingEnable;
+        public float minSampleShading;
+        public IntPtr pSampleMask; // Pointer to VkSampleMask array
+        public VkBool32 alphaToCoverageEnable;
+        public VkBool32 alphaToOneEnable;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkStencilOpState
     {
-        public VkStencilOp FailOp;
-        public VkStencilOp PassOp;
-        public VkStencilOp DepthFailOp;
-        public VkCompareOp CompareOp;
-        public uint CompareMask;
-        public uint WriteMask;
-        public uint Reference;
+        public VkStencilOp failOp;
+        public VkStencilOp passOp;
+        public VkStencilOp depthFailOp;
+        public VkCompareOp compareOp;
+        public uint compareMask;
+        public uint writeMask;
+        public uint reference;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkPipelineDepthStencilStateCreateInfo
     {
-        public VkStructureType SType;
-        public IntPtr PNext;
-        public VkPipelineDepthStencilStateCreateFlags Flags;
-        public VkBool32 DepthTestEnable;
-        public VkBool32 DepthWriteEnable;
-        public VkCompareOp DepthCompareOp;
-        public VkBool32 DepthBoundsTestEnable;
-        public VkBool32 StencilTestEnable;
-        public VkStencilOpState Front;
-        public VkStencilOpState Back;
-        public float MinDepthBounds;
-        public float MaxDepthBounds;
+        public VkStructureType sType;
+        public IntPtr pNext;
+        public VkPipelineDepthStencilStateCreateFlags flags;
+        public VkBool32 depthTestEnable;
+        public VkBool32 depthWriteEnable;
+        public VkCompareOp depthCompareOp;
+        public VkBool32 depthBoundsTestEnable;
+        public VkBool32 stencilTestEnable;
+        public VkStencilOpState front;
+        public VkStencilOpState back;
+        public float minDepthBounds;
+        public float maxDepthBounds;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkPipelineColorBlendAttachmentState
     {
-        public VkBool32 BlendEnable;
-        public VkBlendFactor SrcColorBlendFactor;
-        public VkBlendFactor DstColorBlendFactor;
-        public VkBlendOp ColorBlendOp;
-        public VkBlendFactor SrcAlphaBlendFactor;
-        public VkBlendFactor DstAlphaBlendFactor;
-        public VkBlendOp AlphaBlendOp;
-        public VkColorComponentFlags ColorWriteMask;
+        public VkBool32 blendEnable;
+        public VkBlendFactor srcColorBlendFactor;
+        public VkBlendFactor dstColorBlendFactor;
+        public VkBlendOp colorBlendOp;
+        public VkBlendFactor srcAlphaBlendFactor;
+        public VkBlendFactor dstAlphaBlendFactor;
+        public VkBlendOp alphaBlendOp;
+        public VkColorComponentFlags colorWriteMask;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkPipelineColorBlendStateCreateInfo
     {
-        public VkStructureType SType;
-        public IntPtr PNext;
-        public VkPipelineColorBlendStateCreateFlags Flags;
-        public VkBool32 LogicOpEnable;
-        public VkLogicOp LogicOp;
-        public uint AttachmentCount;
-        public IntPtr PAttachments; // Pointer to VkPipelineColorBlendAttachmentState array
+        public VkStructureType sType;
+        public IntPtr pNext;
+        public VkPipelineColorBlendStateCreateFlags flags;
+        public VkBool32 logicOpEnable;
+        public VkLogicOp logicOp;
+        public uint attachmentCount;
+        public IntPtr pAttachments; // Pointer to VkPipelineColorBlendAttachmentState array
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-        public float[] BlendConstants;
+        public float[] blendConstants;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkPipelineDynamicStateCreateInfo
     {
-        public VkStructureType SType;
-        public IntPtr PNext;
-        public VkPipelineDynamicStateCreateFlags Flags;
-        public uint DynamicStateCount;
-        public IntPtr PDynamicStates; // Pointer to VkDynamicState array
+        public VkStructureType sType;
+        public IntPtr pNext;
+        public VkPipelineDynamicStateCreateFlags flags;
+        public uint dynamicStateCount;
+        public IntPtr pDynamicStates; // Pointer to VkDynamicState array
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkGraphicsPipelineCreateInfo
     {
-        public VkStructureType SType;
-        public IntPtr PNext;
-        public VkPipelineCreateFlags Flags;
-        public uint StageCount;
-        public IntPtr PStages; // Pointer to VkPipelineShaderStageCreateInfo array
-        public IntPtr PVertexInputState; // Pointer to VkPipelineVertexInputStateCreateInfo
-        public IntPtr PInputAssemblyState; // Pointer to VkPipelineInputAssemblyStateCreateInfo
-        public IntPtr PTessellationState; // Pointer to VkPipelineTessellationStateCreateInfo
-        public IntPtr PViewportState; // Pointer to VkPipelineViewportStateCreateInfo
-        public IntPtr PRasterizationState; // Pointer to VkPipelineRasterizationStateCreateInfo
-        public IntPtr PMultisampleState; // Pointer to VkPipelineMultisampleStateCreateInfo
-        public IntPtr PDepthStencilState; // Pointer to VkPipelineDepthStencilStateCreateInfo
-        public IntPtr PColorBlendState; // Pointer to VkPipelineColorBlendStateCreateInfo
-        public IntPtr PDynamicState; // Pointer to VkPipelineDynamicStateCreateInfo
-        public VkPipeline Layout;
-        public VkRenderPass RenderPass;
-        public uint Subpass;
-        public VkPipeline BasePipelineHandle;
-        public int BasePipelineIndex;
+        public VkStructureType sType;
+        public IntPtr pNext;
+        public VkPipelineCreateFlags flags;
+        public uint stageCount;
+        public IntPtr pStages; // Pointer to VkPipelineShaderStageCreateInfo array
+        public IntPtr pVertexInputState; // Pointer to VkPipelineVertexInputStateCreateInfo
+        public IntPtr pInputAssemblyState; // Pointer to VkPipelineInputAssemblyStateCreateInfo
+        public IntPtr pTessellationState; // Pointer to VkPipelineTessellationStateCreateInfo
+        public IntPtr pViewportState; // Pointer to VkPipelineViewportStateCreateInfo
+        public IntPtr pRasterizationState; // Pointer to VkPipelineRasterizationStateCreateInfo
+        public IntPtr pMultisampleState; // Pointer to VkPipelineMultisampleStateCreateInfo
+        public IntPtr pDepthStencilState; // Pointer to VkPipelineDepthStencilStateCreateInfo
+        public IntPtr pColorBlendState; // Pointer to VkPipelineColorBlendStateCreateInfo
+        public IntPtr pDynamicState; // Pointer to VkPipelineDynamicStateCreateInfo
+        public VkPipeline layout;
+        public VkRenderPass renderPass;
+        public uint subpass;
+        public VkPipeline basePipelineHandle;
+        public int basePipelineIndex;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkPushConstantRange
     {
-        public VkShaderStageFlags StageFlags;
-        public uint Offset;
-        public uint Size;
+        public VkShaderStageFlags stageFlags;
+        public uint offset;
+        public uint size;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkPipelineLayoutCreateInfo
     {
-        public VkStructureType SType;
-        public IntPtr PNext;
-        public VkPipelineLayoutCreateFlags Flags;
-        public uint SetLayoutCount;
-        public IntPtr PSetLayouts; // Pointer to VkDescriptorSetLayout array
-        public uint PushConstantRangeCount;
+        public VkStructureType sType;
+        public IntPtr pNext;
+        public VkPipelineLayoutCreateFlags flags;
+        public uint setLayoutCount;
+        public IntPtr pSetLayouts; // Pointer to VkDescriptorSetLayout array
+        public uint pushConstantRangeCount;
         public IntPtr pPushConstantRanges; // Pointer to VkPushConstantRange array
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkSamplerCreateInfo
     {
-        public VkStructureType SType;
-        public IntPtr PNext;
-        public VkSamplerCreateFlags Flags;
-        public VkFilter MagFilter;
-        public VkFilter MinFilter;
-        public VkSamplerMipmapMode MipmapMode;
-        public VkSamplerAddressMode AddressModeU;
-        public VkSamplerAddressMode AddressModeV;
-        public VkSamplerAddressMode AddressModeW;
-        public float MipLodBias;
-        public VkBool32 AnisotropyEnable;
-        public float MaxAnisotropy;
-        public VkBool32 CompareEnable;
-        public VkCompareOp CompareOp;
-        public float MinLod;
-        public float MaxLod;
-        public VkBorderColor BorderColor;
-        public VkBool32 UnnormalizedCoordinates;
+        public VkStructureType sType;
+        public IntPtr pNext;
+        public VkSamplerCreateFlags flags;
+        public VkFilter magFilter;
+        public VkFilter minFilter;
+        public VkSamplerMipmapMode mipmapMode;
+        public VkSamplerAddressMode addressModeU;
+        public VkSamplerAddressMode addressModeV;
+        public VkSamplerAddressMode addressModeW;
+        public float mipLodBias;
+        public VkBool32 anisotropyEnable;
+        public float maxAnisotropy;
+        public VkBool32 compareEnable;
+        public VkCompareOp compareOp;
+        public float minLod;
+        public float maxLod;
+        public VkBorderColor borderColor;
+        public VkBool32 unnormalizedCoordinates;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkCopyDescriptorSet
     {
-        public VkStructureType SType;
-        public IntPtr PNext;
-        public VkDescriptorSet SrcSet;
-        public uint SrcBinding;
-        public uint SrcArrayElement;
-        public VkDescriptorSet DstSet;
-        public uint DstBinding;
-        public uint DstArrayElement;
-        public uint DescriptorCount;
+        public VkStructureType sType;
+        public IntPtr pNext;
+        public VkDescriptorSet srcSet;
+        public uint srcBinding;
+        public uint srcArrayElement;
+        public VkDescriptorSet dstSet;
+        public uint dstBinding;
+        public uint dstArrayElement;
+        public uint descriptorCount;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkDescriptorBufferInfo
     {
-        public VkBuffer Buffer;
-        public VkDeviceSize Offset;
-        public VkDeviceSize Range;
+        public VkBuffer buffer;
+        public VkDeviceSize offset;
+        public VkDeviceSize range;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkDescriptorImageInfo
     {
-        public VkSampler Sampler;
-        public VkImageView ImageView;
-        public VkImageLayout ImageLayout;
+        public VkSampler sampler;
+        public VkImageView imageView;
+        public VkImageLayout imageLayout;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkDescriptorPoolSize
     {
-        public VkDescriptorType Type;
-        public uint DescriptorCount;
+        public VkDescriptorType type;
+        public uint descriptorCount;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkDescriptorPoolCreateInfo
     {
-        public VkStructureType SType;
-        public IntPtr PNext;
-        public VkDescriptorPoolCreateFlags Flags;
-        public uint MaxSets;
-        public uint PoolSizeCount;
+        public VkStructureType sType;
+        public IntPtr pNext;
+        public VkDescriptorPoolCreateFlags flags;
+        public uint maxSets;
+        public uint poolSizeCount;
         public IntPtr pPoolSizes; // Pointer to VkDescriptorPoolSize array
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkDescriptorSetAllocateInfo
     {
-        public VkStructureType SType;
-        public IntPtr PNext;
-        public VkDescriptorPool DescriptorPool;
-        public uint DescriptorSetCount;
-        public IntPtr PSetLayouts; // Pointer to VkDescriptorSetLayout array
+        public VkStructureType sType;
+        public IntPtr pNext;
+        public VkDescriptorPool descriptorPool;
+        public uint descriptorSetCount;
+        public IntPtr pSetLayouts; // Pointer to VkDescriptorSetLayout array
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkDescriptorSetLayoutBinding
     {
-        public uint Binding;
-        public VkDescriptorType DescriptorType;
-        public uint DescriptorCount;
-        public VkShaderStageFlags StageFlags;
-        public IntPtr PImmutableSamplers; // Pointer to VkSampler array
+        public uint binding;
+        public VkDescriptorType descriptorType;
+        public uint descriptorCount;
+        public VkShaderStageFlags stageFlags;
+        public IntPtr pImmutableSamplers; // Pointer to VkSampler array
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkDescriptorSetLayoutCreateInfo
     {
-        public VkStructureType SType;
-        public IntPtr PNext;
-        public VkDescriptorSetLayoutCreateFlags Flags;
-        public uint BindingCount;
-        public IntPtr PBindings; // Pointer to VkDescriptorSetLayoutBinding array
+        public VkStructureType sType;
+        public IntPtr pNext;
+        public VkDescriptorSetLayoutCreateFlags flags;
+        public uint bindingCount;
+        public IntPtr pBindings; // Pointer to VkDescriptorSetLayoutBinding array
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkWriteDescriptorSet
     {
-        public VkStructureType SType;
-        public IntPtr PNext;
-        public VkDescriptorSet DstSet;
-        public uint DstBinding;
-        public uint DstArrayElement;
-        public uint DescriptorCount;
-        public VkDescriptorType DescriptorType;
-        public IntPtr PImageInfo; // Pointer to VkDescriptorImageInfo array
-        public IntPtr PBufferInfo; // Pointer to VkDescriptorBufferInfo array
-        public IntPtr PTexelBufferView; // Pointer to VkBufferView array
+        public VkStructureType sType;
+        public IntPtr pNext;
+        public VkDescriptorSet dstSet;
+        public uint dstBinding;
+        public uint dstArrayElement;
+        public uint descriptorCount;
+        public VkDescriptorType descriptorType;
+        public IntPtr pImageInfo; // Pointer to VkDescriptorImageInfo array
+        public IntPtr pBufferInfo; // Pointer to VkDescriptorBufferInfo array
+        public IntPtr pTexelBufferView; // Pointer to VkBufferView array
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkAttachmentDescription
     {
-        public VkAttachmentDescriptionFlags Flags;
-        public VkFormat Format;
-        public VkSampleCountFlagBits Samples;
-        public VkAttachmentLoadOp LoadOp;
-        public VkAttachmentStoreOp StoreOp;
-        public VkAttachmentLoadOp StencilLoadOp;
-        public VkAttachmentStoreOp StencilStoreOp;
-        public VkImageLayout InitialLayout;
-        public VkImageLayout FinalLayout;
+        public VkAttachmentDescriptionFlags flags;
+        public VkFormat format;
+        public VkSampleCountFlagBits samples;
+        public VkAttachmentLoadOp loadOp;
+        public VkAttachmentStoreOp storeOp;
+        public VkAttachmentLoadOp stencilLoadOp;
+        public VkAttachmentStoreOp stencilStoreOp;
+        public VkImageLayout initialLayout;
+        public VkImageLayout finalLayout;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkAttachmentReference
     {
-        public uint Attachment;
-        public VkImageLayout Layout;
+        public uint attachment;
+        public VkImageLayout layout;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkFramebufferCreateInfo
     {
-        public VkStructureType SType;
-        public IntPtr PNext;
-        public VkFramebufferCreateFlags Flags;
-        public VkRenderPass RenderPass;
-        public uint AttachmentCount;
-        public IntPtr PAttachments; // Pointer to array of VkImageView
-        public uint Width;
-        public uint Height;
-        public uint Layers;
+        public VkStructureType sType;
+        public IntPtr pNext;
+        public VkFramebufferCreateFlags flags;
+        public VkRenderPass renderPass;
+        public uint attachmentCount;
+        public IntPtr pAttachments; // Pointer to array of VkImageView
+        public uint width;
+        public uint height;
+        public uint layers;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkSubpassDescription
     {
-        public VkSubpassDescriptionFlags Flags;
-        public VkPipelineBindPoint PipelineBindPoint;
-        public uint InputAttachmentCount;
-        public IntPtr PInputAttachments; // Pointer to VkAttachmentReference array
-        public uint ColorAttachmentCount;
-        public IntPtr PColorAttachments; // Pointer to VkAttachmentReference array
-        public IntPtr PResolveAttachments; // Pointer to VkAttachmentReference array
-        public IntPtr PDepthStencilAttachment; // Pointer to VkAttachmentReference
-        public uint PreserveAttachmentCount;
+        public VkSubpassDescriptionFlags flags;
+        public VkPipelineBindPoint pipelineBindPoint;
+        public uint inputAttachmentCount;
+        public IntPtr pInputAttachments; // Pointer to VkAttachmentReference array
+        public uint colorAttachmentCount;
+        public IntPtr pColorAttachments; // Pointer to VkAttachmentReference array
+        public IntPtr pResolveAttachments; // Pointer to VkAttachmentReference array
+        public IntPtr pDepthStencilAttachment; // Pointer to VkAttachmentReference
+        public uint preserveAttachmentCount;
         public IntPtr pPreserveAttachments; // Pointer to array of uint
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkSubpassDependency
     {
-        public uint SrcSubpass;
-        public uint DstSubpass;
-        public VkPipelineStageFlags SrcStageMask;
-        public VkPipelineStageFlags DstStageMask;
-        public VkAccessFlags SrcAccessMask;
-        public VkAccessFlags DstAccessMask;
-        public VkDependencyFlags DependencyFlags;
+        public uint srcSubpass;
+        public uint dstSubpass;
+        public VkPipelineStageFlags srcStageMask;
+        public VkPipelineStageFlags dstStageMask;
+        public VkAccessFlags srcAccessMask;
+        public VkAccessFlags dstAccessMask;
+        public VkDependencyFlags dependencyFlags;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkRenderPassCreateInfo
     {
-        public VkStructureType SType;
-        public IntPtr PNext;
-        public VkRenderPassCreateFlags Flags;
-        public uint AttachmentCount;
-        public IntPtr PAttachments; // Pointer to VkAttachmentDescription array
-        public uint SubpassCount;
-        public IntPtr PSubpasses; // Pointer to VkSubpassDescription array
-        public uint DependencyCount;
-        public IntPtr PDependencies; // Pointer to VkSubpassDependency array
+        public VkStructureType sType;
+        public IntPtr pNext;
+        public VkRenderPassCreateFlags flags;
+        public uint attachmentCount;
+        public IntPtr pAttachments; // Pointer to VkAttachmentDescription array
+        public uint subpassCount;
+        public IntPtr pSubpasses; // Pointer to VkSubpassDescription array
+        public uint dependencyCount;
+        public IntPtr pDependencies; // Pointer to VkSubpassDependency array
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkCommandPoolCreateInfo
     {
-        public VkStructureType SType;
-        public IntPtr PNext;
-        public VkCommandPoolCreateFlags Flags;
-        public uint QueueFamilyIndex;
+        public VkStructureType sType;
+        public IntPtr pNext;
+        public VkCommandPoolCreateFlags flags;
+        public uint queueFamilyIndex;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkCommandBufferAllocateInfo
     {
-        public VkStructureType SType;
-        public IntPtr PNext;
-        public VkCommandPool CommandPool;
-        public VkCommandBufferLevel Level;
-        public uint CommandBufferCount;
+        public VkStructureType sType;
+        public IntPtr pNext;
+        public VkCommandPool commandPool;
+        public VkCommandBufferLevel level;
+        public uint commandBufferCount;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkCommandBufferInheritanceInfo
     {
-        public VkStructureType SType;
-        public IntPtr PNext;
-        public VkRenderPass RenderPass;
-        public uint Subpass;
-        public VkFramebuffer Framebuffer;
-        public VkBool32 OcclusionQueryEnable;
-        public VkQueryControlFlags QueryFlags;
-        public VkQueryPipelineStatisticFlags PipelineStatistics;
+        public VkStructureType sType;
+        public IntPtr pNext;
+        public VkRenderPass renderPass;
+        public uint subpass;
+        public VkFramebuffer framebuffer;
+        public VkBool32 occlusionQueryEnable;
+        public VkQueryControlFlags queryFlags;
+        public VkQueryPipelineStatisticFlags pipelineStatistics;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkCommandBufferBeginInfo
     {
-        public VkStructureType SType;
-        public IntPtr PNext;
-        public VkCommandBufferUsageFlags Flags;
-        public IntPtr PInheritanceInfo; // Pointer to VkCommandBufferInheritanceInfo
+        public VkStructureType sType;
+        public IntPtr pNext;
+        public VkCommandBufferUsageFlags flags;
+        public IntPtr pInheritanceInfo; // Pointer to VkCommandBufferInheritanceInfo
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkBufferCopy
     {
-        public VkDeviceSize SrcOffset;
-        public VkDeviceSize DstOffset;
-        public VkDeviceSize Size;
+        public VkDeviceSize srcOffset;
+        public VkDeviceSize dstOffset;
+        public VkDeviceSize size;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkImageSubresourceLayers
     {
-        public VkImageAspectFlags AspectMask;
-        public uint MipLevel;
-        public uint BaseArrayLayer;
-        public uint LayerCount;
+        public VkImageAspectFlags aspectMask;
+        public uint mipLevel;
+        public uint baseArrayLayer;
+        public uint layerCount;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkBufferImageCopy
     {
-        public VkDeviceSize BufferOffset;
-        public uint BufferRowLength;
-        public uint BufferImageHeight;
-        public VkImageSubresourceLayers ImageSubresource;
-        public VkOffset3D ImageOffset;
-        public VkExtent3D ImageExtent;
+        public VkDeviceSize bufferOffset;
+        public uint bufferRowLength;
+        public uint bufferImageHeight;
+        public VkImageSubresourceLayers imageSubresource;
+        public VkOffset3D imageOffset;
+        public VkExtent3D imageExtent;
     }
 
     [StructLayout(LayoutKind.Explicit)]
@@ -1335,115 +1290,115 @@ namespace LevelEditor
     {
         [FieldOffset(0)] // Define the starting offset for this field
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-        public float[] Float32;
+        public float[] float32;
 
         [FieldOffset(0)] // Same offset, creating a union-like effect
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-        public int[] Int32;
+        public int[] int32;
 
         [FieldOffset(0)] // Same offset for uint as well
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-        public uint[] UInt32;
+        public uint[] uint32;
 
         public VkClearColorValue(float[] values)
         {
-            // Initialize Float32 array
-            Float32 = new float[4];
-            Array.Copy(values, Float32, Math.Min(values.Length, 4));
-            Int32 = null; // Clear other references
-            UInt32 = null; // Clear other references
+            // Initialize float32 array
+            float32 = new float[4];
+            Array.Copy(values, float32, Math.Min(values.Length, 4));
+            int32 = null; // Clear other references
+            uint32 = null; // Clear other references
         }
 
         public VkClearColorValue(int[] values)
         {
-            // Initialize Int32 array
-            Int32 = new int[4];
-            Array.Copy(values, Int32, Math.Min(values.Length, 4));
-            Float32 = null; // Clear other references
-            UInt32 = null; // Clear other references
+            // Initialize int32 array
+            int32 = new int[4];
+            Array.Copy(values, int32, Math.Min(values.Length, 4));
+            float32 = null; // Clear other references
+            uint32 = null; // Clear other references
         }
 
         public VkClearColorValue(uint[] values)
         {
-            // Initialize UInt32 array
-            UInt32 = new uint[4];
-            Array.Copy(values, UInt32, Math.Min(values.Length, 4));
-            Float32 = null; // Clear other references
-            Int32 = null; // Clear other references
+            // Initialize uint32 array
+            uint32 = new uint[4];
+            Array.Copy(values, uint32, Math.Min(values.Length, 4));
+            float32 = null; // Clear other references
+            int32 = null; // Clear other references
         }
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkClearDepthStencilValue
     {
-        public float Depth;
-        public uint Stencil;
+        public float depth;
+        public uint stencil;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkClearValue
     {
-        public VkClearColorValue Color;
-        public VkClearDepthStencilValue DepthStencil;
+        public VkClearColorValue color;
+        public VkClearDepthStencilValue depthStencil;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkClearAttachment
     {
-        public VkImageAspectFlags AspectMask;
-        public uint ColorAttachment;
-        public VkClearValue ClearValue;
+        public VkImageAspectFlags aspectMask;
+        public uint colorAttachment;
+        public VkClearValue clearValue;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkClearRect
     {
-        public VkRect2D Rect;
-        public uint BaseArrayLayer;
-        public uint LayerCount;
+        public VkRect2D rect;
+        public uint baseArrayLayer;
+        public uint layerCount;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkImageBlit
     {
-        public VkImageSubresourceLayers SrcSubresource;
+        public VkImageSubresourceLayers srcSubresource;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
-        public VkOffset3D[] SrcOffsets; // Size is 2
-        public VkImageSubresourceLayers DstSubresource;
+        public VkOffset3D[] srcOffsets; // Size is 2
+        public VkImageSubresourceLayers dstSubresource;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
-        public VkOffset3D[] DstOffsets; // Size is 2
+        public VkOffset3D[] dstOffsets; // Size is 2
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkImageCopy
     {
-        public VkImageSubresourceLayers SrcSubresource;
-        public VkOffset3D SrcOffset;
-        public VkImageSubresourceLayers DstSubresource;
-        public VkOffset3D DstOffset;
-        public VkExtent3D Extent;
+        public VkImageSubresourceLayers srcSubresource;
+        public VkOffset3D srcOffset;
+        public VkImageSubresourceLayers dstSubresource;
+        public VkOffset3D dstOffset;
+        public VkExtent3D extent;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkImageResolve
     {
-        public VkImageSubresourceLayers SrcSubresource;
-        public VkOffset3D SrcOffset;
-        public VkImageSubresourceLayers DstSubresource;
-        public VkOffset3D DstOffset;
-        public VkExtent3D Extent;
+        public VkImageSubresourceLayers srcSubresource;
+        public VkOffset3D srcOffset;
+        public VkImageSubresourceLayers dstSubresource;
+        public VkOffset3D dstOffset;
+        public VkExtent3D extent;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkRenderPassBeginInfo
     {
-        public VkStructureType SType;
-        public IntPtr PNext;
-        public VkRenderPass RenderPass;
-        public VkFramebuffer Framebuffer;
-        public VkRect2D RenderArea;
-        public uint ClearValueCount;
-        public IntPtr PClearValues; // Pointer to VkClearValue array
+        public VkStructureType sType;
+        public IntPtr pNext;
+        public VkRenderPass renderPass;
+        public VkFramebuffer framebuffer;
+        public VkRect2D renderArea;
+        public uint clearValueCount;
+        public IntPtr pClearValues; // Pointer to VkClearValue array
     }
 
     public struct VkPhysicalDeviceShaderDrawParametersFeatures
@@ -1464,24 +1419,24 @@ namespace LevelEditor
     [StructLayout(LayoutKind.Sequential)]
     public struct VkSamplerReductionModeCreateInfo
     {
-        VkStructureType sType;
-        IntPtr pNext;
-        VkSamplerReductionMode reductionMode;
+        public VkStructureType sType;
+        public IntPtr pNext;
+        public VkSamplerReductionMode reductionMode;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkPhysicalDeviceSamplerFilterMinmaxProperties
     {
-        VkStructureType sType;
-        IntPtr pNext;
-        VkBool32 filterMinmaxSingleComponentFormats;
-        VkBool32 filterMinmaxImageComponentMapping;
+        public VkStructureType sType;
+        public IntPtr pNext;
+        public VkBool32 filterMinmaxSingleComponentFormats;
+        public VkBool32 filterMinmaxImageComponentMapping;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct VkTransformMatrixKHR
     {
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)] 
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
         public float[,] matrix;
 
         public VkTransformMatrixKHR()
@@ -1607,4 +1562,140 @@ namespace LevelEditor
         public IntPtr pNext;
         public VkPhysicalDeviceFeatures features;
     }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct VkDebugUtilsMessengerCreateInfoEXT
+    {
+        public VkStructureType sType;
+        public IntPtr pNext; // Pointer to next structure, can be null
+        public VkDebugUtilsMessengerCreateFlagsEXT flags;
+        public VkDebugUtilsMessageSeverityFlagsEXT messageSeverity;
+        public VkDebugUtilsMessageTypeFlagsEXT messageType;
+        public VkDebugUtilsMessengerCallbackEXT pfnUserCallback;
+        public IntPtr pUserData; // Pointer to user data
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct VkDebugUtilsMessengerCallbackDataEXT
+    {
+        public VkStructureType sType;     // The type of this structure
+        public IntPtr pNext;              // Pointer to the next structure or null
+        public string pMessageIdName;     // Name of the message ID
+        public uint messageIdNumber;      // Numeric message ID
+        public string pMessage;           // The message itself
+        public uint queueLabelCount;      // Number of queue labels
+        public IntPtr pQueueLabels;       // Pointer to queue labels
+        public uint cmdBufLabelCount;     // Number of command buffer labels
+        public IntPtr pCmdBufLabels;      // Pointer to command buffer labels
+        public IntPtr pUserData;          // Pointer to user data
+    }
+
+    public delegate VkResult VkSetDebugUtilsObjectNameEXT(
+    IntPtr device, // Use IntPtr for VkDevice
+    ref VkDebugUtilsObjectNameInfoEXT pNameInfo
+);
+
+    // PFN_vkSetDebugUtilsObjectTagEXT
+    public delegate VkResult VkSetDebugUtilsObjectTagEXT(
+        IntPtr device, // Use IntPtr for VkDevice
+        ref VkDebugUtilsObjectTagInfoEXT pTagInfo
+    );
+
+    // PFN_vkQueueBeginDebugUtilsLabelEXT
+    public delegate void VkQueueBeginDebugUtilsLabelEXT(
+        IntPtr queue, // Use IntPtr for VkQueue
+        ref VkDebugUtilsLabelEXT pLabelInfo
+    );
+
+    // PFN_vkQueueEndDebugUtilsLabelEXT
+    public delegate void VkQueueEndDebugUtilsLabelEXT(
+        IntPtr queue  // Use IntPtr for VkQueue
+    );
+
+    // PFN_vkQueueInsertDebugUtilsLabelEXT
+    public delegate void VkQueueInsertDebugUtilsLabelEXT(
+        IntPtr queue, // Use IntPtr for VkQueue
+        ref VkDebugUtilsLabelEXT pLabelInfo
+    );
+
+    // PFN_vkCmdBeginDebugUtilsLabelEXT
+    public delegate void VkCmdBeginDebugUtilsLabelEXT(
+        IntPtr commandBuffer, // Use IntPtr for VkCommandBuffer
+        ref VkDebugUtilsLabelEXT pLabelInfo
+    );
+
+    // PFN_vkCmdEndDebugUtilsLabelEXT
+    public delegate void VkCmdEndDebugUtilsLabelEXT(
+        IntPtr commandBuffer // Use IntPtr for VkCommandBuffer
+    );
+
+    // PFN_vkCmdInsertDebugUtilsLabelEXT
+    public delegate void VkCmdInsertDebugUtilsLabelEXT(
+        IntPtr commandBuffer, // Use IntPtr for VkCommandBuffer
+        ref VkDebugUtilsLabelEXT pLabelInfo
+    );
+
+    // PFN_vkCreateDebugUtilsMessengerEXT
+    public delegate VkResult VkCreateDebugUtilsMessengerEXT(
+        IntPtr instance, // Use IntPtr for VkInstance
+        ref VkDebugUtilsMessengerCreateInfoEXT pCreateInfo,
+        IntPtr pAllocator, // Use IntPtr for VkAllocationCallbacks
+        out IntPtr pMessenger // Use `out` to return the messenger handle
+    );
+
+    // PFN_vkDestroyDebugUtilsMessengerEXT
+    public delegate void VkDestroyDebugUtilsMessengerEXT(
+        IntPtr instance, // Use IntPtr for VkInstance
+        IntPtr messenger, // Use IntPtr for VkDebugUtilsMessengerEXT
+        IntPtr pAllocator // Use IntPtr for VkAllocationCallbacks
+    );
+
+    // PFN_vkSubmitDebugUtilsMessageEXT
+    public delegate void VkSubmitDebugUtilsMessageEXT(
+        IntPtr instance, // Use IntPtr for VkInstance
+        VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
+        VkDebugUtilsMessageTypeFlagsEXT messageTypes,
+        ref VkDebugUtilsMessengerCallbackDataEXT pCallbackData
+    );
+
+    public delegate VkBool32 VkDebugUtilsMessengerCallbackEXT(
+        VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
+        VkDebugUtilsMessageTypeFlagsEXT messageTypes,
+        ref VkDebugUtilsMessengerCallbackDataEXT pCallbackData,  // Use ref to allow modifying the struct's contents in C#
+        IntPtr pUserData   // Pointer to user data
+    );
+
+    [StructLayout(LayoutKind.Sequential)]
+public struct VkDebugUtilsObjectNameInfoEXT
+{
+    public VkStructureType sType;            // Structure type: should be `VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT`
+    public IntPtr pNext;                      // Pointer to extension-specific structure, or null
+    public VkObjectType objectType;           // Type of the object being named
+    public ulong objectHandle;                 // Object handle (for example, a VkDevice or VkBuffer handle)
+    [MarshalAs(UnmanagedType.LPStr)]         // Marshals as a null-terminated ANSI string
+    public string pObjectName;                // Name to give to object
+}
+
+[StructLayout(LayoutKind.Sequential)]
+public struct VkDebugUtilsObjectTagInfoEXT
+{
+    public VkStructureType sType;            // Structure type: should be `VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_TAG_INFO_EXT`
+    public IntPtr pNext;                      // Pointer to extension-specific structure, or null
+    public VkObjectType objectType;           // Type of the object being tagged
+    public ulong objectHandle;                 // Object handle (for example, a VkDevice or VkBuffer handle)
+    public ulong tagName;                     // Unique identifier for the tag
+    public IntPtr tagSize;                    // Size of the tag data
+    public IntPtr pTag;                       // Pointer to tag data
+}
+
+[StructLayout(LayoutKind.Sequential)]
+public struct VkDebugUtilsLabelEXT
+{
+    public VkStructureType sType;            // Structure type: should be `VK_STRUCTURE_TYPE_DEBUG_UTILS_LABEL_EXT`
+    public IntPtr pNext;                      // Pointer to extension-specific structure, or null
+    [MarshalAs(UnmanagedType.LPStr)]         // Marshals as a null-terminated ANSI string
+    public string pLabelName;                 // Label name
+    [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)] // Fixed-size array of 4 floats
+    public float[] color;                     // RGBA color for the label (r, g, b, a)
+}
 }

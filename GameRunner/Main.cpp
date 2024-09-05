@@ -3,7 +3,7 @@ extern "C"
 	#include <Global.h>
 	#include <VulkanRenderer.h>
 	#include <FrameTime.h>
-#include <Window.h>
+    #include <GLFWWindow.h>
 
 }
 #include <ImGui/imgui.h>
@@ -16,7 +16,7 @@ extern "C"
 int main()
 {
     time_init(60);
-    GameEngine_CreateGraphicsWindow("Game", 1280, 720);
+    GameEngine_SDL_CreateGraphicsWindow("Game", 1280, 720);
     Renderer_RendererSetUp();
     InterfaceRenderPass::StartUp();
 
@@ -27,11 +27,11 @@ int main()
     {
         while (SDL_PollEvent(&global.Window.Event))
         {
-            GameEngine_PollEventHandler(&global.Window.Event);
+            GameEngine_SDL_PollEventHandler(&global.Window.Event);
             ImGui_ImplSDL2_ProcessEvent(&global.Window.Event);
         }
 
-        Uint32 windowFlags = SDL_GetWindowFlags(global.Window.SDLWindow);
+        Uint32 windowFlags = SDL_GetWindowFlags(global.Window.window);
         if (!(windowFlags & SDL_WINDOW_MINIMIZED))
         {
             time_update();
@@ -45,7 +45,7 @@ int main()
     InterfaceRenderPass::Destroy();
     scene.Destroy();
     Renderer_DestroyRenderer();
-    GameEngine_DestroyWindow();
+    GameEngine_SDL_DestroyWindow();
 
     return 0;
 }

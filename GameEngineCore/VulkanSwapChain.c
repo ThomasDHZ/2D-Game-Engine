@@ -87,7 +87,7 @@ VkResult Vulkan_SetUpSwapChain()
 
 	int width = INT32_MAX;
 	int height = INT32_MAX;
-	SDL_Vulkan_GetDrawableSize(global.Window.SDLWindow, &width, &height);
+	SDL_Vulkan_GetDrawableSize(global.Window.window, &width, &height);
 
 	VkExtent2D extent = { (uint32)width, (uint32)height };
 	global.Renderer.SwapChain.SwapChainResolution = extent;
@@ -177,7 +177,7 @@ VkResult Vulkan_SetUpSwapChain()
 
 VkResult Vulkan_RebuildSwapChain()
 {
-	return Vulkan_SetUpSwapChain(global.Window.SDLWindow, global.Renderer.Device, global.Renderer.PhysicalDevice, global.Renderer.Surface);
+	return Vulkan_SetUpSwapChain(global.Window.window, global.Renderer.Device, global.Renderer.PhysicalDevice, global.Renderer.Surface);
 }
 
 void Vulkan_DestroyImageView()

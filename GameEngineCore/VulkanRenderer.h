@@ -1,13 +1,9 @@
 #pragma once
 #include "DLLMain.h"
 #include <windows.h>
-#pragma warning(push)
-#pragma warning(disable : 26819) 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_vulkan.h>
-#pragma warning(pop)
 #include <stdbool.h>
 
+#include "SDLWindow.h"
 #include "Macro.h"
 #include "CTypedef.h"
 #include "VulkanRendererStruct.h"
@@ -41,7 +37,9 @@ typedef struct rendererState
 	 bool RebuildRendererFlag;
 }RendererState;
 
-
+DLL_EXPORT bool Iswindoww();
+DLL_EXPORT void Renderer_Windows_Renderer(uint32* pExtensionCount, VkExtensionProperties** extensionProperties);
+DLL_EXPORT void Renderer_SDL_Renderer(uint32* pExtensionCount, VkExtensionProperties** extensionProperties);
 DLL_EXPORT VkInstance Renderer_CreateVulkanInstance(VkInstanceCreateInfo instanceInfo);
 DLL_EXPORT VkResult Renderer_RendererSetUp();
 DLL_EXPORT VkResult Renderer_RebuildSwapChain();

@@ -1,6 +1,5 @@
 #pragma once
 #include <vulkan/vulkan.h>
-#include <SDL.h>
 #include "CTypedef.h"
 #include "Macro.h"
 

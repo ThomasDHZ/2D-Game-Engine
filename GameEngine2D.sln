@@ -23,6 +23,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UnitTest", "UnitTest\UnitTe
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LevelEditor", "LevelEditor\LevelEditor.csproj", "{10D2825C-4B98-4F27-B4A3-08ECF426F98C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6718AF68-C302-47C1-845B-BBA1CCC0DFF9} = {6718AF68-C302-47C1-845B-BBA1CCC0DFF9}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

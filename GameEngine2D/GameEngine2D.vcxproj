@@ -150,7 +150,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>$(SolutionDir)GameEngineCore;$(SolutionDir)External\stb;C:\VulkanSDK\1.3.290.0\Include;$(SolutionDir)External;$(SolutionDir)External\sdl\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\DHZ\Documents\GitHub\2D-Game-Engine\x64\Debug;C:\VulkanSDK\1.3.290.0\Lib;$(SolutionDir)External\sdl\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)External\glfw\lib-vc2022;C:\Users\DHZ\Documents\GitHub\2D-Game-Engine\x64\Debug;C:\VulkanSDK\1.3.290.0\Lib;$(SolutionDir)External\sdl\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>$(SolutionDir)External\stb;C:\VulkanSDK\1.3.290.0\Include;$(SolutionDir)External;$(SolutionDir)External\sdl\include;$(SolutionDir)GameEngineCore;$(IncludePath)</IncludePath>

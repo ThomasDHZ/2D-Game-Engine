@@ -92,7 +92,6 @@ global using VkPipelineStageFlagBits2 = System.UInt64;
 global using VkPipelineRasterizationStateStreamCreateFlagsEXT = System.UInt64;
 global using VkPipelineViewportSwizzleStateCreateFlagsNV = System.UInt64;
 global using VkPipelineRasterizationConservativeStateCreateFlagsEXT = System.UInt64;
-global using VkDebugUtilsMessageTypeFlagsEXT = System.UInt64;
 global using VkDebugUtilsMessageSeverityFlagsEXT = System.UInt64;
 global using VkDebugUtilsMessengerCreateFlagsEXT = System.UInt64;
 global using VkSamplerReductionModeEXT = VkSamplerReductionMode;

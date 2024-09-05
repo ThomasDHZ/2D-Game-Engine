@@ -2,6 +2,7 @@
 #include "Global.h"
 #include "VulkanSwapChain.h"
 #include "vulkanwindow.h"
+#include "SDLWindow.h"
 
 static const char* DeviceExtensionList[] = {
     VK_KHR_SWAPCHAIN_EXTENSION_NAME,
@@ -159,10 +160,10 @@ static bool GetRayTracingSupport()
             Array_RendererExtensionPropertiesSearch(deviceExtensions, deviceExtensionCount, VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME))
         {
             uint32 extensionCount;
-            SDL_Vulkan_GetInstanceExtensions(global.Window.SDLWindow, &extensionCount, NULL);
+            SDL_Vulkan_GetInstanceExtensions(global.Window.window, &extensionCount, NULL);
 
             const char** extensions = malloc(sizeof(const char*) * (extensionCount + 3));
-            SDL_Vulkan_GetInstanceExtensions(global.Window.SDLWindow, &extensionCount, extensions);
+            SDL_Vulkan_GetInstanceExtensions(global.Window.window, &extensionCount, extensions);
             if (!extensions)
             {
                 fprintf(stderr, "Failed to allocate memory for Vulkan.\n");
@@ -253,6 +254,20 @@ static void GetRendererFeatures(VkPhysicalDeviceVulkan11Features* physicalDevice
 
 }
 
+bool Iswindoww() 
+{
+    if (!global.Window.window)
+    {
+        return false;
+    }
+
+    SDL_SysWMinfo info;
+    SDL_VERSION(&info.version);
+    SDL_GetWindowWMInfo(global.Window.window, &info);
+    HWND hwnd = info.info.win.window;
+    return IsWindow(hwnd) == TRUE;
+}
+
 VkInstance Renderer_CreateVulkanInstance(VkInstanceCreateInfo instanceInfo)
 {
     VkInstance Instance = VK_NULL_HANDLE;
@@ -260,22 +275,55 @@ VkInstance Renderer_CreateVulkanInstance(VkInstanceCreateInfo instanceInfo)
     return Instance;
 }
 
+void Renderer_Windows_Renderer(uint32* pExtensionCount, VkExtensionProperties** extensionProperties)
+{
+    SDL_Vulkan_GetInstanceExtensions(NULL, pExtensionCount, NULL);
+    const char** extensions = malloc(sizeof(const char*) * (*pExtensionCount + 1));
+    if (!extensions)
+    {
+        *pExtensionCount = 0;
+        *extensionProperties = NULL;
+        return;
+    }
+    SDL_Vulkan_GetInstanceExtensions(NULL, pExtensionCount, extensions);
+    extensions[*pExtensionCount] = VK_EXT_DEBUG_UTILS_EXTENSION_NAME;
+    (*pExtensionCount)++;
+    *extensionProperties = (VkExtensionProperties*)extensions;
+}
+
+void Renderer_SDL_Renderer(uint32* pExtensionCount, VkExtensionProperties** extensionProperties)
+{
+    SDL_Vulkan_GetInstanceExtensions(global.Window.window, pExtensionCount, NULL);
+    const char** extensions = malloc(sizeof(const char*) * (*pExtensionCount + 1));
+    if (!extensions)
+    {
+        *pExtensionCount = 0;
+        *extensionProperties = NULL;
+        return;
+    }
+    SDL_Vulkan_GetInstanceExtensions(global.Window.window, pExtensionCount, extensions);
+    extensions[*pExtensionCount] = VK_EXT_DEBUG_UTILS_EXTENSION_NAME;
+    (*pExtensionCount)++;
+    *extensionProperties = (VkExtensionProperties*)extensions;
+}
 
 VkResult Renderer_RendererSetUp()
 {
     global.Renderer.RebuildRendererFlag = false;
+    uint32 pExtensionCount = 0;
+    VkExtensionProperties* extensions = NULL;
 
-    uint32 extensionCount;
-    SDL_Vulkan_GetInstanceExtensions(global.Window.SDLWindow, &extensionCount, NULL);
-    const char** extensions = malloc(sizeof(const char*) * (extensionCount + 1));
-    if (!extensions)
+
+    if (Iswindoww())
     {
-        fprintf(stderr, "Failed to allocate memory for Vulkan.\n");
-        return VK_RESULT_MAX_ENUM;
+        Renderer_SDL_Renderer(&pExtensionCount, &extensions);
+        printf("This is an SDL window.\n");
     }
-
-    SDL_Vulkan_GetInstanceExtensions(global.Window.SDLWindow, &extensionCount, extensions);
-    extensions[extensionCount++] = VK_EXT_DEBUG_UTILS_EXTENSION_NAME;
+    else 
+    {
+        Renderer_Windows_Renderer(&pExtensionCount, &extensions);
+        printf("This is NOT an SDL window.\n");
+    }
 
     VkDebugUtilsMessengerCreateInfoEXT debugInfo =
     {
@@ -299,7 +347,7 @@ VkResult Renderer_RendererSetUp()
     {
         .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
         .pApplicationInfo = &applicationInfo,
-        .enabledExtensionCount = extensionCount,
+        .enabledExtensionCount = pExtensionCount,
         .ppEnabledExtensionNames = extensions
     };
 #ifdef NDEBUG
@@ -317,7 +365,7 @@ VkResult Renderer_RendererSetUp()
     VULKAN_RESULT(CreateDebugUtilsMessengerEXT(global.Renderer.Instance, &debugInfo, NULL, &global.Renderer.DebugMessenger));
 #endif
 
-    if (!SDL_Vulkan_CreateSurface(global.Window.SDLWindow, global.Renderer.Instance, &global.Renderer.Surface))
+    if (!SDL_Vulkan_CreateSurface(global.Window.window, global.Renderer.Instance, &global.Renderer.Surface))
     {
         fprintf(stderr, "Failed to create Vulkan surface: %s\n", SDL_GetError());
         Renderer_DestroyRenderer();
@@ -359,6 +407,9 @@ VkResult Renderer_RendererSetUp()
             SDL_Quit();
         }
     }
+
+    //VkPhysicalDeviceProperties deviceProperties;
+    //vkGetPhysicalDeviceProperties(physicalDeviceList[0], &deviceProperties);
 
     //VkPhysicalDeviceVulkan11Features physicalDeviceVulkan11Features;
     //GetRendererFeatures(&physicalDeviceVulkan11Features);
@@ -740,7 +791,7 @@ uint32 Renderer_GetMemoryType(uint32 typeFilter, VkMemoryPropertyFlags propertie
 
     fprintf(stderr, "Couldn't find suitable memory type.\n");
     Renderer_DestroyRenderer();
-    GameEngine_DestroyWindow();
+    GameEngine_SDL_DestroyWindow();
     return -1;
 }
 

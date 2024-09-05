@@ -1,6 +1,5 @@
 #pragma once
-#define SDL_MAIN_HANDLED
-#include <SDL.h>
+#include "SDLWindow.h"
 #include <stdbool.h>
 
 typedef enum gameControllerButtons

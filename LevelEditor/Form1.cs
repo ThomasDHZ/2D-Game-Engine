@@ -12,6 +12,8 @@ namespace LevelEditor
 {
     public partial class Form1 : Form
     {
+        static public VulkanRenderer renderer = new VulkanRenderer();
+
         public Form1()
         {
             InitializeComponent();
@@ -19,17 +21,19 @@ namespace LevelEditor
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            UInt32 extensionCount = 0;
-            VkResult result = VulkanAPI.vkEnumerateInstanceExtensionProperties(IntPtr.Zero, ref extensionCount, IntPtr.Zero);
+            try
+            {
+                renderer.OpenWindow();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
 
-            if (result == VkResult.VK_SUCCESS)
-            {
-                Console.WriteLine($"Available Vulkan extensions: {extensionCount}");
-            }
-            else
-            {
-                Console.WriteLine($"Failed to enumerate extensions: {result}");
-            }
+        private void richTextBox1_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

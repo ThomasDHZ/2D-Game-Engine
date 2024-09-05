@@ -1,13 +1,13 @@
 #include "Mouse.h"
 #include "Global.h"
 
-void GameEngine_MouseMoveEvent(const SDL_Event* event)
+void GameEngine_SDL_MouseMoveEvent(const SDL_Event* event)
 {
 	global.Mouse.X = event->motion.x;
 	global.Mouse.Y = event->motion.y;
 }
 
-void GameEngine_MouseButtonPressedEvent(const SDL_Event* event)
+void GameEngine_SDL_MouseButtonPressedEvent(const SDL_Event* event)
 {
     switch (global.Window.Event.button.button)
     {
@@ -18,7 +18,7 @@ void GameEngine_MouseButtonPressedEvent(const SDL_Event* event)
     }
 }
 
-void GameEngine_MouseButtonUnPressedEvent(const SDL_Event* event)
+void GameEngine_SDL_MouseButtonUnPressedEvent(const SDL_Event* event)
 {
 	switch (global.Window.Event.button.button)
 	{
@@ -29,7 +29,7 @@ void GameEngine_MouseButtonUnPressedEvent(const SDL_Event* event)
 	}
 }
 
-void GameEngine_MouseWheelEvent(const SDL_Event* event)
+void GameEngine_SDL_MouseWheelEvent(const SDL_Event* event)
 {
 	global.Mouse.WheelOffset += event->wheel.y;
 }

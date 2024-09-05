@@ -51,7 +51,7 @@
     <ClCompile Include="VulkanSwapChain.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Window.c">
+    <ClCompile Include="SDLWindow.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CBuffer.c">
@@ -72,9 +72,12 @@
     <ClCompile Include="DLLMain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GLFWWindow.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Window.h">
+    <ClInclude Include="SDLWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="VulkanSwapChain.h">
@@ -138,6 +141,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="vulkanwindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GLFWWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

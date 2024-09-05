@@ -1,14 +1,13 @@
 #pragma once
-#include "Window.h"
+#include <Windows.h> #include <objbase.h> #include <oaidl.h> #include <dxcapi.h>
 #include "FrameTime.h"
 #include "Mouse.h"
 #include "Keyboard.h"
-#include "Window.h"
 #include "GameController.h"
 #include "VulkanRenderer.h"
 
 typedef struct global {
-    WindowState         Window;
+    SDLWindowState     Window;
     MouseState          Mouse;
     KeyboardState       Keyboard;
     GameControllerState Controller;

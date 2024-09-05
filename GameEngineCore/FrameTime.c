@@ -1,10 +1,5 @@
 #include "FrameTime.h"
 #include "Global.h"
-#pragma warning(push)
-#pragma warning(disable : 26819) 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_vulkan.h>
-#pragma warning(pop)
 
  void time_init(float frame_rate) {
 	global.time.frame_rate = frame_rate;

@@ -71,8 +71,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)External\sdl\include;$(SolutionDir)External\stb;C:\VulkanSDK\1.3.290.0\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)External\sdl\lib;C:\VulkanSDK\1.3.290.0\Lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)External\glfw\include;$(SolutionDir)External\sdl\include;$(SolutionDir)External\stb;C:\VulkanSDK\1.3.290.0\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)External\glfw\lib-vc2022;$(SolutionDir)External\sdl\lib;C:\VulkanSDK\1.3.290.0\Lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>C:\Users\DHZ\Documents\GitHub\2D-Game-Engine\External\ImGui;C:\VulkanSDK\1.3.290.0\Include;$(SolutionDir)External\stb;$(SolutionDir)External\sdl\include;$(IncludePath)</IncludePath>
@@ -117,7 +117,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2test.lib;vulkan-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2test.lib;vulkan-1.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -146,6 +146,7 @@
     <ClCompile Include="DLLMain.cpp" />
     <ClCompile Include="DLLMain.h" />
     <ClCompile Include="GameController.c" />
+    <ClCompile Include="GLFWWindow.c" />
     <ClCompile Include="Global.c" />
     <ClCompile Include="GraphicsDevice.c" />
     <ClCompile Include="io.c" />
@@ -156,7 +157,7 @@
     <ClCompile Include="VulkanError.c" />
     <ClCompile Include="VulkanRenderer.c" />
     <ClCompile Include="VulkanSwapChain.c" />
-    <ClCompile Include="Window.c" />
+    <ClCompile Include="SDLWindow.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CBuffer.h" />
@@ -169,6 +170,7 @@
       <FileType>CppHeader</FileType>
     </ClInclude>
     <ClInclude Include="GameController.h" />
+    <ClInclude Include="GLFWWindow.h" />
     <ClInclude Include="Global.h" />
     <ClInclude Include="GraphicsDevice.h" />
     <ClInclude Include="io.h" />
@@ -184,7 +186,7 @@
     <ClInclude Include="VulkanRendererStruct.h" />
     <ClInclude Include="VulkanSwapChain.h" />
     <ClInclude Include="vulkanwindow.h" />
-    <ClInclude Include="Window.h" />
+    <ClInclude Include="SDLWindow.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

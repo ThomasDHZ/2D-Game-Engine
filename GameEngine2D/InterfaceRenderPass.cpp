@@ -152,7 +152,7 @@ std::vector<VkCommandBuffer> InterfaceRenderPass::ImGuiCommandBuffers;
         ImGuiIO& io = ImGui::GetIO(); (void)io;
 
         ImGui::StyleColorsDark();
-        ImGui_ImplSDL2_InitForVulkan(global.Window.SDLWindow);
+        ImGui_ImplSDL2_InitForVulkan(global.Window.windoww);
 
         VULKAN_RESULT(CreateRenderPass());
         VULKAN_RESULT(CreateRendererFramebuffers());

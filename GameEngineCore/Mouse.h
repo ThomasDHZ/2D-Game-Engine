@@ -1,6 +1,6 @@
 #pragma once
-#define SDL_MAIN_HANDLED
-#include <SDL.h>
+#include "SDLWindow.h"
+#include "Mouse.h"
 
 typedef enum mouseButtons
 {
@@ -24,7 +24,7 @@ typedef struct mouseState
 	MouseButtonEventState MouseButtonState[3];
 }MouseState;
 
-void GameEngine_MouseMoveEvent(const SDL_Event* event);
-void GameEngine_MouseButtonPressedEvent(const SDL_Event* event);
-void GameEngine_MouseButtonUnPressedEvent(const SDL_Event* event);
-void GameEngine_MouseWheelEvent(const SDL_Event* event);
+void GameEngine_SDL_MouseMoveEvent(const SDL_Event* event);
+void GameEngine_SDL_MouseButtonPressedEvent(const SDL_Event* event);
+void GameEngine_SDL_MouseButtonUnPressedEvent(const SDL_Event* event);
+void GameEngine_SDL_MouseWheelEvent(const SDL_Event* event);
