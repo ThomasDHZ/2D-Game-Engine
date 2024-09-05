@@ -39,7 +39,6 @@ typedef struct rendererState
 
 DLL_EXPORT bool Iswindoww();
 DLL_EXPORT void Renderer_Windows_Renderer(uint32* pExtensionCount, VkExtensionProperties** extensionProperties);
-DLL_EXPORT void Renderer_SDL_Renderer(uint32* pExtensionCount, VkExtensionProperties** extensionProperties);
 DLL_EXPORT VkInstance Renderer_CreateVulkanInstance(VkInstanceCreateInfo instanceInfo);
 DLL_EXPORT VkResult Renderer_RendererSetUp();
 DLL_EXPORT VkResult Renderer_RebuildSwapChain();

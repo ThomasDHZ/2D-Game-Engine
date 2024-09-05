@@ -159,23 +159,9 @@ static bool GetRayTracingSupport()
         if (Array_RendererExtensionPropertiesSearch(deviceExtensions, deviceExtensionCount, VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME) &&
             Array_RendererExtensionPropertiesSearch(deviceExtensions, deviceExtensionCount, VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME))
         {
-            uint32 extensionCount;
-            SDL_Vulkan_GetInstanceExtensions(global.Window.window, &extensionCount, NULL);
-
-            const char** extensions = malloc(sizeof(const char*) * (extensionCount + 3));
-            SDL_Vulkan_GetInstanceExtensions(global.Window.window, &extensionCount, extensions);
-            if (!extensions)
-            {
-                fprintf(stderr, "Failed to allocate memory for Vulkan.\n");
-                free(deviceExtensions);
-                return false;
-            }
-            extensions[extensionCount++] = VK_EXT_DEBUG_UTILS_EXTENSION_NAME;
-            extensions[extensionCount++] = VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME;
-            extensions[extensionCount++] = VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME;
-
-            free(extensions);
-            free(deviceExtensions);
+            uint32 pExtensionCount = 0;
+            VkExtensionProperties* extensions = NULL;
+            Window_SDL_GetInstanceExtensions(&pExtensionCount, &extensions);
             return true;
         }
         else
@@ -277,34 +263,11 @@ VkInstance Renderer_CreateVulkanInstance(VkInstanceCreateInfo instanceInfo)
 
 void Renderer_Windows_Renderer(uint32* pExtensionCount, VkExtensionProperties** extensionProperties)
 {
-    SDL_Vulkan_GetInstanceExtensions(NULL, pExtensionCount, NULL);
-    const char** extensions = malloc(sizeof(const char*) * (*pExtensionCount + 1));
-    if (!extensions)
-    {
-        *pExtensionCount = 0;
-        *extensionProperties = NULL;
-        return;
-    }
-    SDL_Vulkan_GetInstanceExtensions(NULL, pExtensionCount, extensions);
-    extensions[*pExtensionCount] = VK_EXT_DEBUG_UTILS_EXTENSION_NAME;
+    vkEnumerateInstanceExtensionProperties(NULL, &pExtensionCount, NULL);
+    VkExtensionProperties* instanceExtensions = (VkExtensionProperties*)malloc(sizeof(VkExtensionProperties) * (*pExtensionCount));
+    vkEnumerateInstanceExtensionProperties(NULL, &pExtensionCount, instanceExtensions);
     (*pExtensionCount)++;
-    *extensionProperties = (VkExtensionProperties*)extensions;
-}
-
-void Renderer_SDL_Renderer(uint32* pExtensionCount, VkExtensionProperties** extensionProperties)
-{
-    SDL_Vulkan_GetInstanceExtensions(global.Window.window, pExtensionCount, NULL);
-    const char** extensions = malloc(sizeof(const char*) * (*pExtensionCount + 1));
-    if (!extensions)
-    {
-        *pExtensionCount = 0;
-        *extensionProperties = NULL;
-        return;
-    }
-    SDL_Vulkan_GetInstanceExtensions(global.Window.window, pExtensionCount, extensions);
-    extensions[*pExtensionCount] = VK_EXT_DEBUG_UTILS_EXTENSION_NAME;
-    (*pExtensionCount)++;
-    *extensionProperties = (VkExtensionProperties*)extensions;
+    *extensionProperties = (VkExtensionProperties*)extensionProperties;
 }
 
 VkResult Renderer_RendererSetUp()
@@ -316,7 +279,7 @@ VkResult Renderer_RendererSetUp()
 
     if (Iswindoww())
     {
-        Renderer_SDL_Renderer(&pExtensionCount, &extensions);
+        Window_SDL_GetInstanceExtensions(&pExtensionCount, &extensions);
         printf("This is an SDL window.\n");
     }
     else 
@@ -365,13 +328,7 @@ VkResult Renderer_RendererSetUp()
     VULKAN_RESULT(CreateDebugUtilsMessengerEXT(global.Renderer.Instance, &debugInfo, NULL, &global.Renderer.DebugMessenger));
 #endif
 
-    if (!SDL_Vulkan_CreateSurface(global.Window.window, global.Renderer.Instance, &global.Renderer.Surface))
-    {
-        fprintf(stderr, "Failed to create Vulkan surface: %s\n", SDL_GetError());
-        Renderer_DestroyRenderer();
-        free(extensions);
-        return VK_RESULT_MAX_ENUM;
-    }
+    Window_SDL_CreateSurface(&global.Renderer.Instance, &global.Renderer.Surface);
 
     uint32 deviceCount = UINT32_MAX;
     VULKAN_RESULT(vkEnumeratePhysicalDevices(global.Renderer.Instance, &deviceCount, NULL));

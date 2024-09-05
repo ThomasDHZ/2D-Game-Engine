@@ -1,6 +1,8 @@
 #include "SDLWindow.h"
 #include "Global.h"
 
+SDLWindowState sdlWindow = { 0 };
+
   void GameEngine_SDL_CreateGraphicsWindow(const char* WindowName, uint32 width, uint32 height)
 {
     if (SDL_Init(SDL_INIT_VIDEO) < 0)
@@ -40,6 +42,27 @@
         default: break;
     }
 }
+
+  void Window_SDL_GetInstanceExtensions(uint32* pExtensionCount, VkExtensionProperties** extensionProperties)
+  {
+      SDL_Vulkan_GetInstanceExtensions(NULL, pExtensionCount, NULL);
+      const char** extensions = malloc(sizeof(const char*) * (*pExtensionCount + 1));
+      if (!extensions)
+      {
+          *pExtensionCount = 0;
+          *extensionProperties = NULL;
+          return;
+      }
+      SDL_Vulkan_GetInstanceExtensions(NULL, pExtensionCount, extensions);
+      extensions[*pExtensionCount] = VK_EXT_DEBUG_UTILS_EXTENSION_NAME;
+      (*pExtensionCount)++;
+      *extensionProperties = (VkExtensionProperties*)extensions;
+  }
+
+  void Window_SDL_CreateSurface(VkInstance* instance, VkSurfaceKHR* surface)
+  {
+      SDL_Vulkan_CreateSurface(global.Window.window, *instance, surface);
+  }
 
   void GameEngine_SDL_DestroyWindow(void)
 {

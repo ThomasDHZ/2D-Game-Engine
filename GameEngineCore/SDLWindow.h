@@ -9,6 +9,7 @@
 
 #include <stdio.h>
 #include <stdbool.h>
+#include <vulkan/vulkan_core.h>
 #include "CTypedef.h"
 #include "Macro.h"
 
@@ -21,8 +22,10 @@ typedef struct sdlWindowState
     bool FramebufferResized;
     bool ExitWindow;
 } SDLWindowState;
-
+DLL_EXPORT SDLWindowState sdlWindow;
 
 DLL_EXPORT void GameEngine_SDL_CreateGraphicsWindow(const char* WindowName, uint32 width, uint32 height);
 DLL_EXPORT void GameEngine_SDL_PollEventHandler(SDL_Event* event);
+DLL_EXPORT void Window_SDL_GetInstanceExtensions(uint32* pExtensionCount, VkExtensionProperties** extensionProperties);
+DLL_EXPORT void Window_SDL_CreateSurface(VkInstance* instance, VkSurfaceKHR* surface);
 DLL_EXPORT void GameEngine_SDL_DestroyWindow(void);
